@@ -31,13 +31,16 @@ public class GepgUtils {
     }
 
     /**
-     * Generates a random string of the specified length using the characters from the given candidate character set.
-     * The candidate character set includes uppercase letters (A-Z) and digits (0-9).
+     * Generates a random string of the specified length using the characters
+     * from the given candidate character set.
+     * The candidate character set includes uppercase letters (A-Z) and digits
+     * (0-9).
      *
      * @param length The desired length of the random string to be generated.
      * @return A randomly generated string of the specified length.
      *
-     * @throws IllegalArgumentException If the specified length is less than or equal to zero.
+     * @throws IllegalArgumentException If the specified length is less than or
+     * equal to zero.
      *
      * @example
      * // Generating a random string of length 8
@@ -52,7 +55,8 @@ public class GepgUtils {
      * @example
      * // Generating a random string of length 0 (invalid)
      * try {
-     *     String randomStr = randomString(0); // This will throw an IllegalArgumentException
+     *     String randomStr = randomString(0); // This will throw an
+     *     IllegalArgumentException
      * } catch (IllegalArgumentException e) {
      *     System.err.println("Invalid length specified: " + e.getMessage());
      * }

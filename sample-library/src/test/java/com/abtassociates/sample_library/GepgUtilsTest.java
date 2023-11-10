@@ -8,9 +8,6 @@ class GepgUtilsTest {
 
     @Test
     void testRequestControlNumber() {
-        // Create a sample bill object for testing
-        Object sampleBill = new Object();
-
         // Test the requestControlNumber method
         String controlNumber = GepgUtils.requestControlNumber(32);
 
