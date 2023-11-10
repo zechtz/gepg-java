@@ -5,9 +5,9 @@ name: Generate Coverage Report and Send it to coveralls
 
 on:
   push:
-    branches: [ development ]
+    branches: [ main ]
   pull_request:
-    branches: [ development ]
+    branches: [ main ]
 
 jobs:
   build:
