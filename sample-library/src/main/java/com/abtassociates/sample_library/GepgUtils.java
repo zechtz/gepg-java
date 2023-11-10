@@ -18,7 +18,7 @@ public class GepgUtils {
 
     /**
      * Private method to make HTTP requests to GePG and retrieve the control number
-     * for a bill.
+     * for a bill
      *
      * @param bill The bill object for which the control number is requested.
      * @return The generated control number.
