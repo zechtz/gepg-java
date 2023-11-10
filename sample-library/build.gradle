@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'maven-publish'
+    id 'com.github.kt3k.coveralls' version '2.12.2'
 }
 
 jacoco {
@@ -100,4 +101,12 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+coveralls {
+    jacocoReportPath 'build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml'
+}
+
+tasks.coveralls {
+    dependsOn 'jacocoTestReport'
 }
