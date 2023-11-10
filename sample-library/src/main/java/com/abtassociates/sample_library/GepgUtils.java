@@ -1,7 +1,8 @@
 package com.abtassociates.sample_library;
 
 /**
- * Utility class for interacting with GePG (Government Electronic Payment Gateway).
+ * Utility class for interacting with GePG (Government Electronic Payment
+ * Gateway).
  */
 public class GepgUtils {
 
@@ -11,12 +12,15 @@ public class GepgUtils {
      * @param bill The bill object for which the control number is requested.
      * @return The generated control number.
      */
+
     public static String requestControlNumber(Object bill) {
+
         return getControlNumber(bill);
     }
 
     /**
-     * Private method to make HTTP requests to GePG and retrieve the control number for a bill.
+     * Private method to make HTTP requests to GePG and retrieve the control number
+     * for a bill.
      *
      * @param bill The bill object for which the control number is requested.
      * @return The generated control number.
