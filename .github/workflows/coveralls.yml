@@ -37,6 +37,5 @@ jobs:
           CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
         run: |
-          mvn coveralls:report \
-          --no-transfer-progress \
+          ./gradlew coveralls \
           -D repoToken=${{ secrets.COVERALLS_REPO_TOKEN }}
