@@ -5,7 +5,6 @@ package com.abtassociates.sample_library;
  * Gateway).
  */
 public class GepgUtils {
-
 	/**
 	 * Generates a control number for a given bill using GePG.
 	 *
@@ -18,8 +17,8 @@ public class GepgUtils {
 	}
 
 	/**
-	 * Private method to make HTTP requests to GePG and retrieve the control number
-	 * for a bill.
+	 * Private method to make HTTP requests to GePG and
+	 * retrieve the control number for a bill.
 	 *
 	 * @param bill
 	 *            The bill object for which the control number is requested.
@@ -27,7 +26,8 @@ public class GepgUtils {
 	 */
 	private static String getControlNumber(Object bill) {
 		// Add HTTP Requests to GePG
-		// For illustration purposes, a sample control number is returned.
+		// For illustration purposes,
+		// a sample control number is returned.
 		return "sample";
 	}
 }
