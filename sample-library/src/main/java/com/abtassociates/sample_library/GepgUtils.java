@@ -61,11 +61,11 @@ public class GepgUtils {
      *     System.err.println("Invalid length specified: " + e.getMessage());
      * }
      */
-    private static String randomString(int length) {
+    private static String randomString(int stringLength) {
         String candidateChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < stringLength; i++) {
             sb.append(candidateChars.charAt(random.nextInt(candidateChars
                 .length())));
         }
