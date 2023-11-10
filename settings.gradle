@@ -1,0 +1,4 @@
+rootProject.name = 'sample-library-two'
+include 'sample-library'
+include 'sample'
+
