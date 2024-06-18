@@ -6,12 +6,12 @@ plugins {
 }
 
 jacoco {
-    toolVersion = "0.8.7" // Specify the JaCoCo version you want to use
+    toolVersion = "0.8.7"
 }
 
 test {
     useJUnitPlatform()
-    finalizedBy jacocoTestReport // Report is always generated after tests run
+    finalizedBy jacocoTestReport
 }
 
 jacocoTestReport {
@@ -30,62 +30,42 @@ if (rootProject.file("github.properties").exists()) {
 }
 
 publishing {
-
     repositories {
         maven {
             name = "GitHubPackages"
-            /** Configure path of your package repository on Github
-             ** Replace GITHUB_USERID with your/organisation Github userID
-             ** and REPOSITORY with the repository name on GitHub
-             */
             url = uri("https://maven.pkg.github.com/watabelabs/gepg")
             credentials {
-                /** Create github.properties in root project folder file with
-                 ** gpr.usr=GITHUB_USER_ID & gpr.key=PERSONAL_ACCESS_TOKEN
-                 ** Set env variable GPR_debugdebugUSER & GPR_API_KEY if not adding a properties file**/
-
                 username = githubProperties['gpr.usr'] ?: System.getenv("GITHUB_ACTOR")
                 password = githubProperties['gpr.key'] ?: System.getenv("GITHUB_TOKEN")
             }
         }
     }
-    def getArtifactId = {
-        return "sample-library"
-    }
     publications {
-        bar(MavenPublication) {
-            groupId group // Library groupID
-            artifactId getArtifactId()
-            version version
-            artifact("$buildDir/libs/${getArtifactId()}-$version" + ".jar")
-
-            //This is to cater for transitive dependencies within this library
-            pom.withXml {
-                final dependenciesNode = asNode().appendNode('dependencies')
-                ext.addDependency = { Dependency dep, String scope ->
-                    if (dep.group == null || dep.version == null || dep.name == null || dep.name == 'unspecified')
-                        return
-                    final dependencyNode = dependenciesNode.appendNode('dependency')
-                    dependencyNode.appendNode('groupId', dep.group)
-                    dependencyNode.appendNode('artifactId', dep.name)
-                    dependencyNode.appendNode('version', dep.version)
-                    dependencyNode.appendNode('scope', scope)
-                    if (!dep.transitive) {
-                        final exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
-                        exclusionNode.appendNode('groupId', '*')
-                        exclusionNode.appendNode('artifactId', '*')
-                    } else if (!dep.properties.excludeRules.empty) {
-                        final exclusionsNode = dependencyNode.appendNode('exclusions')
-                        dep.properties.excludeRules.each { ExcludeRule rule ->
-                            def exclusion = exclusionsNode.appendNode('exclusion')
-                            exclusion.appendNode('groupId', rule.group ?: '*')
-                            exclusion.appendNode('artifactId', rule.module ?: '*')
-                        }
+        mavenJava(MavenPublication) {
+            from components.java
+            pom {
+                name.set("GePG Java Library")
+                description.set("A Java library for GePG integration")
+                url.set("https://github.com/watabelabs/gepg")
+                licenses {
+                    license {
+                        name.set("The MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
                     }
                 }
-                configurations.implementation.getDependencies().each { dep -> addDependency(dep, 'implementation') }
+                developers {
+                    developer {
+                        id.set("watabelabs")
+                        name.set("Watabe Labs")
+                        email.set("contact@watabelabs.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/watabelabs/gepg.git")
+                    developerConnection.set("scm:git:ssh://github.com/watabelabs/gepg.git")
+                    url.set("https://github.com/watabelabs/gepg")
+                }
             }
-
         }
     }
 }

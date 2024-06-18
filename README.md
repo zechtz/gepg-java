@@ -8,6 +8,49 @@ A Java library for GePG integration.
 
 Integrating with GePG often requires writing repetitive code. This library simplifies the process, handling all the complex aspects for you, so you can focus on developing robust software.
 
+## Installation instructions
+
+### For Gradle
+
+```sh
+
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/watabelabs/gepg")
+        credentials {
+            username = project.findProperty("gpr.usr") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.watabelabs:gepg:1.0-SNAPSHOT'
+}
+```
+
+### For maven
+
+```sh
+<repositories>
+    <repository>
+        <id>github</id>
+        <url>https://maven.pkg.github.com/watabelabs/gepg</url>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+    </repository>
+</repositories>
+
+<dependency>
+    <groupId>com.watabelabs</groupId>
+    <artifactId>gepg</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+
+
+```
+
 ## Features
 
 This library exposes all possible requests and responses to and from GePG.
