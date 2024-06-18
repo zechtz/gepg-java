@@ -4,52 +4,117 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
- * The GepgBillSubReqMapper class is used for mapping the XML request
- * to the corresponding Java object. This class represents the bill subscription
- * request.
- *
- * <p>
- * It contains two main fields: billHdr and billTrxInf. The billHdr field holds
- * the bill header information, while the billTrxInf field holds the bill
- * transaction
- * information.
- * </p>
- *
- * <p>
- * The class is annotated with JAXB annotations to specify how the XML elements
- * should be mapped to the Java fields. It uses {@link XmlRootElement} to define
- * the
- * root element name and {@link XmlAccessorType} to specify the access type for
- * the fields.
- * </p>
+ * Root class representing the GePG Bill Submission Request.
  */
 @XmlRootElement(name = "gepgBillSubReq")
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(propOrder = { "billHdr", "billTrxInf" })
 public class GepgBillSubRequestMapper {
 
-    @XmlElement(name = "BillHdr")
+    @XmlElement(name = "GepgBillHeaderMapper", required = true)
     private GepgBillHeaderMapper billHdr;
 
-    @XmlElement(name = "BillTrxInf")
+    @XmlElement(name = "BillTrxInf", required = true)
     private GepgBillTrxInfoMapper billTrxInf;
 
-    // Getters and setters
+    /**
+     * Default no-args constructor.
+     */
+    public GepgBillSubRequestMapper() {
+    }
 
-    public GepgBillHeaderMapper getBillHdr() {
+    /**
+     * All-args constructor.
+     * 
+     * @param billHdr    the bill header
+     * @param billTrxInf the bill transaction information
+     */
+    public GepgBillSubRequestMapper(GepgBillHeaderMapper billHdr, GepgBillTrxInfoMapper billTrxInf) {
+        this.billHdr = billHdr;
+        this.billTrxInf = billTrxInf;
+    }
+
+    /**
+     * Gets the bill header.
+     * 
+     * @return the bill header
+     */
+    public GepgBillHeaderMapper getGepgBillHeaderMapper() {
         return billHdr;
     }
 
-    public void setBillHdr(GepgBillHeaderMapper billHdr) {
+    /**
+     * Sets the bill header.
+     * 
+     * @param billHdr the new bill header
+     */
+    public void setGepgBillHeaderMapper(GepgBillHeaderMapper billHdr) {
         this.billHdr = billHdr;
     }
 
+    /**
+     * Gets the bill transaction information.
+     * 
+     * @return the bill transaction information
+     */
     public GepgBillTrxInfoMapper getBillTrxInf() {
         return billTrxInf;
     }
 
+    /**
+     * Sets the bill transaction information.
+     * 
+     * @param billTrxInf the new bill transaction information
+     */
     public void setBillTrxInf(GepgBillTrxInfoMapper billTrxInf) {
         this.billTrxInf = billTrxInf;
+    }
+
+    /**
+     * Generates a string representation of the object.
+     * 
+     * @return a string representation of the object
+     */
+    @Override
+    public String toString() {
+        return "GePgBillSubReq{" +
+                "billHdr=" + billHdr +
+                ", billTrxInf=" + billTrxInf +
+                '}';
+    }
+
+    /**
+     * Checks if this object is equal to another object.
+     * 
+     * @param o the other object
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        GepgBillSubRequestMapper that = (GepgBillSubRequestMapper) o;
+
+        if (billHdr != null ? !billHdr.equals(that.billHdr) : that.billHdr != null)
+            return false;
+        return billTrxInf != null ? billTrxInf.equals(that.billTrxInf) : that.billTrxInf == null;
+    }
+
+    /**
+     * Generates a hash code for this object.
+     * 
+     * @return a hash code for this object
+     */
+    @Override
+    public int hashCode() {
+        int result = billHdr != null ? billHdr.hashCode() : 0;
+        result = 31 * result + (billTrxInf != null ? billTrxInf.hashCode() : 0);
+        return result;
     }
 }

@@ -14,23 +14,24 @@ import javax.xml.bind.annotation.XmlElement;
  * should be mapped to the Java fields.
  * </p>
  */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GepgBillHeaderMapper {
 
-    @XmlElement(name = "SpCode")
+    @XmlElement(name = "SpCode", required = true)
     private String spCode;
 
-    @XmlElement(name = "RtrRespFlg")
+    @XmlElement(name = "RtrRespFlg", required = true)
     private boolean rtrRespFlg;
 
     /**
-     * Default no-argument constructor.
+     * Default no-args constructor.
      */
     public GepgBillHeaderMapper() {
     }
 
     /**
-     * Parameterized constructor to initialize the object with the provided values.
+     * All-args constructor.
      *
      * @param spCode     the service provider code
      * @param rtrRespFlg the return response flag
@@ -41,7 +42,7 @@ public class GepgBillHeaderMapper {
     }
 
     /**
-     * Retrieves the service provider code.
+     * Gets the service provider code.
      *
      * @return the service provider code
      */
@@ -52,14 +53,14 @@ public class GepgBillHeaderMapper {
     /**
      * Sets the service provider code.
      *
-     * @param spCode the service provider code to set
+     * @param spCode the new service provider code
      */
     public void setSpCode(String spCode) {
         this.spCode = spCode;
     }
 
     /**
-     * Retrieves the return response flag.
+     * Gets the return response flag.
      *
      * @return the return response flag
      */
@@ -70,26 +71,54 @@ public class GepgBillHeaderMapper {
     /**
      * Sets the return response flag.
      *
-     * @param rtrRespFlg the return response flag to set
+     * @param rtrRespFlg the new return response flag
      */
     public void setRtrRespFlg(boolean rtrRespFlg) {
         this.rtrRespFlg = rtrRespFlg;
     }
 
     /**
-     * Returns a string representation of the object.
-     * <p>
-     * This method is overridden to provide a string representation of the object
-     * that includes the values of the fields.
-     * </p>
+     * Generates a string representation of the object.
      *
      * @return a string representation of the object
      */
     @Override
     public String toString() {
-        return "GepgBillHeaderMapper{" +
+        return "BillHdr{" +
                 "spCode='" + spCode + '\'' +
                 ", rtrRespFlg=" + rtrRespFlg +
                 '}';
+    }
+
+    /**
+     * Checks if this object is equal to another object.
+     *
+     * @param o the other object
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        GepgBillHeaderMapper billHdr = (GepgBillHeaderMapper) o;
+
+        if (rtrRespFlg != billHdr.rtrRespFlg)
+            return false;
+        return spCode != null ? spCode.equals(billHdr.spCode) : billHdr.spCode == null;
+    }
+
+    /**
+     * Generates a hash code for this object.
+     *
+     * @return a hash code for this object
+     */
+    @Override
+    public int hashCode() {
+        int result = spCode != null ? spCode.hashCode() : 0;
+        result = 31 * result + (rtrRespFlg ? 1 : 0);
+        return result;
     }
 }

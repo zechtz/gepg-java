@@ -1,8 +1,5 @@
 package com.watabelabs.gepg.mappers.bill;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -28,255 +25,193 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GepgBillItemMapper {
 
-    /**
-     * The list of bill items.
-     * <p>
-     * This field is mapped to the XML element named "BillItem". It holds a list of
-     * {@link BillItemMapper} objects, each representing details of an individual
-     * bill item.
-     * </p>
-     */
-    @XmlElement(name = "BillItem")
-    private List<BillItemMapper> billItem;
+    @XmlElement(name = "BillItemRef", required = true)
+    private String billItemRef;
+
+    @XmlElement(name = "UseItemRefOnPay", required = true)
+    private String useItemRefOnPay;
+
+    @XmlElement(name = "BillItemAmt", required = true)
+    private double billItemAmt;
+
+    @XmlElement(name = "BillItemEqvAmt", required = true)
+    private double billItemEqvAmt;
+
+    @XmlElement(name = "BillItemMiscAmt", required = true)
+    private double billItemMiscAmt;
+
+    @XmlElement(name = "GfsCode", required = true)
+    private String gfsCode;
 
     /**
-     * Default no-argument constructor.
+     * Default no-args constructor.
      */
     public GepgBillItemMapper() {
     }
 
     /**
-     * Parameterized constructor to initialize the object with the provided list of
-     * bill items.
+     * All-args constructor.
      *
-     * @param billItem the list of bill items to set
+     * @param billItemRef     the bill item reference
+     * @param useItemRefOnPay the use item reference on pay
+     * @param billItemAmt     the bill item amount
+     * @param billItemEqvAmt  the bill item equivalent amount
+     * @param billItemMiscAmt the bill item miscellaneous amount
+     * @param gfsCode         the GFS code
      */
-    public GepgBillItemMapper(List<BillItemMapper> billItem) {
-        this.billItem = billItem;
+    public GepgBillItemMapper(String billItemRef, String useItemRefOnPay, double billItemAmt, double billItemEqvAmt,
+            Double billItemMiscAmt, String gfsCode) {
+        this.billItemRef = billItemRef;
+        this.useItemRefOnPay = useItemRefOnPay;
+        this.billItemAmt = billItemAmt;
+        this.billItemEqvAmt = billItemEqvAmt;
+        this.billItemMiscAmt = billItemMiscAmt;
+        this.gfsCode = gfsCode;
     }
 
     /**
-     * Retrieves the list of bill items.
+     * Gets the bill item reference.
      *
-     * @return the list of bill items
+     * @return the bill item reference
      */
-    public List<BillItemMapper> getBillItem() {
-        return billItem;
+    public String getBillItemRef() {
+        return billItemRef;
     }
 
     /**
-     * Sets the list of bill items.
+     * Sets the bill item reference.
      *
-     * @param billItem the list of bill items to set
+     * @param billItemRef the new bill item reference
      */
-    public void setBillItem(List<BillItemMapper> billItem) {
-        this.billItem = billItem;
+    public void setBillItemRef(String billItemRef) {
+        this.billItemRef = billItemRef;
     }
 
     /**
-     * Returns a string representation of the object.
-     * <p>
-     * This method is overridden to provide a string representation of the object
-     * that includes the values of the billItem field.
-     * </p>
+     * Gets the use item reference on pay flag.
+     *
+     * @return the use item reference on pay flag
+     */
+    public String getUseItemRefOnPay() {
+        return useItemRefOnPay;
+    }
+
+    /**
+     * Sets the use item reference on pay flag.
+     *
+     * @param useItemRefOnPay the new use item reference on pay flag
+     */
+    public void setUseItemRefOnPay(String useItemRefOnPay) {
+        this.useItemRefOnPay = useItemRefOnPay;
+    }
+
+    /**
+     * Gets the bill item amount.
+     *
+     * @return the bill item amount
+     */
+    public double getBillItemAmt() {
+        return billItemAmt;
+    }
+
+    /**
+     * Sets the bill item amount.
+     *
+     * @param billItemAmt the new bill item amount
+     */
+    public void setBillItemAmt(double billItemAmt) {
+        this.billItemAmt = billItemAmt;
+    }
+
+    /**
+     * Gets the bill item equivalent amount.
+     *
+     * @return the bill item equivalent amount
+     */
+    public double getBillItemEqvAmt() {
+        return billItemEqvAmt;
+    }
+
+    /**
+     * Sets the bill item equivalent amount.
+     *
+     * @param billItemEqvAmt the new bill item equivalent amount
+     */
+    public void setBillItemEqvAmt(double billItemEqvAmt) {
+        this.billItemEqvAmt = billItemEqvAmt;
+    }
+
+    /**
+     * Gets the bill item miscellaneous amount.
+     *
+     * @return the bill item miscellaneous amount
+     */
+    public double getBillItemMiscAmt() {
+        return billItemMiscAmt;
+    }
+
+    /**
+     * Sets the bill item miscellaneous amount.
+     *
+     * @param billItemMiscAmt the new bill item miscellaneous amount
+     */
+    public void setBillItemMiscAmt(double billItemMiscAmt) {
+        this.billItemMiscAmt = billItemMiscAmt;
+    }
+
+    /**
+     * Gets the GFS code.
+     *
+     * @return the GFS code
+     */
+    public String getGfsCode() {
+        return gfsCode;
+    }
+
+    /**
+     * Sets the GFS code.
+     *
+     * @param gfsCode the new GFS code
+     */
+    public void setGfsCode(String gfsCode) {
+        this.gfsCode = gfsCode;
+    }
+
+    /**
+     * Generates a string representation of the object.
      *
      * @return a string representation of the object
      */
     @Override
     public String toString() {
-        return "GepgBillItemMapper{" +
-                "billItem=" + billItem +
+        return "BillItem{" +
+                "billItemRef='" + billItemRef + '\'' +
+                ", useItemRefOnPay='" + useItemRefOnPay + '\'' +
+                ", billItemAmt=" + billItemAmt +
+                ", billItemEqvAmt=" + billItemEqvAmt +
+                ", billItemMiscAmt=" + billItemMiscAmt +
+                ", gfsCode='" + gfsCode + '\'' +
                 '}';
     }
 
     /**
-     * The BillItemMapper class represents the details of an individual bill item.
+     * Generates a hash code for this object.
      *
-     * <p>
-     * It contains fields for the bill item reference, whether to use the item
-     * reference
-     * on payment, the bill item amount, the equivalent amount, the miscellaneous
-     * amount,
-     * and the GFS code. Each field is annotated with JAXB annotations to specify
-     * how the
-     * XML elements should be mapped to the Java fields.
-     * </p>
+     * @return a hash code for this object
      */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class BillItemMapper {
-
-        @XmlElement(name = "BillItemRef")
-        private String billItemRef;
-
-        @XmlElement(name = "UseItemRefOnPay")
-        private String useItemRefOnPay;
-
-        @XmlElement(name = "BillItemAmt")
-        private BigDecimal billItemAmt;
-
-        @XmlElement(name = "BillItemEqvAmt")
-        private BigDecimal billItemEqvAmt;
-
-        @XmlElement(name = "BillItemMiscAmt")
-        private BigDecimal billItemMiscAmt;
-
-        @XmlElement(name = "GfsCode")
-        private String gfsCode;
-
-        /**
-         * Default no-argument constructor.
-         */
-        public BillItemMapper() {
-        }
-
-        /**
-         * Parameterized constructor to initialize the object with the provided values.
-         *
-         * @param billItemRef     the bill item reference
-         * @param useItemRefOnPay whether to use the item reference on payment
-         * @param billItemAmt     the bill item amount
-         * @param billItemEqvAmt  the equivalent amount of the bill item
-         * @param billItemMiscAmt the miscellaneous amount of the bill item
-         * @param gfsCode         the GFS code for the bill item
-         */
-        public BillItemMapper(String billItemRef, String useItemRefOnPay, BigDecimal billItemAmt,
-                BigDecimal billItemEqvAmt, BigDecimal billItemMiscAmt, String gfsCode) {
-            this.billItemRef = billItemRef;
-            this.useItemRefOnPay = useItemRefOnPay;
-            this.billItemAmt = billItemAmt;
-            this.billItemEqvAmt = billItemEqvAmt;
-            this.billItemMiscAmt = billItemMiscAmt;
-            this.gfsCode = gfsCode;
-        }
-
-        /**
-         * Retrieves the bill item reference.
-         *
-         * @return the bill item reference
-         */
-        public String getBillItemRef() {
-            return billItemRef;
-        }
-
-        /**
-         * Sets the bill item reference.
-         *
-         * @param billItemRef the bill item reference to set
-         */
-        public void setBillItemRef(String billItemRef) {
-            this.billItemRef = billItemRef;
-        }
-
-        /**
-         * Retrieves whether to use the item reference on payment.
-         *
-         * @return the value indicating whether to use the item reference on payment
-         */
-        public String getUseItemRefOnPay() {
-            return useItemRefOnPay;
-        }
-
-        /**
-         * Sets whether to use the item reference on payment.
-         *
-         * @param useItemRefOnPay the value indicating whether to use the item reference
-         *                        on payment
-         */
-        public void setUseItemRefOnPay(String useItemRefOnPay) {
-            this.useItemRefOnPay = useItemRefOnPay;
-        }
-
-        /**
-         * Retrieves the bill item amount.
-         *
-         * @return the bill item amount
-         */
-        public BigDecimal getBillItemAmt() {
-            return billItemAmt;
-        }
-
-        /**
-         * Sets the bill item amount.
-         *
-         * @param billItemAmt the bill item amount to set
-         */
-        public void setBillItemAmt(BigDecimal billItemAmt) {
-            this.billItemAmt = billItemAmt;
-        }
-
-        /**
-         * Retrieves the equivalent amount of the bill item.
-         *
-         * @return the equivalent amount of the bill item
-         */
-        public BigDecimal getBillItemEqvAmt() {
-            return billItemEqvAmt;
-        }
-
-        /**
-         * Sets the equivalent amount of the bill item.
-         *
-         * @param billItemEqvAmt the equivalent amount of the bill item to set
-         */
-        public void setBillItemEqvAmt(BigDecimal billItemEqvAmt) {
-            this.billItemEqvAmt = billItemEqvAmt;
-        }
-
-        /**
-         * Retrieves the miscellaneous amount of the bill item.
-         *
-         * @return the miscellaneous amount of the bill item
-         */
-        public BigDecimal getBillItemMiscAmt() {
-            return billItemMiscAmt;
-        }
-
-        /**
-         * Sets the miscellaneous amount of the bill item.
-         *
-         * @param billItemMiscAmt the miscellaneous amount of the bill item to set
-         */
-        public void setBillItemMiscAmt(BigDecimal billItemMiscAmt) {
-            this.billItemMiscAmt = billItemMiscAmt;
-        }
-
-        /**
-         * Retrieves the GFS code for the bill item.
-         *
-         * @return the GFS code for the bill item
-         */
-        public String getGfsCode() {
-            return gfsCode;
-        }
-
-        /**
-         * Sets the GFS code for the bill item.
-         *
-         * @param gfsCode the GFS code for the bill item to set
-         */
-        public void setGfsCode(String gfsCode) {
-            this.gfsCode = gfsCode;
-        }
-
-        /**
-         * Returns a string representation of the object.
-         * <p>
-         * This method is overridden to provide a string representation of the object
-         * that includes the values of the fields.
-         * </p>
-         *
-         * @return a string representation of the object
-         */
-        @Override
-        public String toString() {
-            return "BillItemMapper{" +
-                    "billItemRef='" + billItemRef + '\'' +
-                    ", useItemRefOnPay='" + useItemRefOnPay + '\'' +
-                    ", billItemAmt=" + billItemAmt +
-                    ", billItemEqvAmt=" + billItemEqvAmt +
-                    ", billItemMiscAmt=" + billItemMiscAmt +
-                    ", gfsCode='" + gfsCode + '\'' +
-                    '}';
-        }
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = billItemRef != null ? billItemRef.hashCode() : 0;
+        result = 31 * result + (useItemRefOnPay != null ? useItemRefOnPay.hashCode() : 0);
+        temp = Double.doubleToLongBits(billItemAmt);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(billItemEqvAmt);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(billItemMiscAmt);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (gfsCode != null ? gfsCode.hashCode() : 0);
+        return result;
     }
 }
