@@ -5,6 +5,7 @@ import java.security.PrivateKey;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -75,19 +76,19 @@ public class MessageUtil {
      * @return the signed message wrapped in an XML envelope
      * @throws Exception if an error occurs during signing or XML conversion
      */
-    public String sign(String message) throws Exception {
-        // Load the private key
-        PrivateKey privateKey = DigitalSignatureUtil.loadPrivateKey(keystorePath, keystorePassword, keyAlias);
 
-        // Generate the digital signature
+    public String sign(String message) throws Exception {
+        if (message == null || message.isEmpty()) {
+            throw new ValidationException("Message cannot be null or empty");
+        }
+
+        PrivateKey privateKey = DigitalSignatureUtil.loadPrivateKey(keystorePath, keystorePassword, keyAlias);
         String digitalSignature = DigitalSignatureUtil.signData(message, privateKey);
 
-        // Create the envelope
         Envelope envelope = new Envelope();
         envelope.setMessage(message);
         envelope.setDigitalSignature(digitalSignature);
 
-        // Convert the envelope to an XML string
         return convertToXmlString(envelope);
     }
 
