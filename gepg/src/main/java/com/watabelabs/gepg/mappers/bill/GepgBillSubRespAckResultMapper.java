@@ -41,7 +41,7 @@ public class GepgBillSubRespAckResultMapper {
      * </p>
      */
     @XmlElement(name = "gepgBillSubRespAck")
-    private GepgBillSubResponseAckMapper gepgBillSubRespAck;
+    private GepgBillSubRespAckMapper gepgBillSubRespAck;
 
     /**
      * The signature associated with the bill subscription acknowledgment.
@@ -71,7 +71,7 @@ public class GepgBillSubRespAckResultMapper {
      * @param gepgBillSubRespAck the acknowledgment details to set
      * @param gepgSignature      the signature to set
      */
-    public GepgBillSubRespAckResultMapper(GepgBillSubResponseAckMapper gepgBillSubRespAck, String gepgSignature) {
+    public GepgBillSubRespAckResultMapper(GepgBillSubRespAckMapper gepgBillSubRespAck, String gepgSignature) {
         this.gepgBillSubRespAck = gepgBillSubRespAck;
         this.gepgSignature = gepgSignature;
     }
@@ -81,7 +81,7 @@ public class GepgBillSubRespAckResultMapper {
      *
      * @return the acknowledgment details
      */
-    public GepgBillSubResponseAckMapper getGepgBillSubRespAck() {
+    public GepgBillSubRespAckMapper getGepgBillSubRespAck() {
         return gepgBillSubRespAck;
     }
 
@@ -90,7 +90,7 @@ public class GepgBillSubRespAckResultMapper {
      *
      * @param gepgBillSubRespAck the acknowledgment details to set
      */
-    public void setGepgBillSubRespAck(GepgBillSubResponseAckMapper gepgBillSubRespAck) {
+    public void setGepgBillSubRespAck(GepgBillSubRespAckMapper gepgBillSubRespAck) {
         this.gepgBillSubRespAck = gepgBillSubRespAck;
     }
 

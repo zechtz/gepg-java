@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "ReconcTrxInf")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class ReconcTrxInfMapper {
+public class GepgReconcTrxInfMapper {
 
     @XmlElement(name = "SpBillId")
     private UUID billId;
@@ -87,7 +87,7 @@ public class ReconcTrxInfMapper {
      * the class when unmarshalling XML data.
      * </p>
      */
-    public ReconcTrxInfMapper() {
+    public GepgReconcTrxInfMapper() {
     }
 
     /**
@@ -109,7 +109,7 @@ public class ReconcTrxInfMapper {
      * @param reconcRvs02 reconciliation reversal 2
      * @param reconcRvs03 reconciliation reversal 3
      */
-    public ReconcTrxInfMapper(UUID billId, String payRefId, Long payCtrNum, BigDecimal paidAmt, String cCy,
+    public GepgReconcTrxInfMapper(UUID billId, String payRefId, Long payCtrNum, BigDecimal paidAmt, String cCy,
             String trxDtTm,
             String ctrAccNum, String usdPayChn, String pyrCellNum, String pyrName, String pyrEmail,
             String remarks, String reconcRvs01, String reconcRvs02, String reconcRvs03) {

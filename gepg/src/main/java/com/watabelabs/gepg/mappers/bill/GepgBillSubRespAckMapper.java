@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "gepgBillSubRespAck")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class GepgBillSubResponseAckMapper {
+public class GepgBillSubRespAckMapper {
 
     /**
      * The transaction status code.
@@ -46,7 +46,7 @@ public class GepgBillSubResponseAckMapper {
      * the class when unmarshalling XML data.
      * </p>
      */
-    public GepgBillSubResponseAckMapper() {
+    public GepgBillSubRespAckMapper() {
     }
 
     /**
@@ -55,7 +55,7 @@ public class GepgBillSubResponseAckMapper {
      *
      * @param trxStsCode the transaction status code to set
      */
-    public GepgBillSubResponseAckMapper(String trxStsCode) {
+    public GepgBillSubRespAckMapper(String trxStsCode) {
         this.trxStsCode = trxStsCode;
     }
 

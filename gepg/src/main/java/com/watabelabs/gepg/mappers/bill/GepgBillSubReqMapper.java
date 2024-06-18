@@ -12,10 +12,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "gepgBillSubReq")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "billHdr", "billTrxInf" })
-public class GepgBillSubRequestMapper {
+public class GepgBillSubReqMapper {
 
     @XmlElement(name = "GepgBillHeaderMapper", required = true)
-    private GepgBillHeaderMapper billHdr;
+    private GepgBillHdrMapper billHdr;
 
     @XmlElement(name = "BillTrxInf", required = true)
     private GepgBillTrxInfoMapper billTrxInf;
@@ -23,41 +23,41 @@ public class GepgBillSubRequestMapper {
     /**
      * Default no-args constructor.
      */
-    public GepgBillSubRequestMapper() {
+    public GepgBillSubReqMapper() {
     }
 
     /**
      * All-args constructor.
-     * 
+     *
      * @param billHdr    the bill header
      * @param billTrxInf the bill transaction information
      */
-    public GepgBillSubRequestMapper(GepgBillHeaderMapper billHdr, GepgBillTrxInfoMapper billTrxInf) {
+    public GepgBillSubReqMapper(GepgBillHdrMapper billHdr, GepgBillTrxInfoMapper billTrxInf) {
         this.billHdr = billHdr;
         this.billTrxInf = billTrxInf;
     }
 
     /**
      * Gets the bill header.
-     * 
+     *
      * @return the bill header
      */
-    public GepgBillHeaderMapper getGepgBillHeaderMapper() {
+    public GepgBillHdrMapper getGepgBillHeaderMapper() {
         return billHdr;
     }
 
     /**
      * Sets the bill header.
-     * 
+     *
      * @param billHdr the new bill header
      */
-    public void setGepgBillHeaderMapper(GepgBillHeaderMapper billHdr) {
+    public void setGepgBillHeaderMapper(GepgBillHdrMapper billHdr) {
         this.billHdr = billHdr;
     }
 
     /**
      * Gets the bill transaction information.
-     * 
+     *
      * @return the bill transaction information
      */
     public GepgBillTrxInfoMapper getBillTrxInf() {
@@ -66,7 +66,7 @@ public class GepgBillSubRequestMapper {
 
     /**
      * Sets the bill transaction information.
-     * 
+     *
      * @param billTrxInf the new bill transaction information
      */
     public void setBillTrxInf(GepgBillTrxInfoMapper billTrxInf) {
@@ -75,7 +75,7 @@ public class GepgBillSubRequestMapper {
 
     /**
      * Generates a string representation of the object.
-     * 
+     *
      * @return a string representation of the object
      */
     @Override
@@ -88,7 +88,7 @@ public class GepgBillSubRequestMapper {
 
     /**
      * Checks if this object is equal to another object.
-     * 
+     *
      * @param o the other object
      * @return true if the objects are equal, false otherwise
      */
@@ -99,7 +99,7 @@ public class GepgBillSubRequestMapper {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        GepgBillSubRequestMapper that = (GepgBillSubRequestMapper) o;
+        GepgBillSubReqMapper that = (GepgBillSubReqMapper) o;
 
         if (billHdr != null ? !billHdr.equals(that.billHdr) : that.billHdr != null)
             return false;
@@ -108,7 +108,7 @@ public class GepgBillSubRequestMapper {
 
     /**
      * Generates a hash code for this object.
-     * 
+     *
      * @return a hash code for this object
      */
     @Override

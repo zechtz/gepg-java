@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-
 /**
  * The GepgSpReconcRespMapper class is used for mapping the XML response
  * to the corresponding Java object. This class represents the service provider
@@ -35,7 +34,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  */
 @XmlRootElement(name = "gepgSpReconcResp")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-@XmlSeeAlso({ ReconcBatchInfoMapper.class, ReconcTransMapper.class })
+@XmlSeeAlso({ GepgReconcBatchInfoMapper.class, GepgReconcTransMapper.class })
 public class GepgSpReconcRespMapper {
 
     /**
@@ -50,7 +49,7 @@ public class GepgSpReconcRespMapper {
      *
      */
     @XmlElement(name = "ReconcBatchInfo")
-    private ReconcBatchInfoMapper reconcBatchInfo;
+    private GepgReconcBatchInfoMapper reconcBatchInfo;
 
     /**
      * The reconciliation transactions.
@@ -64,7 +63,7 @@ public class GepgSpReconcRespMapper {
      *
      */
     @XmlElement(name = "ReconcTrans")
-    private ReconcTransMapper reconcTrans;
+    private GepgReconcTransMapper reconcTrans;
 
     /**
      * Default no-argument constructor.
@@ -85,7 +84,7 @@ public class GepgSpReconcRespMapper {
      * @param reconcBatchInfo the reconciliation batch information to set
      * @param reconcTrans     the r conciliation transactions to set
      */
-    public GepgSpReconcRespMapper(ReconcBatchInfoMapper reconcBatchInfo, ReconcTransMapper reconcTrans) {
+    public GepgSpReconcRespMapper(GepgReconcBatchInfoMapper reconcBatchInfo, GepgReconcTransMapper reconcTrans) {
         this.reconcBatchInfo = reconcBatchInfo;
         this.reconcTrans = reconcTrans;
     }
@@ -95,7 +94,7 @@ public class GepgSpReconcRespMapper {
      *
      * @return the reconciliation batch information
      */
-    public ReconcBatchInfoMapper getReconcBatchInfo() {
+    public GepgReconcBatchInfoMapper getReconcBatchInfo() {
         return reconcBatchInfo;
     }
 
@@ -104,7 +103,7 @@ public class GepgSpReconcRespMapper {
      *
      * @param reconcBatchInfo the reconciliation batch information to set
      */
-    public void setReconcBatchInfo(ReconcBatchInfoMapper reconcBatchInfo) {
+    public void setReconcBatchInfo(GepgReconcBatchInfoMapper reconcBatchInfo) {
         this.reconcBatchInfo = reconcBatchInfo;
     }
 
@@ -113,7 +112,7 @@ public class GepgSpReconcRespMapper {
      *
      * @return the reconciliation transactions
      */
-    public ReconcTransMapper getReconcTrans() {
+    public GepgReconcTransMapper getReconcTrans() {
         return reconcTrans;
     }
 
@@ -122,7 +121,7 @@ public class GepgSpReconcRespMapper {
      *
      * @param reconcTrans the reconciliation transactions to set
      */
-    public void setReconcTrans(ReconcTransMapper reconcTrans) {
+    public void setReconcTrans(GepgReconcTransMapper reconcTrans) {
         this.reconcTrans = reconcTrans;
     }
 

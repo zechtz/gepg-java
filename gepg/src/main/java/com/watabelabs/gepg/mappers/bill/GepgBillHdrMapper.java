@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class GepgBillHeaderMapper {
+public class GepgBillHdrMapper {
 
     @XmlElement(name = "SpCode", required = true)
     private String spCode;
@@ -27,7 +27,7 @@ public class GepgBillHeaderMapper {
     /**
      * Default no-args constructor.
      */
-    public GepgBillHeaderMapper() {
+    public GepgBillHdrMapper() {
     }
 
     /**
@@ -36,7 +36,7 @@ public class GepgBillHeaderMapper {
      * @param spCode     the service provider code
      * @param rtrRespFlg the return response flag
      */
-    public GepgBillHeaderMapper(String spCode, boolean rtrRespFlg) {
+    public GepgBillHdrMapper(String spCode, boolean rtrRespFlg) {
         this.spCode = spCode;
         this.rtrRespFlg = rtrRespFlg;
     }
@@ -103,7 +103,7 @@ public class GepgBillHeaderMapper {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        GepgBillHeaderMapper billHdr = (GepgBillHeaderMapper) o;
+        GepgBillHdrMapper billHdr = (GepgBillHdrMapper) o;
 
         if (rtrRespFlg != billHdr.rtrRespFlg)
             return false;

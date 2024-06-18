@@ -13,54 +13,63 @@ import javax.xml.bind.annotation.XmlRootElement;
  * transactions, containing a list of reconciliation transaction information.
  *
  *
- * <p>It contains a single field, reconcTrxInf, which is a list of
+ * <p>
+ * It contains a single field, reconcTrxInf, which is a list of
  *
  * {@link Recon
  * cTrxInfMapper} objects, each representing details of a reconciliation
- * transaction.</p>
+ * transaction.
+ * </p>
  *
  *
- * <p>The class is annotated with JAXB annotations to specify how the XML elemen
+ * <p>
+ * The class is annotated with JAXB annotations to specify how the XML elemen
  * s
  * should be mapped to the Java fields. It uses {@link XmlRootElement} to defin
  * root elemen
  * t name and {@link XmlAccessorType} to specify the access type for
- * the fields.</p>
+ * the fields.
+ * </p>
  */
 @XmlRootElement(name = "ReconcTrans")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class ReconcTransMapper {
+public class GepgReconcTransMapper {
 
     /**
      * The
-     *  list of reconciliation transaction information.
+     * list of reconciliation transaction information.
      *
-     * <p>This field is mapped to the XML element named "ReconcTrxInf". I
-     *  holds a list of
+     * <p>
+     * This field is mapped to the XML element named "ReconcTrxInf". I
+     * holds a list of
      * {@link Recon
      * cTrxInfMapper} objects, each representing details of a reconciliation
-     * transaction.</p>
+     * transaction.
+     * </p>
      */
     @XmlElement(name = "ReconcTrxInf")
-    private List<ReconcTrxInfMapper> reconcTrxInf;
+    private List<GepgReconcTrxInfMapper> reconcTrxInf;
 
     /**
      * Def
      * ault no-argument constructor.
-     * <p>This constructor is required for JA
+     * <p>
+     * This constructor is required for JA
      * XB to be able to create an instance of
-     * the class when unmarshalling XML data.</p>
+     * the class when unmarshalling XML data.
+     * </p>
      */
-    public ReconcTransMapper() {
+    public GepgReconcTransMapper() {
     }
 
     /**
      *
-     * Parameterized constructor to initialize the object with the provided list of reconciliation transaction information.
+     * Parameterized constructor to initialize the object with the provided list of
+     * reconciliation transaction information.
      *
      * @param reconcTrxInf the list of reconciliation transaction information to set
      */
-    public ReconcTransMapper(List<ReconcTrxInfMapper> reconcTrxInf) {
+    public GepgReconcTransMapper(List<GepgReconcTrxInfMapper> reconcTrxInf) {
         this.reconcTrxInf = reconcTrxInf;
     }
 
@@ -69,7 +78,7 @@ public class ReconcTransMapper {
      *
      * @return the list of reconciliation transaction information
      */
-    public List<ReconcTrxInfMapper> getReconcTrxInf() {
+    public List<GepgReconcTrxInfMapper> getReconcTrxInf() {
         return reconcTrxInf;
     }
 
@@ -78,16 +87,18 @@ public class ReconcTransMapper {
      *
      * @param reconcTrxInf the list of reconciliation transaction information to set
      */
-    public void setReconcTrxInf(List<ReconcTrxInfMapper> reconcTrxInf) {
+    public void setReconcTrxInf(List<GepgReconcTrxInfMapper> reconcTrxInf) {
         this.reconcTrxInf = reconcTrxInf;
     }
 
     /**
      * Ret
      * urns a string representation of the object.
-     * <p>This method is overridden to provide a string re
+     * <p>
+     * This method is overridden to provide a string re
      * presentation of the object
-     * that includes the values of the reconcTrxInf field.</p>
+     * that includes the values of the reconcTrxInf field.
+     * </p>
      *
      * @return a string representation of the object
      */
@@ -98,4 +109,3 @@ public class ReconcTransMapper {
                 '}';
     }
 }
-

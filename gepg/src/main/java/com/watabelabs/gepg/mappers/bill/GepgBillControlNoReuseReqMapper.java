@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The GepgBillSubReqMapper class is used for mapping the XML request
+ * The GepgBillControlNoReuseReqMapper class is used for mapping the XML request
  * to the corresponding Java object. This class represents the bill subscription
  * request.
  *
@@ -28,9 +28,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "gepgBillSubReq")
 @XmlAccessorType(XmlAccessType.FIELD)
 
-public class GepgBillControlNoReuseRequestMapper {
+public class GepgBillControlNoReuseReqMapper {
     @XmlElement(name = "BillHdr")
-    private GepgBillHeaderMapper billHdr;
+    private GepgBillHdrMapper billHdr;
 
     @XmlElement(name = "BillTrxInf")
     private GepgBillTrxInfoMapper billTrxInf;
@@ -38,7 +38,7 @@ public class GepgBillControlNoReuseRequestMapper {
     /**
      * Default no-argument constructor.
      */
-    public GepgBillControlNoReuseRequestMapper() {
+    public GepgBillControlNoReuseReqMapper() {
     }
 
     /**
@@ -48,7 +48,7 @@ public class GepgBillControlNoReuseRequestMapper {
      * @param billHdr    the bill header information to set
      * @param billTrxInf the bill transaction information to set
      */
-    public GepgBillControlNoReuseRequestMapper(GepgBillHeaderMapper billHdr, GepgBillTrxInfoMapper billTrxInf) {
+    public GepgBillControlNoReuseReqMapper(GepgBillHdrMapper billHdr, GepgBillTrxInfoMapper billTrxInf) {
         this.billHdr = billHdr;
         this.billTrxInf = billTrxInf;
     }
@@ -58,7 +58,7 @@ public class GepgBillControlNoReuseRequestMapper {
      *
      * @param billHdr the bill header information to set
      */
-    public void setBillHdr(GepgBillHeaderMapper billHdr) {
+    public void setBillHdr(GepgBillHdrMapper billHdr) {
         this.billHdr = billHdr;
     }
 

@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 public class GepgBillChangeRequestMapper {
     @XmlElement(name = "BillHdr")
-    private GepgBillHeaderMapper billHdr;
+    private GepgBillHdrMapper billHdr;
 
     @XmlElement(name = "BillTrxInf")
     private GepgBillTrxInfoMapper billTrxInf;
@@ -48,7 +48,7 @@ public class GepgBillChangeRequestMapper {
      * @param billHdr    the bill header information to set
      * @param billTrxInf the bill transaction information to set
      */
-    public GepgBillChangeRequestMapper(GepgBillHeaderMapper billHdr, GepgBillTrxInfoMapper billTrxInf) {
+    public GepgBillChangeRequestMapper(GepgBillHdrMapper billHdr, GepgBillTrxInfoMapper billTrxInf) {
         this.billHdr = billHdr;
         this.billTrxInf = billTrxInf;
     }
@@ -58,7 +58,7 @@ public class GepgBillChangeRequestMapper {
      *
      * @param billHdr the bill header information to set
      */
-    public void setBillHdr(GepgBillHeaderMapper billHdr) {
+    public void setBillHdr(GepgBillHdrMapper billHdr) {
         this.billHdr = billHdr;
     }
 
