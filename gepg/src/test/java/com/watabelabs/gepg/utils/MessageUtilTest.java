@@ -5,7 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -36,7 +40,24 @@ public class MessageUtilTest {
 
     @BeforeAll
     public static void setup() {
-        keystorePath = "/data/sites/tfra/tfra-api/gepg-keys/private-key.pfx";
+        try {
+            // Load the keystore file from the classpath
+            InputStream resourceStream = MessageUtilTest.class.getResourceAsStream("/keys/private-key.pfx");
+            if (resourceStream == null) {
+                throw new RuntimeException("Keystore file not found");
+            }
+
+            // Copy the resource to a temporary file
+            Path tempFile = Files.createTempFile("private-key", ".pfx");
+            Files.copy(resourceStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            // Set the keystore path to the temporary file location
+            keystorePath = tempFile.toAbsolutePath().toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to load keystore", e);
+        }
+
         keystorePassword = "passpass";
         keyAlias = "gepgclient";
     }

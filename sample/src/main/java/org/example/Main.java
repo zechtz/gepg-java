@@ -15,7 +15,7 @@ import com.watabelabs.gepg.utils.XmlUtil;
 
 public class Main {
 
-    private static String gepgCode = "SP19940";
+    private static String gepgCode = "SP1000";
     private static String apiUrl = "https://uat1.gepg.go.tz/api/sigqrequest";
 
     private static String keystorePath = "/data/sites/tfra/tfra-api/gepg-keys/private-key.pfx";
