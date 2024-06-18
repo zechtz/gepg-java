@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import com.watabelabs.gepg.GepgRequest;
+import com.watabelabs.gepg.constants.GepgResponseCode;
 import com.watabelabs.gepg.mappers.bill.GepgBillHeaderMapper;
 import com.watabelabs.gepg.mappers.bill.GepgBillItemMapper;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAckMapper;
@@ -37,7 +38,9 @@ public class Main {
 
         GepgBillSubReqAckMapper respMapper = gRequest.submitBill(signedMessage);
 
-        System.out.println(respMapper);
+        String responseMessage = GepgResponseCode.getMessage(respMapper.getTrxStsCode());
+
+        System.out.println(responseMessage);
     }
 
     private static GepgBillSubRequestMapper createData() {

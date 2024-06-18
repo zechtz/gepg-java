@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class GepgBillSubReqAckMapper {
 
     @XmlElement(name = "TrxStsCode")
-    private String trxStsCode;
+    private int trxStsCode;
 
     /**
      * Default no-argument constructor.
@@ -42,7 +42,7 @@ public class GepgBillSubReqAckMapper {
      *
      * @param trxStsCode the transaction status code to set
      */
-    public GepgBillSubReqAckMapper(String trxStsCode) {
+    public GepgBillSubReqAckMapper(int trxStsCode) {
         this.trxStsCode = trxStsCode;
     }
 
@@ -51,7 +51,7 @@ public class GepgBillSubReqAckMapper {
      *
      * @return the transaction status code
      */
-    public String getTrxStsCode() {
+    public int getTrxStsCode() {
         return trxStsCode;
     }
 
@@ -60,7 +60,7 @@ public class GepgBillSubReqAckMapper {
      *
      * @param trxStsCode the transaction status code to set
      */
-    public void setTrxStsCode(String trxStsCode) {
+    public void setTrxStsCode(int trxStsCode) {
         this.trxStsCode = trxStsCode;
     }
 
