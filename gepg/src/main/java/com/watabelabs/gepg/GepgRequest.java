@@ -10,7 +10,7 @@ import javax.xml.bind.Unmarshaller;
 
 import com.watabelabs.gepg.mappers.bill.GepgBillCancellationRespMapper;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAckMapper;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubRequestMapper;
+import com.watabelabs.gepg.mappers.bill.GepgBillSubReqMapper;
 import com.watabelabs.gepg.mappers.payment.GepgPmtSpInfoAckMapper;
 
 public class GepgRequest {
@@ -50,9 +50,9 @@ public class GepgRequest {
      * @return the bill submission request generated from reusing the control number
      * @throws Exception if an error occurs during the process
      */
-    public GepgBillSubRequestMapper reuseControlNumber(String signedRequest) throws Exception {
+    public GepgBillSubReqMapper reuseControlNumber(String signedRequest) throws Exception {
         String response = sendRequest(signedRequest);
-        return mapResponse(response, GepgBillSubRequestMapper.class);
+        return mapResponse(response, GepgBillSubReqMapper.class);
     }
 
     /**
@@ -62,9 +62,9 @@ public class GepgRequest {
      * @return the updated bill submission request
      * @throws Exception if an error occurs during the process
      */
-    public GepgBillSubRequestMapper updateBill(String signedRequest) throws Exception {
+    public GepgBillSubReqMapper updateBill(String signedRequest) throws Exception {
         String response = sendRequest(signedRequest);
-        return mapResponse(response, GepgBillSubRequestMapper.class);
+        return mapResponse(response, GepgBillSubReqMapper.class);
     }
 
     /**
@@ -119,8 +119,8 @@ public class GepgRequest {
      * Maps the XML response to the specified class type.
      *
      * @param response the XML response
-     * @param clazz the class to map the response to
-     * @param <> the type of the class
+     * @param clazz    the class to map the response to
+     * @param <>       the type of the class
      * @return the mapped object
      * @throws Exception if an error occurs during the mapping
      */
