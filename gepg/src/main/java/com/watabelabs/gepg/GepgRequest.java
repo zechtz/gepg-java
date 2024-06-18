@@ -119,8 +119,8 @@ public class GepgRequest {
      * Maps the XML response to the specified class type.
      *
      * @param response the XML response
-     * @param cla      z the class to map the response to
-     * @param <        > the type of the class
+     * @param clazz the class to map the response to
+     * @param <> the type of the class
      * @return the mapped object
      * @throws Exception if an error occurs during the mapping
      */

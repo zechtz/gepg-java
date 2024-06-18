@@ -1,1 +1,1 @@
-[![Coverage Status](https://coveralls.io/repos/github/AbtPS3/sample-java-library/badge.svg?branch=main)](https://coveralls.io/github/AbtPS3/sample-java-library?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/zechtz/gepg-java/badge.svg?branch=main)](https://coveralls.io/github/zechtz/gepg-java?branch=main)
