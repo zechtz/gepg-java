@@ -24,7 +24,7 @@ public class GepgRequest {
      * Constructor to initialize the GepgRequest with the necessary parameters.
      *
      * @param gepgCode the GePG code
-     * @param apiU   l the API URL
+     * @param apiU     l the API URL
      */
     public GepgRequest(String gepgCode, String apiUrl) {
         this.gepgCode = gepgCode;
@@ -119,8 +119,8 @@ public class GepgRequest {
      * Maps the XML response to the specified class type.
      *
      * @param response the XML response
-     * @param cla    z the class to map the response to
-     * @param <      > the type of the class
+     * @param cla      z the class to map the response to
+     * @param <        > the type of the class
      * @return the mapped object
      * @throws Exception if an error occurs during the mapping
      */
@@ -132,4 +132,3 @@ public class GepgRequest {
         return (T) unmarshaller.unmarshal(reader);
     }
 }
-
