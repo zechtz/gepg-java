@@ -121,10 +121,10 @@ private static GepgBillSubReqMapper createData() {
 
 ```
 
-# Contributing
+## Contributing
 
-We welcome contributions! If you want to contribute to this project, please fork the repository and create a pull request with your changes. Make sure to follow the existing code style and include tests for your changes.
+I welcome contributions! If you want to contribute to this project, please fork the repository and create a pull request with your changes. Make sure to follow the existing code style and include tests for your changes.
 
-# License
+## License
 
 This project is licensed under the MIT License. See the LICENSE file for details
