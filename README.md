@@ -106,7 +106,9 @@ All these mappers conform to the GePG specification, eliminating the need to mai
 
 #### XmlUtil Class
 
--   `convertToXmlString(Object mapper)`: Static method that takes in any DataMapper and returns its XML string representation.
+-   `convertToXmlString(Object mapper)`: Static method that takes in any DataMapper and returns its XML string representation, adds the xml declaration `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` to the message.
+
+-   `convertToXmlStringWithoutDeclaration(Object mapper)`: Static method that takes in any DataMapper and returns its XML string representation doesn't add the xml declaration on top of the message.
 
 #### GepgRequest Class
 
