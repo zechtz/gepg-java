@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 import com.watabelabs.gepg.utils.XmlUtil;
 
@@ -14,6 +15,7 @@ public class GepgBillSubReqMapperTest {
     @Test
     public void textMapperToXmlConvertionWithXmlDeclaration() throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         GepgBillHdrMapper billHdr = new GepgBillHdrMapper("SP023", true);
         GepgBillItemMapper item1 = new GepgBillItemMapper("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
@@ -41,11 +43,11 @@ public class GepgBillSubReqMapperTest {
                 "<SpSysId>tjv47</SpSysId>" +
                 "<BillAmt>7885.0</BillAmt>" +
                 "<MiscAmt>0.0</MiscAmt>" +
-                "<BillExprDt>2017-05-30T10:00:01+03:00</BillExprDt>" +
+                "<BillExprDt>2017-05-30T10:00:01Z</BillExprDt>" +
                 "<PyrId>Palapala</PyrId>" +
                 "<PyrName>Charles Palapala</PyrName>" +
                 "<BillDesc>Bill Number 7885</BillDesc>" +
-                "<BillGenDt>2017-02-22T10:00:10+03:00</BillGenDt>" +
+                "<BillGenDt>2017-02-22T10:00:10Z</BillGenDt>" +
                 "<BillGenBy>100</BillGenBy>" +
                 "<BillApprBy>Hashim</BillApprBy>" +
                 "<PyrCellNum>0699210053</PyrCellNum>" +
@@ -81,6 +83,7 @@ public class GepgBillSubReqMapperTest {
     @Test
     public void textMapperToXmlConvertionWithoutDeclaration() throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         GepgBillHdrMapper billHdr = new GepgBillHdrMapper("SP023", true);
         GepgBillItemMapper item1 = new GepgBillItemMapper("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
@@ -94,7 +97,7 @@ public class GepgBillSubReqMapperTest {
 
         GepgBillSubReqMapper gepgBillSubReq = new GepgBillSubReqMapper(billHdr, billTrxInf);
 
-        String xmlOutput = XmlUtil.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
+        String xmlOutput = XmlUtil.convertToXmlString(gepgBillSubReq);
 
         String expectedXml = "<gepgBillSubReq>" +
                 "<GepgBillHeaderMapper>" +
@@ -107,11 +110,11 @@ public class GepgBillSubReqMapperTest {
                 "<SpSysId>tjv47</SpSysId>" +
                 "<BillAmt>7885.0</BillAmt>" +
                 "<MiscAmt>0.0</MiscAmt>" +
-                "<BillExprDt>2017-05-30T10:00:01+03:00</BillExprDt>" +
+                "<BillExprDt>2017-05-30T10:00:01Z</BillExprDt>" +
                 "<PyrId>Palapala</PyrId>" +
                 "<PyrName>Charles Palapala</PyrName>" +
                 "<BillDesc>Bill Number 7885</BillDesc>" +
-                "<BillGenDt>2017-02-22T10:00:10+03:00</BillGenDt>" +
+                "<BillGenDt>2017-02-22T10:00:10Z</BillGenDt>" +
                 "<BillGenBy>100</BillGenBy>" +
                 "<BillApprBy>Hashim</BillApprBy>" +
                 "<PyrCellNum>0699210053</PyrCellNum>" +
