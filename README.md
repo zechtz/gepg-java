@@ -47,8 +47,6 @@ dependencies {
     <artifactId>gepg</artifactId>
     <version>1.0-SNAPSHOT</version>
 </dependency>
-
-
 ```
 
 ## Features
@@ -108,10 +106,11 @@ All these mappers conform to the GePG specification, eliminating the need to mai
 #### GepgRequest Class
 
 -   `submitBill()`: Instance method that takes a signed XML string, makes a request to GePG, and returns a `GepgBillSubReqAckMapper`.
--   `reuseControlNumber()`: Returns a `GepgBillSubReqMapper`.
--   `updateBill()`: Returns a `GepgBillSubReqMapper`.
--   `cancelBill()`: Returns a `GepgBillCancellationRespMapper`.
--   `requestPaymentInfo()`: Requests payment information.
+-   `reuseControlNumber()`: Instance method that takes in a signed XML string, makes a request to GePG and returns a Returns a `GepgBillSubReqMapper`.
+-   `updateBill()`: Instance method that takes in a signed XML string, makes a request to GePG and Returns a `GepgBillSubReqMapper`.
+-   `cancelBill()`: Instance method that takes in a signed XML string, makes a request to GePG and Returns a `GepgBillCancellationRespMapper`.
+-   `requestPaymentInfo()`: Instance method that takes in a signed XML string, makes a request to GePG and.returns a `GepgPmtSpInfoAckMapper`
+-   `requestReconciliation()`: Instance method that takes in a signed XML string, makes a request to GePG and.returns a `GepgSpReconcRespMapper`
 
 ## Usage Example
 

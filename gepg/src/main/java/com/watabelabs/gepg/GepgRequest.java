@@ -12,6 +12,7 @@ import com.watabelabs.gepg.mappers.bill.GepgBillCancellationRespMapper;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAckMapper;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqMapper;
 import com.watabelabs.gepg.mappers.payment.GepgPmtSpInfoAckMapper;
+import com.watabelabs.gepg.mappers.reconciliation.GepgSpReconcRespMapper;
 
 public class GepgRequest {
 
@@ -24,7 +25,7 @@ public class GepgRequest {
      * Constructor to initialize the GepgRequest with the necessary parameters.
      *
      * @param gepgCode the GePG code
-     * @param apiU     l the API URL
+     * @param apiUrl the API URL
      */
     public GepgRequest(String gepgCode, String apiUrl) {
         this.gepgCode = gepgCode;
@@ -89,6 +90,18 @@ public class GepgRequest {
     public GepgPmtSpInfoAckMapper requestPaymentInfo(String signedRequest) throws Exception {
         String response = sendRequest(signedRequest);
         return mapResponse(response, GepgPmtSpInfoAckMapper.class);
+    }
+
+    /**
+     * Requests payment information from the GePG API.
+     *
+     * @param signedRequest the signed XML request
+     * @return the acknowledgment response from the GePG API
+     * @throws Exception if an error occurs during the process
+     */
+    public GepgSpReconcRespMapper requestReconciliation(String signedRequest) throws Exception {
+        String response = sendRequest(signedRequest);
+        return mapResponse(response, GepgSpReconcRespMapper.class);
     }
 
     /**
