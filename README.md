@@ -97,20 +97,25 @@ All these mappers conform to the GePG specification, eliminating the need to mai
 
 #### MessageUtil Class
 
--   `sign()`: Instance method that adds a signature to your payload. This method returns a signed XML string as required by GePG.
+-   `sign(String xmlString)`: Instance method that adds a signature to your payload. This method returns a signed XML string as required by GePG.
+
+### GepgResponseCode Class
+
+-   `getResponseMessage(int responseCode)`: Instance method that returns a gepg response message
+    by response code.
 
 #### XmlUtil Class
 
--   `convertToXmlString()`: Static method that takes in any DataWrapper and returns its XML string representation.
+-   `convertToXmlString(Object mapper)`: Static method that takes in any DataMapper and returns its XML string representation.
 
 #### GepgRequest Class
 
--   `submitBill()`: Instance method that takes a signed XML string, makes a request to GePG, and returns a `GepgBillSubReqAckMapper`.
--   `reuseControlNumber()`: Instance method that takes in a signed XML string, makes a request to GePG and returns a Returns a `GepgBillSubReqMapper`.
--   `updateBill()`: Instance method that takes in a signed XML string, makes a request to GePG and Returns a `GepgBillSubReqMapper`.
--   `cancelBill()`: Instance method that takes in a signed XML string, makes a request to GePG and Returns a `GepgBillCancellationRespMapper`.
--   `requestPaymentInfo()`: Instance method that takes in a signed XML string, makes a request to GePG and.returns a `GepgPmtSpInfoAckMapper`
--   `requestReconciliation()`: Instance method that takes in a signed XML string, makes a request to GePG and.returns a `GepgSpReconcRespMapper`
+-   `submitBill(String signedMessage)`: Instance method that takes a signed XML string, makes a request to GePG, and returns a `GepgBillSubReqAckMapper`.
+-   `reuseControlNumber(String signedMessage)`: Instance method that takes in a signed XML string, makes a request to GePG and returns a Returns a `GepgBillSubReqMapper`.
+-   `updateBill(String signedMessage)`: Instance method that takes in a signed XML string, makes a request to GePG and Returns a `GepgBillSubReqMapper`.
+-   `cancelBill(String signedMessage)`: Instance method that takes in a signed XML string, makes a request to GePG and Returns a `GepgBillCancellationRespMapper`.
+-   `requestPaymentInfo(String signedMessage)`: Instance method that takes in a signed XML string, makes a request to GePG and.returns a `GepgPmtSpInfoAckMapper`
+-   `requestReconciliation(String signedMessage)`: Instance method that takes in a signed XML string, makes a request to GePG and.returns a `GepgSpReconcRespMapper`
 
 ## Usage Example
 
