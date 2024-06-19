@@ -3,6 +3,8 @@ package com.watabelabs.gepg.mappers.bill;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.TimeZone;
 
@@ -17,13 +19,17 @@ public class GepgBillSubReqMapperTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
         GepgBillHdrMapper billHdr = new GepgBillHdrMapper("SP023", true);
         GepgBillItemMapper item1 = new GepgBillItemMapper("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
         GepgBillItemMapper item2 = new GepgBillItemMapper("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
 
         GepgBillTrxInfoMapper billTrxInf = new GepgBillTrxInfoMapper(
-                "7885", "2001", "tjv47", 7885, 0, sdf.parse("2017-05-30T10:00:01"), "Palapala", "Charles Palapala",
-                "Bill Number 7885", sdf.parse("2017-02-22T10:00:10"), "100", "Hashim", "0699210053",
+                "7885", "2001", "tjv47", 7885, 0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                "Charles Palapala",
+                "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
+                "0699210053",
                 "charlestp@yahoo.com",
                 "TZS", 7885, true, 1, Arrays.asList(item1, item2));
 
@@ -82,22 +88,24 @@ public class GepgBillSubReqMapperTest {
 
     @Test
     public void textMapperToXmlConvertionWithoutDeclaration() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
         GepgBillHdrMapper billHdr = new GepgBillHdrMapper("SP023", true);
         GepgBillItemMapper item1 = new GepgBillItemMapper("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
         GepgBillItemMapper item2 = new GepgBillItemMapper("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
 
         GepgBillTrxInfoMapper billTrxInf = new GepgBillTrxInfoMapper(
-                "7885", "2001", "tjv47", 7885, 0, sdf.parse("2017-05-30T10:00:01"), "Palapala", "Charles Palapala",
-                "Bill Number 7885", sdf.parse("2017-02-22T10:00:10"), "100", "Hashim", "0699210053",
+                "7885", "2001", "tjv47", 7885, 0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                "Charles Palapala",
+                "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
+                "0699210053",
                 "charlestp@yahoo.com",
                 "TZS", 7885, true, 1, Arrays.asList(item1, item2));
 
         GepgBillSubReqMapper gepgBillSubReq = new GepgBillSubReqMapper(billHdr, billTrxInf);
 
-        String xmlOutput = XmlUtil.convertToXmlString(gepgBillSubReq);
+        String xmlOutput = XmlUtil.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
 
         String expectedXml = "<gepgBillSubReq>" +
                 "<GepgBillHeaderMapper>" +
@@ -145,5 +153,32 @@ public class GepgBillSubReqMapperTest {
                 "</gepgBillSubReq>";
 
         assertEquals(expectedXml.replaceAll("\\s+", ""), xmlOutput.replaceAll("\\s+", ""));
+    }
+
+    private static GepgBillSubReqMapper createData() {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        // Creating and populating the Bill Header
+        GepgBillHdrMapper billHdr = new GepgBillHdrMapper("SP023", true);
+
+        // Creating and populating Bill Items
+        GepgBillItemMapper item1 = new GepgBillItemMapper("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
+        GepgBillItemMapper item2 = new GepgBillItemMapper("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
+
+        LocalDateTime billExprDt = LocalDateTime.parse("2017-05-30T10:00:01", formatter);
+        LocalDateTime billGenDt = LocalDateTime.parse("2017-02-22T10:00:10", formatter);
+
+        // Creating and populating the Bill Transaction Information
+        GepgBillTrxInfoMapper billTrxInf = new GepgBillTrxInfoMapper(
+                "7885", "2001", "tjv47", 7885, 0, billGenDt, "Palapala", "Charles Palapala",
+                "Bill Number 7885", billExprDt, "100", "Hashim", "0699210053", "charlestp@yahoo.com",
+                "TZS", 7885, true, 1, Arrays.asList(item1, item2));
+
+        // Creating and populating the Bill Submission Request
+        GepgBillSubReqMapper request = new GepgBillSubReqMapper(billHdr, billTrxInf);
+
+        // Print the object to verify the data
+        return request;
     }
 }

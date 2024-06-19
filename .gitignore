@@ -38,3 +38,5 @@ bin/
 ### Mac OS ###
 .DS_Store
 github.properties
+
+test.xml
