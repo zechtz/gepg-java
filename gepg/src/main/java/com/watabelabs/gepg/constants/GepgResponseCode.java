@@ -147,7 +147,7 @@ public class GepgResponseCode {
      * @return the message corresponding to the given code
      * @throws IllegalArgumentException if the code is not recognized
      */
-    public static String getMessage(int code) {
+    public static String getResponseMessage(int code) {
         String message = responseMessages.get(code);
         if (message == null) {
             throw new IllegalArgumentException("Unknown code: " + code);

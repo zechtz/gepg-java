@@ -38,7 +38,7 @@ public class Main {
 
         GepgBillSubReqAckMapper respMapper = gRequest.submitBill(signedMessage);
 
-        String responseMessage = GepgResponseCode.getMessage(respMapper.getTrxStsCode());
+        String responseMessage = GepgResponseCode.getResponseMessage(respMapper.getTrxStsCode());
 
         System.out.println(responseMessage);
     }
