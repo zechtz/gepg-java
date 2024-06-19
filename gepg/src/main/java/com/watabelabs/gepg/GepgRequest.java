@@ -25,7 +25,7 @@ public class GepgRequest {
      * Constructor to initialize the GepgRequest with the necessary parameters.
      *
      * @param gepgCode the GePG code
-     * @param apiUrl the API URL
+     * @param apiUrl   the API URL
      */
     public GepgRequest(String gepgCode, String apiUrl) {
         this.gepgCode = gepgCode;
