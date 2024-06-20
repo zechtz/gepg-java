@@ -39,10 +39,10 @@ public class GepgBillSubReqMapperTest {
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                 "<gepgBillSubReq>" +
-                "<GepgBillHeaderMapper>" +
+                "<BillHdr>" +
                 "<SpCode>SP023</SpCode>" +
                 "<RtrRespFlg>true</RtrRespFlg>" +
-                "</GepgBillHeaderMapper>" +
+                "</BillHdr>" +
                 "<BillTrxInf>" +
                 "<BillId>7885</BillId>" +
                 "<SubSpCode>2001</SubSpCode>" +
@@ -108,10 +108,10 @@ public class GepgBillSubReqMapperTest {
         String xmlOutput = XmlUtil.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
 
         String expectedXml = "<gepgBillSubReq>" +
-                "<GepgBillHeaderMapper>" +
+                "<BillHdr>" +
                 "<SpCode>SP023</SpCode>" +
                 "<RtrRespFlg>true</RtrRespFlg>" +
-                "</GepgBillHeaderMapper>" +
+                "</BillHdr>" +
                 "<BillTrxInf>" +
                 "<BillId>7885</BillId>" +
                 "<SubSpCode>2001</SubSpCode>" +

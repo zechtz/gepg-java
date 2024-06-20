@@ -40,3 +40,4 @@ bin/
 github.properties
 
 test.xml
+.env
