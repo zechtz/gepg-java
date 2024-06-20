@@ -140,10 +140,11 @@ public class MessageUtil {
      * @return the content as a POJO
      * @throws Exception if an error occurs during XML conversion
      */
-    public <T> T unwrapAndConvertToPojo(String xmlString, Class<T> contentClass) throws Exception {
+    public static <T> T unwrapAndConvertToPojo(String xmlString, Class<T> contentClass) throws Exception {
         // Unmarshal the Envelope
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
+        @SuppressWarnings("unchecked")
         Envelope<T> envelope = (Envelope<T>) unmarshaller.unmarshal(new StringReader(xmlString));
 
         // Extract the content and return the first item (assuming there's only one)
@@ -183,4 +184,3 @@ public class MessageUtil {
         }
     }
 }
-

@@ -32,7 +32,7 @@ public class Main {
         MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
 
         // Sign the message
-        String signedMessage = messageUtil.sign(message);
+        String signedMessage = messageUtil.sign(message, GepgBillSubReqMapper.class);
 
         // Assert that the signed message is not null and contains the digital signature
         GepgRequest gRequest = new GepgRequest(gepgCode, apiUrl);
