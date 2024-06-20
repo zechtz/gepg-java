@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = { "billHdr", "billTrxInf" })
 public class GepgBillSubReqMapper {
 
-    @XmlElement(name = "GepgBillHeaderMapper", required = true)
+    @XmlElement(name = "BillHdr", required = true)
     private GepgBillHdrMapper billHdr;
 
     @XmlElement(name = "BillTrxInf", required = true)
