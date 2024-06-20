@@ -146,7 +146,7 @@ public class MessageUtil {
         Unmarshaller unmarshaller = context.createUnmarshaller();
         Envelope<T> envelope = (Envelope<T>) unmarshaller.unmarshal(new StringReader(xmlString));
 
-        ct the content and return the first item (assuming there's only one)
+        // Extract the content and return the first item (assuming there's only one)
         return envelope.getContent().get(0);
     }
 
@@ -183,3 +183,4 @@ public class MessageUtil {
         }
     }
 }
+
