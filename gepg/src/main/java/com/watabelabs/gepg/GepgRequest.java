@@ -11,6 +11,7 @@ import javax.xml.bind.Unmarshaller;
 import com.watabelabs.gepg.mappers.bill.GepgBillCancellationRespMapper;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAckMapper;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqMapper;
+import com.watabelabs.gepg.mappers.bill.GepgBillSubRespAckMapper;
 import com.watabelabs.gepg.mappers.payment.GepgPmtSpInfoAckMapper;
 import com.watabelabs.gepg.mappers.reconciliation.GepgSpReconcRespMapper;
 
@@ -42,6 +43,18 @@ public class GepgRequest {
     public GepgBillSubReqAckMapper submitBill(String signedRequest) throws Exception {
         String response = sendRequest(signedRequest);
         return mapResponse(response, GepgBillSubReqAckMapper.class);
+    }
+
+    /**
+     * Submits a bill acknowledgment to the GePG API.
+     *
+     * @param xmlString the XML string
+     * @return the bill submission acknowledgment response
+     * @throws Exception if an error occurs during the process
+     */
+    public GepgBillSubRespAckMapper submitBillAck(String xmlString) throws Exception {
+        String response = sendRequest(xmlString);
+        return mapResponse(response, GepgBillSubRespAckMapper.class);
     }
 
     /**
@@ -93,7 +106,7 @@ public class GepgRequest {
     }
 
     /**
-     * Requests payment information from the GePG API.
+     * Requests reconciliation information from the GePG API.
      *
      * @param signedRequest the signed XML request
      * @return the acknowledgment response from the GePG API
@@ -133,7 +146,7 @@ public class GepgRequest {
      *
      * @param response the XML response
      * @param clazz    the class to map the response to
-     * @param <>       the type of the class
+     * @param <T>      the type of the class
      * @return the mapped object
      * @throws Exception if an error occurs during the mapping
      */
@@ -145,3 +158,4 @@ public class GepgRequest {
         return (T) unmarshaller.unmarshal(reader);
     }
 }
+
