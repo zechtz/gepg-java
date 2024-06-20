@@ -65,7 +65,7 @@ public class GepgPymtTrxInfMapper {
     @XmlElement(name = "TrxDtTm")
     private String trxDtTm;
 
-    @XmlElement(name = "UsdPayChn")
+    @XmlElement(name = "UsdPayChnl")
     private String usdPayChn;
 
     @XmlElement(name = "PyrCellNum")
