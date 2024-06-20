@@ -38,7 +38,7 @@ public class GepgBillSubRespMapper {
      * </p>
      */
     @XmlElement(name = "BillTrxInf")
-    private GepgBillTrxInfoMapper billTrxInf;
+    private GepgBillTrxInfMapper billTrxInf;
 
     /**
      * Default no-argument constructor.
@@ -56,7 +56,7 @@ public class GepgBillSubRespMapper {
      *
      * @param billTrxInf the bill transaction information to set
      */
-    public GepgBillSubRespMapper(GepgBillTrxInfoMapper billTrxInf) {
+    public GepgBillSubRespMapper(GepgBillTrxInfMapper billTrxInf) {
         this.billTrxInf = billTrxInf;
     }
 
@@ -65,7 +65,7 @@ public class GepgBillSubRespMapper {
      *
      * @return the bill transaction information
      */
-    public GepgBillTrxInfoMapper getBillTrxInf() {
+    public GepgBillTrxInfMapper getBillTrxInf() {
         return billTrxInf;
     }
 
@@ -74,7 +74,7 @@ public class GepgBillSubRespMapper {
      *
      * @param billTrxInf the bill transaction information to set
      */
-    public void setBillTrxInf(GepgBillTrxInfoMapper billTrxInf) {
+    public void setBillTrxInf(GepgBillTrxInfMapper billTrxInf) {
         this.billTrxInf = billTrxInf;
     }
 

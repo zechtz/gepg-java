@@ -6,14 +6,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The GepgBillSubRespAckMapper class is used for mapping the XML response
+ * The GepgBillSubReqAckMapper class is used for mapping the XML response
  * to the corresponding Java object. This class represents the acknowledgment
- * response of a bill subscription.
+ * of the bill subscription request.
  *
  * <p>
  * It contains a single field, trxStsCode, which stores the transaction status
- * code
- * of the acknowledgment response.
+ * code of the acknowledgment response.
  * </p>
  *
  * <p>
@@ -24,29 +23,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * the fields.
  * </p>
  */
-@XmlRootElement(name = "gepgBillSubRespAck")
-@XmlAccessorType(value = XmlAccessType.FIELD)
-public class GepgBillSubRespAckMapper {
+@XmlRootElement(name = "gepgBillSubResAck")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class GepgBillSubResAckMapper {
 
-    /**
-     * The transaction status code.
-     * <p>
-     * This field is mapped to the XML element named "TrxStsCode". It holds the
-     * status code of the transaction, indicating whether it was successful or if
-     * there was an error.
-     * </p>
-     */
     @XmlElement(name = "TrxStsCode")
     private int trxStsCode;
 
     /**
      * Default no-argument constructor.
-     * <p>
-     * This constructor is required for JAXB to be able to create an instance of
-     * the class when unmarshalling XML data.
-     * </p>
      */
-    public GepgBillSubRespAckMapper() {
+    public GepgBillSubResAckMapper() {
     }
 
     /**
@@ -55,7 +42,7 @@ public class GepgBillSubRespAckMapper {
      *
      * @param trxStsCode the transaction status code to set
      */
-    public GepgBillSubRespAckMapper(int trxStsCode) {
+    public GepgBillSubResAckMapper(int trxStsCode) {
         this.trxStsCode = trxStsCode;
     }
 
@@ -88,7 +75,7 @@ public class GepgBillSubRespAckMapper {
      */
     @Override
     public String toString() {
-        return "GepgBillSubRespAckMapper{" +
+        return "GepgBillSubResAckMapper{" +
                 "trxStsCode='" + trxStsCode + '\'' +
                 '}';
     }
