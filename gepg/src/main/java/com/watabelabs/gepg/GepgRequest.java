@@ -1,19 +1,28 @@
-
 package com.watabelabs.gepg;
 
+import java.io.InputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Scanner;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
-import com.watabelabs.gepg.mappers.bill.GepgBillCancellationRespMapper;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAckMapper;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubReqMapper;
-import com.watabelabs.gepg.mappers.payment.GepgPmtSpInfoAckMapper;
-import com.watabelabs.gepg.mappers.reconciliation.GepgSpReconcRespMapper;
+import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAck;
+import com.watabelabs.gepg.mappers.bill.GepgBillSubRespAck;
+import com.watabelabs.gepg.mappers.bill.GepgBillSubResp;
+import com.watabelabs.gepg.utils.MessageUtil;
+import com.watabelabs.gepg.utils.XmlUtil;
 
 public class GepgRequest {
 
@@ -21,6 +30,10 @@ public class GepgRequest {
     private final String apiUrl;
     private static final String CONTENT_TYPE = "Application/xml";
     private static final String GEPG_COM = "default.sp.in";
+
+    private static String keystorePath;
+    private static String keystorePassword;
+    private static String keyAlias;
 
     /**
      * Constructor to initialize the GepgRequest with the necessary parameters.
@@ -33,6 +46,29 @@ public class GepgRequest {
         this.apiUrl = apiUrl;
     }
 
+    private static void loadFiles() {
+        try {
+            // Load the keystore file from the classpath
+            InputStream resourceStream = GepgRequest.class.getResourceAsStream("/keys/private-key.pfx");
+            if (resourceStream == null) {
+                throw new RuntimeException("Keystore file not found");
+            }
+
+            // Copy the resource to a temporary file
+            Path tempFile = Files.createTempFile("private-key", ".pfx");
+            Files.copy(resourceStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            // Set the keystore path to the temporary file location
+            keystorePath = tempFile.toAbsolutePath().toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to load keystore", e);
+        }
+
+        keystorePassword = "passpass";
+        keyAlias = "gepgclient";
+    }
+
     /**
      * Submits a bill to the GePG API.
      *
@@ -40,80 +76,43 @@ public class GepgRequest {
      * @return the acknowledgment response from the GePG API
      * @throws Exception if an error occurs during the process
      */
-    public GepgBillSubReqAckMapper submitBill(String signedRequest) throws Exception {
+    public GepgBillSubReqAck submitBill(String signedRequest) throws Exception {
+        // Step 1: Send the bill submission request
         String response = sendRequest(signedRequest);
-        return mapResponse(response, GepgBillSubReqAckMapper.class);
+        Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
+        GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
+
+        // Check if the response contains a valid acknowledgment
+        if (billSubReqAck == null || billSubReqAck.getTrxStsCode() == 0) {
+            throw new Exception("Invalid acknowledgment response");
+        }
+
+        return billSubReqAck;
     }
 
     /**
-     * Sends the signed acknowledgment back to the GePG API.
+     * Receives the control number response and sends an acknowledgment back.
      *
-     * @param signedRequest the signed XML acknowledgment
-     * @return the acknowledgment response from the GePG API
+     * @param responseXml the XML response from GePG
+     * @return the signed acknowledgment XML to be sent back to GePG
      * @throws Exception if an error occurs during the process
      */
-    public void submitBillAck(String signedRequest) throws Exception {
-        sendRequest(signedRequest);
-    }
+    public String receiveControlNumber(String responseXml) throws Exception {
+        loadFiles();
 
-    /**
-     * Reuses a control number with the GePG API.
-     *
-     * @param signedRequest the signed XML request
-     * @return the bill submission request generated from reusing the control number
-     * @throws Exception if an error occurs during the process
-     */
-    public GepgBillSubReqMapper reuseControlNumber(String signedRequest) throws Exception {
-        String response = sendRequest(signedRequest);
-        return mapResponse(response, GepgBillSubReqMapper.class);
-    }
+        Envelope<GepgBillSubResp> envelope = mapResponse(responseXml, GepgBillSubResp.class);
+        GepgBillSubResp responseMapper = envelope.getContent().get(0);
 
-    /**
-     * Updates a bill with the GePG API.
-     *
-     * @param signedRequest the signed XML request
-     * @return the updated bill submission request
-     * @throws Exception if an error occurs during the process
-     */
-    public GepgBillSubReqMapper updateBill(String signedRequest) throws Exception {
-        String response = sendRequest(signedRequest);
-        return mapResponse(response, GepgBillSubReqMapper.class);
-    }
+        // Prepare the acknowledgment response
+        GepgBillSubRespAck ackMapper = new GepgBillSubRespAck();
+        ackMapper.setTrxStsCode(responseMapper.getBillTrxInf().getTrxStsCode());
 
-    /**
-     * Cancels a bill with the GePG API.
-     *
-     * @param signedRequest the signed XML request
-     * @return the response from the GePG API regarding the cancellation
-     * @throws Exception if an error occurs during the process
-     */
-    public GepgBillCancellationRespMapper cancelBill(String signedRequest) throws Exception {
-        String response = sendRequest(signedRequest);
-        return mapResponse(response, GepgBillCancellationRespMapper.class);
-    }
+        // Convert acknowledgment to XML and sign it
+        String ackXml = XmlUtil.convertToXmlString(ackMapper);
 
-    /**
-     * Requests payment information from the GePG API.
-     *
-     * @param signedRequest the signed XML request
-     * @return the acknowledgment response from the GePG API
-     * @throws Exception if an error occurs during the process
-     */
-    public GepgPmtSpInfoAckMapper requestPaymentInfo(String signedRequest) throws Exception {
-        String response = sendRequest(signedRequest);
-        return mapResponse(response, GepgPmtSpInfoAckMapper.class);
-    }
-
-    /**
-     * Requests reconciliation information from the GePG API.
-     *
-     * @param signedRequest the signed XML request
-     * @return the acknowledgment response from the GePG API
-     * @throws Exception if an error occurs during the process
-     */
-    public GepgSpReconcRespMapper requestReconciliation(String signedRequest) throws Exception {
-        String response = sendRequest(signedRequest);
-        return mapResponse(response, GepgSpReconcRespMapper.class);
+        MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias); // Initialize with the
+                                                                                             // required parameters
+        return messageUtil.sign(ackXml, GepgBillSubRespAck.class);
     }
 
     /**
@@ -141,19 +140,53 @@ public class GepgRequest {
     }
 
     /**
-     * Maps the XML response to the specified class type.
+     * Maps the XML response to an Envelope containing the specified content class
+     * type.
      *
-     * @param response the XML response
-     * @param clazz    the class to map the response to
-     * @param <T>      the type of the class
-     * @return the mapped object
+     * @param response     the XML response
+     * @param contentClass the class of the content to be mapped
+     * @param <T>          the type of the content class
+     * @return the Envelope containing the mapped content
      * @throws Exception if an error occurs during the mapping
      */
     @SuppressWarnings("unchecked")
-    private <T> T mapResponse(String response, Class<T> clazz) throws Exception {
-        JAXBContext context = JAXBContext.newInstance(clazz);
+    private <T> Envelope<T> mapResponse(String response, Class<T> contentClass) throws Exception {
+        JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         StringReader reader = new StringReader(response);
-        return (T) unmarshaller.unmarshal(reader);
+        return (Envelope<T>) unmarshaller.unmarshal(reader);
+    }
+
+    /**
+     * The Envelope class wraps any content and the digital signature into an XML
+     * structure.
+     */
+    @XmlRootElement(name = "Gepg")
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class Envelope<T> {
+
+        @XmlAnyElement(lax = true)
+        private List<T> content;
+
+        @XmlElement(name = "gepgSignature", required = true)
+        private String gepgSignature;
+
+        // Getters and setters
+
+        public List<T> getContent() {
+            return content;
+        }
+
+        public void setContent(List<T> content) {
+            this.content = content;
+        }
+
+        public String getGepgSignature() {
+            return gepgSignature;
+        }
+
+        public void setGepgSignature(String gepgSignature) {
+            this.gepgSignature = gepgSignature;
+        }
     }
 }
