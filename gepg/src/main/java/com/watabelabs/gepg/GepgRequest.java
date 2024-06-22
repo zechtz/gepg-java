@@ -17,7 +17,6 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyElement;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAck;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubRespAck;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubResp;
