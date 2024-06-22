@@ -2,10 +2,10 @@ package com.watabelabs.gepg.mappers.bill;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "gepgBillCanclReq")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class GepgBillCancellationReqMapper {
+public class GepgBillCanclReq {
 
     @XmlElement(name = "SpCode")
     private String spCode;
@@ -41,7 +41,7 @@ public class GepgBillCancellationReqMapper {
     /**
      * Default no-argument constructor.
      */
-    public GepgBillCancellationReqMapper() {
+    public GepgBillCanclReq() {
     }
 
     /**
@@ -52,7 +52,7 @@ public class GepgBillCancellationReqMapper {
      * @param canclReasn the cancellation reason
      * @param billIds    the list of bill IDs
      */
-    public GepgBillCancellationReqMapper(String spCode, String spSysId, String canclReasn, List<String> billIds) {
+    public GepgBillCanclReq(String spCode, String spSysId, String canclReasn, List<String> billIds) {
         this.spCode = spCode;
         this.spSysId = spSysId;
         this.canclReasn = canclReasn;

@@ -1,9 +1,9 @@
 package com.watabelabs.gepg.mappers.bill;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The GepgBillSubReqAckMapper class is used for mapping the XML response
@@ -23,9 +23,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * the fields.
  * </p>
  */
-@XmlRootElement(name = "gepgBillSubResAck")
+@XmlRootElement(name = "gepgBillSubReqAck")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class GepgBillSubResAckMapper {
+public class GepgBillSubReqAck {
 
     @XmlElement(name = "TrxStsCode")
     private int trxStsCode;
@@ -33,7 +33,7 @@ public class GepgBillSubResAckMapper {
     /**
      * Default no-argument constructor.
      */
-    public GepgBillSubResAckMapper() {
+    public GepgBillSubReqAck() {
     }
 
     /**
@@ -42,7 +42,7 @@ public class GepgBillSubResAckMapper {
      *
      * @param trxStsCode the transaction status code to set
      */
-    public GepgBillSubResAckMapper(int trxStsCode) {
+    public GepgBillSubReqAck(int trxStsCode) {
         this.trxStsCode = trxStsCode;
     }
 
@@ -75,7 +75,7 @@ public class GepgBillSubResAckMapper {
      */
     @Override
     public String toString() {
-        return "GepgBillSubResAckMapper{" +
+        return "GepgBillSubReqAckMapper{" +
                 "trxStsCode='" + trxStsCode + '\'' +
                 '}';
     }

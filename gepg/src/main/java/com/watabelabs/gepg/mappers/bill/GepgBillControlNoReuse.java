@@ -1,9 +1,9 @@
 package com.watabelabs.gepg.mappers.bill;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The GepgBillControlNoReuseReqMapper class is used for mapping the XML request
@@ -28,17 +28,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "gepgBillSubReq")
 @XmlAccessorType(XmlAccessType.FIELD)
 
-public class GepgBillControlNoReuseReqMapper {
+public class GepgBillControlNoReuse {
     @XmlElement(name = "BillHdr")
-    private GepgBillHdrMapper billHdr;
+    private GepgBillHdr billHdr;
 
     @XmlElement(name = "BillTrxInf")
-    private GepgBillTrxInfoMapper billTrxInf;
+    private GepgBillTrxInf billTrxInf;
 
     /**
      * Default no-argument constructor.
      */
-    public GepgBillControlNoReuseReqMapper() {
+    public GepgBillControlNoReuse() {
     }
 
     /**
@@ -48,7 +48,7 @@ public class GepgBillControlNoReuseReqMapper {
      * @param billHdr    the bill header information to set
      * @param billTrxInf the bill transaction information to set
      */
-    public GepgBillControlNoReuseReqMapper(GepgBillHdrMapper billHdr, GepgBillTrxInfoMapper billTrxInf) {
+    public GepgBillControlNoReuse(GepgBillHdr billHdr, GepgBillTrxInf billTrxInf) {
         this.billHdr = billHdr;
         this.billTrxInf = billTrxInf;
     }
@@ -58,7 +58,7 @@ public class GepgBillControlNoReuseReqMapper {
      *
      * @param billHdr the bill header information to set
      */
-    public void setBillHdr(GepgBillHdrMapper billHdr) {
+    public void setBillHdr(GepgBillHdr billHdr) {
         this.billHdr = billHdr;
     }
 
@@ -67,7 +67,7 @@ public class GepgBillControlNoReuseReqMapper {
      *
      * @return the bill transaction information
      */
-    public GepgBillTrxInfoMapper getBillTrxInf() {
+    public GepgBillTrxInf getBillTrxInf() {
         return billTrxInf;
     }
 
@@ -76,7 +76,7 @@ public class GepgBillControlNoReuseReqMapper {
      *
      * @param billTrxInf the bill transaction information to set
      */
-    public void setBillTrxInf(GepgBillTrxInfoMapper billTrxInf) {
+    public void setBillTrxInf(GepgBillTrxInf billTrxInf) {
         this.billTrxInf = billTrxInf;
     }
 

@@ -1,8 +1,8 @@
 package com.watabelabs.gepg.mappers.bill;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * The GepgBillItemMapper class is used for mapping the XML response
@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlElement;
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class GepgBillItemMapper {
+public class GepgBillItem {
 
     @XmlElement(name = "BillItemRef", required = true)
     private String billItemRef;
@@ -46,7 +46,7 @@ public class GepgBillItemMapper {
     /**
      * Default no-args constructor.
      */
-    public GepgBillItemMapper() {
+    public GepgBillItem() {
     }
 
     /**
@@ -59,7 +59,7 @@ public class GepgBillItemMapper {
      * @param billItemMiscAmt the bill item miscellaneous amount
      * @param gfsCode         the GFS code
      */
-    public GepgBillItemMapper(String billItemRef, String useItemRefOnPay, double billItemAmt, double billItemEqvAmt,
+    public GepgBillItem(String billItemRef, String useItemRefOnPay, double billItemAmt, double billItemEqvAmt,
             Double billItemMiscAmt, String gfsCode) {
         this.billItemRef = billItemRef;
         this.useItemRefOnPay = useItemRefOnPay;

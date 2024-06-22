@@ -2,10 +2,10 @@ package com.watabelabs.gepg.mappers.bill;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The BillCancellationRespMapper class is used for mapping the XML response
@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "gepgBillCanclResp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class GepgBillCancellationRespMapper {
+public class GepgBillCanclResp {
 
     @XmlElement(name = "BillCanclTrxDt")
     private List<BillCanclTrxDtMapper> billCanclTrxDt;
@@ -36,7 +36,7 @@ public class GepgBillCancellationRespMapper {
     /**
      * Default no-argument constructor.
      */
-    public GepgBillCancellationRespMapper() {
+    public GepgBillCanclResp() {
     }
 
     /**
@@ -46,7 +46,7 @@ public class GepgBillCancellationRespMapper {
      * @param billCanclTrxDt the list of bill cancellation transaction details to
      *                       set
      */
-    public GepgBillCancellationRespMapper(List<BillCanclTrxDtMapper> billCanclTrxDt) {
+    public GepgBillCanclResp(List<BillCanclTrxDtMapper> billCanclTrxDt) {
         this.billCanclTrxDt = billCanclTrxDt;
     }
 

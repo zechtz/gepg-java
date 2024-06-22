@@ -1,8 +1,8 @@
 package com.watabelabs.gepg.mappers.bill;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * The GepgBillHeaderMapper class represents the bill header information.
@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class GepgBillHdrMapper {
+public class GepgBillHdr {
 
     @XmlElement(name = "SpCode", required = true)
     private String spCode;
@@ -27,7 +27,7 @@ public class GepgBillHdrMapper {
     /**
      * Default no-args constructor.
      */
-    public GepgBillHdrMapper() {
+    public GepgBillHdr() {
     }
 
     /**
@@ -36,7 +36,7 @@ public class GepgBillHdrMapper {
      * @param spCode     the service provider code
      * @param rtrRespFlg the return response flag
      */
-    public GepgBillHdrMapper(String spCode, boolean rtrRespFlg) {
+    public GepgBillHdr(String spCode, boolean rtrRespFlg) {
         this.spCode = spCode;
         this.rtrRespFlg = rtrRespFlg;
     }
@@ -103,7 +103,7 @@ public class GepgBillHdrMapper {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        GepgBillHdrMapper billHdr = (GepgBillHdrMapper) o;
+        GepgBillHdr billHdr = (GepgBillHdr) o;
 
         if (rtrRespFlg != billHdr.rtrRespFlg)
             return false;
