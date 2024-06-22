@@ -50,7 +50,7 @@ public class GepgPmtSpInfoMapperTest {
     @Test
     public void testPmtInfoXmlConversionWithDeclaration() throws Exception {
         // Create a sample message
-        GepgPmtSpInfoMapper pmtSpInfoMapper = createData();
+        GepgPmtSpInfo pmtSpInfoMapper = createData();
 
         // Convert to XML string
         String message = XmlUtil.convertToXmlString(pmtSpInfoMapper);
@@ -63,7 +63,7 @@ public class GepgPmtSpInfoMapperTest {
     @Test
     public void testPmtInfoConversionWithoutDeclaration() throws Exception {
         // Create a sample message
-        GepgPmtSpInfoMapper pmtSpInfoMapper = createData();
+        GepgPmtSpInfo pmtSpInfoMapper = createData();
 
         // Convert to XML string
         String message = XmlUtil.convertToXmlStringWithoutDeclaration(pmtSpInfoMapper);
@@ -76,7 +76,7 @@ public class GepgPmtSpInfoMapperTest {
     @Test
     public void testSignedMessageContainsGepgAndSignature() throws Exception {
         // Create a sample message
-        GepgPmtSpInfoMapper pmtSpInfoMapper = createData();
+        GepgPmtSpInfo pmtSpInfoMapper = createData();
 
         // Convert to XML string
         String message = XmlUtil.convertToXmlStringWithoutDeclaration(pmtSpInfoMapper);
@@ -85,7 +85,7 @@ public class GepgPmtSpInfoMapperTest {
         MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
 
         // Sign the message
-        String signedMessage = messageUtil.sign(message, GepgPmtSpInfoMapper.class);
+        String signedMessage = messageUtil.sign(message, GepgPmtSpInfo.class);
 
         // Assert that the signed message is not null and contains <Gepg> and
         // <gepgSignature>
@@ -95,9 +95,9 @@ public class GepgPmtSpInfoMapperTest {
         assertTrue(signedMessage.contains("<gepgSignature>"));
     }
 
-    private static GepgPmtSpInfoMapper createData() {
+    private static GepgPmtSpInfo createData() {
         // Creating and populating the Payment Transaction Information
-        GepgPymtTrxInfMapper pymtTrxInf = new GepgPymtTrxInfMapper(
+        GepgPymtTrxInf pymtTrxInf = new GepgPymtTrxInf(
                 "TRX123456", // trxId
                 "SP001", // spCode
                 "PAYREF123456", // payRefId
@@ -118,7 +118,7 @@ public class GepgPmtSpInfoMapperTest {
         );
 
         // Creating and populating the Payment Service Provider Information
-        GepgPmtSpInfoMapper pmtSpInfo = new GepgPmtSpInfoMapper(pymtTrxInf);
+        GepgPmtSpInfo pmtSpInfo = new GepgPmtSpInfo(pymtTrxInf);
 
         // Print the object to verify the data
         System.out.println(pmtSpInfo);

@@ -15,39 +15,31 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.ValidationException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.ValidationException;
 import javax.xml.transform.stream.StreamResult;
 
-import com.watabelabs.gepg.GepgRequest;
-import com.watabelabs.gepg.constants.GepgResponseCode;
-import com.watabelabs.gepg.mappers.bill.GepgBillHdrMapper;
-import com.watabelabs.gepg.mappers.bill.GepgBillItemMapper;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAckMapper;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubReqMapper;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubRespAckMapper;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubRespMapper;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubRespPayloadMapper;
-import com.watabelabs.gepg.mappers.bill.GepgBillTrxInfoMapper;
+import com.watabelabs.gepg.mappers.bill.GepgBillHdr;
+import com.watabelabs.gepg.mappers.bill.GepgBillItem;
+import com.watabelabs.gepg.mappers.bill.GepgBillSubReq;
+import com.watabelabs.gepg.mappers.bill.GepgBillSubResp;
+import com.watabelabs.gepg.mappers.bill.GepgBillTrxInf;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import spark.Spark;
+import io.javalin.Javalin;
 
 public class MessageUtilTest {
 
     private static String keystorePath;
     private static String keystorePassword;
     private static String keyAlias;
-    private static GepgBillSubRespMapper callbackResponse;
+    private static GepgBillSubResp callbackResponse;
     private static CountDownLatch latch;
 
-    private final String gepgCode = "SP19940";
-    private final String apiUrl = "http://localhost:3005/api/bill/sigqrequest";
+    private static Javalin app;
 
     @BeforeAll
     public static void setup() {
@@ -71,51 +63,6 @@ public class MessageUtilTest {
 
         keystorePassword = "passpass";
         keyAlias = "gepgclient";
-
-        // Start SparkJava server
-        Spark.port(4040);
-
-        // Setup the callback endpoint to handle GePG system responses
-        Spark.post("/api/callback", (req, res) -> {
-            MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
-
-            // convert back to Pojo
-            GepgBillSubRespPayloadMapper gepgBillSubRespPayloadMapper = MessageUtil.unwrapAndConvertToPojo(req.body(),
-                    GepgBillSubRespPayloadMapper.class);
-
-            // log the message
-            System.out.println("Received Control Number Response");
-            System.out.println(gepgBillSubRespPayloadMapper.getGepgBillSubResp().getBillTrxInf().getPayCntrNum());
-            System.out.println("End Control Number Response");
-
-            latch.countDown();
-
-            String _apiUrl = "http://localhost:3005/api/bill/sigqrequest";
-
-            // Prepare the acknowledgment response
-            GepgBillSubReqAckMapper ack = new GepgBillSubReqAckMapper(7101);
-
-            String ackXmlString = XmlUtil.convertToXmlString(ack);
-
-            // Sign the message
-            String signedMessage = messageUtil.sign(ackXmlString, GepgBillSubRespAckMapper.class);
-
-            System.out.println(signedMessage);
-
-            // Send the acknowledgment back to GePG
-            GepgRequest gepgRequest = new GepgRequest("Gepg_Code", _apiUrl);
-
-            gepgRequest.submitBillAck(signedMessage);
-
-            return "Received";
-        });
-
-        Spark.awaitInitialization();
-    }
-
-    @AfterAll
-    public static void teardown() {
-        Spark.stop();
     }
 
     @Test
@@ -127,7 +74,7 @@ public class MessageUtilTest {
         MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
 
         // Sign the message
-        String signedMessage = messageUtil.sign(message, GepgBillSubReqMapper.class);
+        String signedMessage = messageUtil.sign(message, GepgBillSubReq.class);
 
         // Assert that the signed message is not null and contains the digital signature
         assertNotNull(signedMessage);
@@ -141,13 +88,13 @@ public class MessageUtilTest {
         String message = "<gepgBillSubReq><BillHdr><SpCode>S023</SpCode><RtrRespFlg>true</RtrRespFlg></BillHdr></gepgBillSubReq>";
 
         // Instantiate MessageUtil
-        MessageUtil.Envelope<GepgBillSubReqMapper> envelope = new MessageUtil.Envelope<>();
-        GepgBillSubReqMapper billSubReq = new GepgBillSubReqMapper();
+        MessageUtil.Envelope<GepgBillSubReq> envelope = new MessageUtil.Envelope<>();
+        GepgBillSubReq billSubReq = new GepgBillSubReq();
         envelope.setContent(Arrays.asList(billSubReq));
         envelope.setGepgSignature("dummySignature");
 
         // Convert to XML string
-        JAXBContext context = JAXBContext.newInstance(MessageUtil.Envelope.class, GepgBillSubReqMapper.class);
+        JAXBContext context = JAXBContext.newInstance(MessageUtil.Envelope.class, GepgBillSubReq.class);
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
@@ -173,7 +120,7 @@ public class MessageUtilTest {
 
         // Sign the message with null input
         assertThrows(ValidationException.class, () -> {
-            messageUtil.sign(null, GepgBillSubReqMapper.class);
+            messageUtil.sign(null, GepgBillSubReq.class);
         });
     }
 
@@ -184,60 +131,21 @@ public class MessageUtilTest {
 
         // Sign the message with empty input
         assertThrows(ValidationException.class, () -> {
-            messageUtil.sign("", GepgBillSubReqMapper.class);
+            messageUtil.sign("", GepgBillSubReq.class);
         });
-    }
-
-    @Test
-    @Disabled("Will come back here later, I am trying to swee why acknowledgment is wrong")
-    public void testSignAndSubmitBillWithCallback() throws Exception {
-        // Create a sample message
-        GepgBillSubReqMapper mapper = createData();
-
-        // Instantiate MessageUtil
-        MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
-
-        String xmlString = XmlUtil.convertToXmlString(mapper);
-
-        // Sign the message
-        String signedMessage = messageUtil.sign(xmlString, GepgBillSubReqMapper.class);
-
-        System.out.println(signedMessage);
-
-        GepgRequest request = new GepgRequest("Gepg_Code", apiUrl);
-
-        // Simulate a callback from GePG system
-        latch = new CountDownLatch(1);
-
-        // Submit the signed message
-        GepgBillSubReqAckMapper response = request.submitBill(signedMessage);
-
-        // Submit the GepgBillSubReqAckMapper
-
-        // Assert that the response is not null
-        assertNotNull(response);
-        assertEquals(7101, response.getTrxStsCode());
-        assertEquals("SUCCESSFUL", GepgResponseCode.getResponseMessage(response.getTrxStsCode()));
-
-        // Wait for callback
-        latch.await();
-
-        // Assert that the callback response is received and contains the expected data
-        assertNotNull(callbackResponse);
-        assertEquals("123456789", callbackResponse.getBillTrxInf().getPayCntrNum());
     }
 
     @Test
     public void testActualDtoWillGetMapped() throws Exception {
         // Create a sample message
-        GepgBillSubReqMapper billSubRequestMapper = createData();
+        GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
         String message = XmlUtil.convertToXmlString(billSubRequestMapper);
 
         MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
 
         // Sign the message
-        String signedMessage = messageUtil.sign(message, GepgBillSubReqMapper.class);
+        String signedMessage = messageUtil.sign(message, GepgBillSubReq.class);
 
         // Assert that the signed message is not null and contains the digital signature
         assertNotNull(signedMessage);
@@ -245,29 +153,30 @@ public class MessageUtilTest {
         assertTrue(signedMessage.contains("<gepgSignature>"));
     }
 
-    private static GepgBillSubReqMapper createData() {
+    private static GepgBillSubReq createBillSubReq() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
         // Creating and populating the Bill Header
-        GepgBillHdrMapper billHdr = new GepgBillHdrMapper("SP023", true);
+        GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
 
         // Creating and populating Bill Items
-        GepgBillItemMapper item1 = new GepgBillItemMapper("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
-        GepgBillItemMapper item2 = new GepgBillItemMapper("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
+        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
+        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
 
         LocalDateTime billExprDt = LocalDateTime.parse("2017-05-30T10:00:01", formatter);
         LocalDateTime billGenDt = LocalDateTime.parse("2017-02-22T10:00:10", formatter);
 
         // Creating and populating the Bill Transaction Information
-        GepgBillTrxInfoMapper billTrxInf = new GepgBillTrxInfoMapper(
+        GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
                 "7885", "2001", "tjv47", 7885, 0, billGenDt, "Palapala", "Charles Palapala",
                 "Bill Number 7885", billExprDt, "100", "Hashim", "0699210053", "charlestp@yahoo.com",
                 "TZS", 7885, true, 1, Arrays.asList(item1, item2));
 
         // Creating and populating the Bill Submission Request
-        GepgBillSubReqMapper request = new GepgBillSubReqMapper(billHdr, billTrxInf);
+        GepgBillSubReq request = new GepgBillSubReq(billHdr, billTrxInf);
 
         // Print the object to verify the data
         return request;
     }
+
 }
