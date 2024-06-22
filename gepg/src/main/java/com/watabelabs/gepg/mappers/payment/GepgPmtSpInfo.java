@@ -1,10 +1,10 @@
 package com.watabelabs.gepg.mappers.payment;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 /**
  * The GepgPmtSpInfoMapper class is used for mapping the XML response
@@ -26,19 +26,19 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  */
 @XmlRootElement(name = "gepgPmtSpInfo")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-@XmlSeeAlso({ GepgPymtTrxInfMapper.class })
-public class GepgPmtSpInfoMapper {
+@XmlSeeAlso({ GepgPymtTrxInf.class })
+public class GepgPmtSpInfo {
 
     /**
      * The payment transaction information.
      * <p>
      * This field is mapped to the XML element named "PymtTrxInf". It holds the
      * details of the payment transaction, encapsulated in a
-     * {@link GepgPymtTrxInfMapper} object.
+     * {@link GepgPymtTrxInf} object.
      * </p>
      */
     @XmlElement(name = "PymtTrxInf")
-    private GepgPymtTrxInfMapper pymtTrxInf;
+    private GepgPymtTrxInf pymtTrxInf;
 
     /**
      * Default no-argument constructor.
@@ -47,7 +47,7 @@ public class GepgPmtSpInfoMapper {
      * the class when unmarshalling XML data.
      * </p>
      */
-    public GepgPmtSpInfoMapper() {
+    public GepgPmtSpInfo() {
     }
 
     /**
@@ -56,7 +56,7 @@ public class GepgPmtSpInfoMapper {
      *
      * @param pymtTrxInf the payment transaction information to set
      */
-    public GepgPmtSpInfoMapper(GepgPymtTrxInfMapper pymtTrxInf) {
+    public GepgPmtSpInfo(GepgPymtTrxInf pymtTrxInf) {
         this.pymtTrxInf = pymtTrxInf;
     }
 
@@ -65,7 +65,7 @@ public class GepgPmtSpInfoMapper {
      *
      * @return the payment transaction information
      */
-    public GepgPymtTrxInfMapper getPymtTrxInf() {
+    public GepgPymtTrxInf getPymtTrxInf() {
         return pymtTrxInf;
     }
 
@@ -74,7 +74,7 @@ public class GepgPmtSpInfoMapper {
      *
      * @param pymtTrxInf the payment transaction information to set
      */
-    public void setPymtTrxInf(GepgPymtTrxInfMapper pymtTrxInf) {
+    public void setPymtTrxInf(GepgPymtTrxInf pymtTrxInf) {
         this.pymtTrxInf = pymtTrxInf;
     }
 

@@ -3,10 +3,10 @@ package com.watabelabs.gepg.mappers.payment;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The GepgPymtTrxInfMapper class is used for mapping the XML response
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "PymtTrxInf")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class GepgPymtTrxInfMapper {
+public class GepgPymtTrxInf {
 
     @XmlElement(name = "TrxId")
     private String trxId;
@@ -93,7 +93,7 @@ public class GepgPymtTrxInfMapper {
      * the class when unmarshalling XML data.
      * </p>
      */
-    public GepgPymtTrxInfMapper() {
+    public GepgPymtTrxInf() {
     }
 
     /**
@@ -117,7 +117,7 @@ public class GepgPymtTrxInfMapper {
      * @param pspName          the PSP name
      * @param ctrAccNum        the control account number
      */
-    public GepgPymtTrxInfMapper(String trxId, String spCode, String payRefId, UUID billId, String payCtrNum,
+    public GepgPymtTrxInf(String trxId, String spCode, String payRefId, UUID billId, String payCtrNum,
             BigDecimal billAmt, BigDecimal paidAmt, BigDecimal billPayOpt, String CCy,
             String trxDtTm, String usdPayChn, String pyrCellNum, String pyrName,
             String pyrEmail, String pspReceiptNumber, String pspName, String ctrAccNum) {

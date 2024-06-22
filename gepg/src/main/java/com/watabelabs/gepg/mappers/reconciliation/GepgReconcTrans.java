@@ -2,10 +2,10 @@ package com.watabelabs.gepg.mappers.reconciliation;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The ReconcTransMapper class is used for mapping the XML response
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "ReconcTrans")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class GepgReconcTransMapper {
+public class GepgReconcTrans {
 
     /**
      * The
@@ -48,7 +48,7 @@ public class GepgReconcTransMapper {
      * </p>
      */
     @XmlElement(name = "ReconcTrxInf")
-    private List<GepgReconcTrxInfMapper> reconcTrxInf;
+    private List<GepgReconcTrxInf> reconcTrxInf;
 
     /**
      * Def
@@ -59,7 +59,7 @@ public class GepgReconcTransMapper {
      * the class when unmarshalling XML data.
      * </p>
      */
-    public GepgReconcTransMapper() {
+    public GepgReconcTrans() {
     }
 
     /**
@@ -69,7 +69,7 @@ public class GepgReconcTransMapper {
      *
      * @param reconcTrxInf the list of reconciliation transaction information to set
      */
-    public GepgReconcTransMapper(List<GepgReconcTrxInfMapper> reconcTrxInf) {
+    public GepgReconcTrans(List<GepgReconcTrxInf> reconcTrxInf) {
         this.reconcTrxInf = reconcTrxInf;
     }
 
@@ -78,7 +78,7 @@ public class GepgReconcTransMapper {
      *
      * @return the list of reconciliation transaction information
      */
-    public List<GepgReconcTrxInfMapper> getReconcTrxInf() {
+    public List<GepgReconcTrxInf> getReconcTrxInf() {
         return reconcTrxInf;
     }
 
@@ -87,7 +87,7 @@ public class GepgReconcTransMapper {
      *
      * @param reconcTrxInf the list of reconciliation transaction information to set
      */
-    public void setReconcTrxInf(List<GepgReconcTrxInfMapper> reconcTrxInf) {
+    public void setReconcTrxInf(List<GepgReconcTrxInf> reconcTrxInf) {
         this.reconcTrxInf = reconcTrxInf;
     }
 

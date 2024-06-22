@@ -1,9 +1,9 @@
 package com.watabelabs.gepg.mappers.payment;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The GepgPmtSpInfoAckMapper class is used for mapping the XML response
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "gepgPmtSpInfoAck")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class GepgPmtSpInfoAckMapper {
+public class GepgPmtSpInfoAck {
 
     /**
      * The transaction status code.
@@ -45,7 +45,7 @@ public class GepgPmtSpInfoAckMapper {
      * the class when unmarshalling XML data.
      * </p>
      */
-    public GepgPmtSpInfoAckMapper() {
+    public GepgPmtSpInfoAck() {
     }
 
     /**
@@ -54,7 +54,7 @@ public class GepgPmtSpInfoAckMapper {
      *
      * @param trxStsCode the transaction status code to set
      */
-    public GepgPmtSpInfoAckMapper(String trxStsCode) {
+    public GepgPmtSpInfoAck(String trxStsCode) {
         this.trxStsCode = trxStsCode;
     }
 

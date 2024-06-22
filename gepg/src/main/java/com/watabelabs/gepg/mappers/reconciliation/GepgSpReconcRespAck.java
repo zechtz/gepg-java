@@ -1,9 +1,9 @@
 package com.watabelabs.gepg.mappers.reconciliation;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The GepgSpReconcRespAckMapper class is used for mapping the XML response
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "gepgSpReconcRespAck")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class GepgSpReconcRespAckMapper {
+public class GepgSpReconcRespAck {
 
     /**
      * The reconciliation status code.
@@ -45,7 +45,7 @@ public class GepgSpReconcRespAckMapper {
      * the class when unmarshalling XML data.
      * </p>
      */
-    public GepgSpReconcRespAckMapper() {
+    public GepgSpReconcRespAck() {
     }
 
     /**
@@ -54,7 +54,7 @@ public class GepgSpReconcRespAckMapper {
      *
      * @param reconcStsCode the reconciliation status code to set
      */
-    public GepgSpReconcRespAckMapper(String reconcStsCode) {
+    public GepgSpReconcRespAck(String reconcStsCode) {
         this.reconcStsCode = reconcStsCode;
     }
 

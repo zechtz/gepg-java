@@ -3,10 +3,10 @@ package com.watabelabs.gepg.mappers.reconciliation;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The ReconcTrxInfMapper class is used for mapping the XML response
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "ReconcTrxInf")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class GepgReconcTrxInfMapper {
+public class GepgReconcTrxInf {
 
     @XmlElement(name = "SpBillId")
     private UUID billId;
@@ -87,7 +87,7 @@ public class GepgReconcTrxInfMapper {
      * the class when unmarshalling XML data.
      * </p>
      */
-    public GepgReconcTrxInfMapper() {
+    public GepgReconcTrxInf() {
     }
 
     /**
@@ -109,7 +109,7 @@ public class GepgReconcTrxInfMapper {
      * @param reconcRvs02 reconciliation reversal 2
      * @param reconcRvs03 reconciliation reversal 3
      */
-    public GepgReconcTrxInfMapper(UUID billId, String payRefId, Long payCtrNum, BigDecimal paidAmt, String cCy,
+    public GepgReconcTrxInf(UUID billId, String payRefId, Long payCtrNum, BigDecimal paidAmt, String cCy,
             String trxDtTm,
             String ctrAccNum, String usdPayChn, String pyrCellNum, String pyrName, String pyrEmail,
             String remarks, String reconcRvs01, String reconcRvs02, String reconcRvs03) {

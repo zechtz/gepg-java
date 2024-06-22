@@ -1,9 +1,9 @@
 package com.watabelabs.gepg.mappers.reconciliation;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The ReconcBatchInfoMapper class is used for mapping the XML response
@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "ReconcBatchInfo")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class GepgReconcBatchInfoMapper {
+public class ReconcBatchInfo {
 
     /**
      * The service provider reconciliation request ID.
@@ -77,7 +77,7 @@ public class GepgReconcBatchInfoMapper {
      * the class when unmarshalling XML data.
      * </p>
      */
-    public GepgReconcBatchInfoMapper() {
+    public ReconcBatchInfo() {
     }
 
     /**
@@ -88,7 +88,7 @@ public class GepgReconcBatchInfoMapper {
      * @param spName        the service provider name
      * @param reconcStsCode the reconciliation status code
      */
-    public GepgReconcBatchInfoMapper(Long spReconcReqId, String spCode, String spName, String reconcStsCode) {
+    public ReconcBatchInfo(Long spReconcReqId, String spCode, String spName, String reconcStsCode) {
         this.spReconcReqId = spReconcReqId;
         this.spCode = spCode;
         this.spName = spName;
