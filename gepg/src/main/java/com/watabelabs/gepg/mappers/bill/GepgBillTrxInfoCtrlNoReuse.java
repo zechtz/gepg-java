@@ -1,5 +1,6 @@
 package com.watabelabs.gepg.mappers.bill;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,10 +54,10 @@ public class GepgBillTrxInfoCtrlNoReuse {
     private String spSysId;
 
     @XmlElement(name = "BillAmt", required = true)
-    private double billAmt;
+    private BigDecimal billAmt;
 
     @XmlElement(name = "MiscAmt", required = true)
-    private double miscAmt;
+    private BigDecimal miscAmt;
 
     @XmlElement(name = "BillExprDt", required = true)
     @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
@@ -91,7 +92,7 @@ public class GepgBillTrxInfoCtrlNoReuse {
     private String ccy;
 
     @XmlElement(name = "BillEqvAmt", required = true)
-    private double billEqvAmt;
+    private BigDecimal billEqvAmt;
 
     @XmlElement(name = "RemFlag", required = true)
     private boolean remFlag;
@@ -136,11 +137,11 @@ public class GepgBillTrxInfoCtrlNoReuse {
      * @param billPayCntrNumb the bill payment control number
      * @param billItems       the list of bill items
      */
-    public GepgBillTrxInfoCtrlNoReuse(String billId, String subSpCode, String spSysId, double billAmt,
-            double miscAmt,
+    public GepgBillTrxInfoCtrlNoReuse(String billId, String subSpCode, String spSysId, BigDecimal billAmt,
+            BigDecimal miscAmt,
             LocalDateTime billExprDt,
             String pyrId, String pyrName, String billDesc, LocalDateTime billGenDt, String billGenBy, String billApprBy,
-            String pyrCellNum, String pyrEmail, String ccy, double billEqvAmt, boolean remFlag, int billPayOpt,
+            String pyrCellNum, String pyrEmail, String ccy, BigDecimal billEqvAmt, boolean remFlag, int billPayOpt,
             int payCntrNum, List<GepgBillItem> billItems) {
         this.billId = billId;
         this.subSpCode = subSpCode;
@@ -198,93 +199,6 @@ public class GepgBillTrxInfoCtrlNoReuse {
                 '}';
     }
 
-    /**
-     * Checks if this object is equal to another object.
-     *
-     * @param o the other object
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-
-        GepgBillTrxInfoCtrlNoReuse that = (GepgBillTrxInfoCtrlNoReuse) o;
-
-        if (Double.compare(that.billAmt, billAmt) != 0)
-            return false;
-        if (Double.compare(that.miscAmt, miscAmt) != 0)
-            return false;
-        if (remFlag != that.remFlag)
-            return false;
-        if (billPayOpt != that.billPayOpt)
-            return false;
-        if (billId != null ? !billId.equals(that.billId) : that.billId != null)
-            return false;
-        if (subSpCode != null ? !subSpCode.equals(that.subSpCode) : that.subSpCode != null)
-            return false;
-        if (spSysId != null ? !spSysId.equals(that.spSysId) : that.spSysId != null)
-            return false;
-        if (billExprDt != null ? !billExprDt.equals(that.billExprDt) : that.billExprDt != null)
-            return false;
-        if (pyrId != null ? !pyrId.equals(that.pyrId) : that.pyrId != null)
-            return false;
-        if (pyrName != null ? !pyrName.equals(that.pyrName) : that.pyrName != null)
-            return false;
-        if (billDesc != null ? !billDesc.equals(that.billDesc) : that.billDesc != null)
-            return false;
-        if (billGenDt != null ? !billGenDt.equals(that.billGenDt) : that.billGenDt != null)
-            return false;
-        if (billGenBy != null ? !billGenBy.equals(that.billGenBy) : that.billGenBy != null)
-            return false;
-        if (billApprBy != null ? !billApprBy.equals(that.billApprBy) : that.billApprBy != null)
-            return false;
-        if (pyrCellNum != null ? !pyrCellNum.equals(that.pyrCellNum) : that.pyrCellNum != null)
-            return false;
-        if (pyrEmail != null ? !pyrEmail.equals(that.pyrEmail) : that.pyrEmail != null)
-            return false;
-        if (ccy != null ? !ccy.equals(that.ccy) : that.ccy != null)
-            return false;
-        if (Double.compare(that.billEqvAmt, billEqvAmt) != 0)
-            return false;
-        return billItems != null ? billItems.equals(that.billItems) : that.billItems == null;
-    }
-
-    /**
-     * Generates a hash code for this object.
-     *
-     * @return a hash code for this object
-     */
-    @Override
-    public int hashCode() {
-        int result;
-        long temp;
-        result = billId != null ? billId.hashCode() : 0;
-        result = 31 * result + (subSpCode != null ? subSpCode.hashCode() : 0);
-        result = 31 * result + (spSysId != null ? spSysId.hashCode() : 0);
-        temp = Double.doubleToLongBits(billAmt);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(miscAmt);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (billExprDt != null ? billExprDt.hashCode() : 0);
-        result = 31 * result + (pyrId != null ? pyrId.hashCode() : 0);
-        result = 31 * result + (pyrName != null ? pyrName.hashCode() : 0);
-        result = 31 * result + (billDesc != null ? billDesc.hashCode() : 0);
-        result = 31 * result + (billGenDt != null ? billGenDt.hashCode() : 0);
-        result = 31 * result + (billGenBy != null ? billGenBy.hashCode() : 0);
-        result = 31 * result + (billApprBy != null ? billApprBy.hashCode() : 0);
-        result = 31 * result + (pyrCellNum != null ? pyrCellNum.hashCode() : 0);
-        result = 31 * result + (pyrEmail != null ? pyrEmail.hashCode() : 0);
-        result = 31 * result + (ccy != null ? ccy.hashCode() : 0);
-        temp = Double.doubleToLongBits(billEqvAmt);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (remFlag ? 1 : 0);
-        result = 31 * result + billPayOpt;
-        result = 31 * result + (billItems != null ? billItems.hashCode() : 0);
-        return result;
-    }
 
     public String getBillId() {
         return billId;
@@ -310,19 +224,19 @@ public class GepgBillTrxInfoCtrlNoReuse {
         this.spSysId = spSysId;
     }
 
-    public double getBillAmt() {
+    public BigDecimal getBillAmt() {
         return billAmt;
     }
 
-    public void setBillAmt(double billAmt) {
+    public void setBillAmt(BigDecimal billAmt) {
         this.billAmt = billAmt;
     }
 
-    public double getMiscAmt() {
+    public BigDecimal getMiscAmt() {
         return miscAmt;
     }
 
-    public void setMiscAmt(double miscAmt) {
+    public void setMiscAmt(BigDecimal miscAmt) {
         this.miscAmt = miscAmt;
     }
 
@@ -406,11 +320,11 @@ public class GepgBillTrxInfoCtrlNoReuse {
         this.ccy = ccy;
     }
 
-    public double getBillEqvAmt() {
+    public BigDecimal getBillEqvAmt() {
         return billEqvAmt;
     }
 
-    public void setBillEqvAmt(double billEqvAmt) {
+    public void setBillEqvAmt(BigDecimal billEqvAmt) {
         this.billEqvAmt = billEqvAmt;
     }
 

@@ -1,5 +1,8 @@
 package com.watabelabs.gepg.mappers.bill;
 
+import java.math.BigDecimal;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -32,13 +35,13 @@ public class GepgBillItem {
     private String useItemRefOnPay;
 
     @XmlElement(name = "BillItemAmt", required = true)
-    private double billItemAmt;
+    private BigDecimal billItemAmt;
 
     @XmlElement(name = "BillItemEqvAmt", required = true)
-    private double billItemEqvAmt;
+    private BigDecimal billItemEqvAmt;
 
     @XmlElement(name = "BillItemMiscAmt", required = true)
-    private double billItemMiscAmt;
+    private BigDecimal billItemMiscAmt;
 
     @XmlElement(name = "GfsCode", required = true)
     private String gfsCode;
@@ -59,8 +62,8 @@ public class GepgBillItem {
      * @param billItemMiscAmt the bill item miscellaneous amount
      * @param gfsCode         the GFS code
      */
-    public GepgBillItem(String billItemRef, String useItemRefOnPay, double billItemAmt, double billItemEqvAmt,
-            Double billItemMiscAmt, String gfsCode) {
+    public GepgBillItem(String billItemRef, String useItemRefOnPay, BigDecimal billItemAmt, BigDecimal  billItemEqvAmt,
+            BigDecimal  billItemMiscAmt, String gfsCode) {
         this.billItemRef = billItemRef;
         this.useItemRefOnPay = useItemRefOnPay;
         this.billItemAmt = billItemAmt;
@@ -110,7 +113,7 @@ public class GepgBillItem {
      *
      * @return the bill item amount
      */
-    public double getBillItemAmt() {
+    public BigDecimal getBillItemAmt() {
         return billItemAmt;
     }
 
@@ -119,7 +122,7 @@ public class GepgBillItem {
      *
      * @param billItemAmt the new bill item amount
      */
-    public void setBillItemAmt(double billItemAmt) {
+    public void setBillItemAmt(BigDecimal billItemAmt) {
         this.billItemAmt = billItemAmt;
     }
 
@@ -128,7 +131,7 @@ public class GepgBillItem {
      *
      * @return the bill item equivalent amount
      */
-    public double getBillItemEqvAmt() {
+    public BigDecimal getBillItemEqvAmt() {
         return billItemEqvAmt;
     }
 
@@ -137,7 +140,7 @@ public class GepgBillItem {
      *
      * @param billItemEqvAmt the new bill item equivalent amount
      */
-    public void setBillItemEqvAmt(double billItemEqvAmt) {
+    public void setBillItemEqvAmt(BigDecimal billItemEqvAmt) {
         this.billItemEqvAmt = billItemEqvAmt;
     }
 
@@ -146,7 +149,7 @@ public class GepgBillItem {
      *
      * @return the bill item miscellaneous amount
      */
-    public double getBillItemMiscAmt() {
+    public BigDecimal getBillItemMiscAmt() {
         return billItemMiscAmt;
     }
 
@@ -155,7 +158,7 @@ public class GepgBillItem {
      *
      * @param billItemMiscAmt the new bill item miscellaneous amount
      */
-    public void setBillItemMiscAmt(double billItemMiscAmt) {
+    public void setBillItemMiscAmt(BigDecimal billItemMiscAmt) {
         this.billItemMiscAmt = billItemMiscAmt;
     }
 
@@ -194,24 +197,26 @@ public class GepgBillItem {
                 '}';
     }
 
-    /**
-     * Generates a hash code for this object.
-     *
-     * @return a hash code for this object
-     */
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = billItemRef != null ? billItemRef.hashCode() : 0;
-        result = 31 * result + (useItemRefOnPay != null ? useItemRefOnPay.hashCode() : 0);
-        temp = Double.doubleToLongBits(billItemAmt);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(billItemEqvAmt);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(billItemMiscAmt);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (gfsCode != null ? gfsCode.hashCode() : 0);
-        return result;
+        return Objects.hash(billItemRef, useItemRefOnPay, billItemAmt, billItemEqvAmt, billItemMiscAmt, gfsCode);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        GepgBillItem other = (GepgBillItem) obj;
+        return Objects.equals(billItemRef, other.billItemRef) && Objects.equals(useItemRefOnPay, other.useItemRefOnPay)
+                && Objects.equals(billItemAmt, other.billItemAmt)
+                && Objects.equals(billItemEqvAmt, other.billItemEqvAmt)
+                && Objects.equals(billItemMiscAmt, other.billItemMiscAmt) && Objects.equals(gfsCode, other.gfsCode);
     }
 }

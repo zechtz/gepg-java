@@ -1,5 +1,6 @@
 package com.watabelabs.gepg.mappers.bill;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,10 +44,10 @@ public class GepgBillTrxInf {
     private String spSysId;
 
     @XmlElement(name = "BillAmt", required = true)
-    private double billAmt;
+    private BigDecimal billAmt;
 
     @XmlElement(name = "MiscAmt", required = true)
-    private double miscAmt;
+    private BigDecimal miscAmt;
 
     @XmlElement(name = "BillExprDt", required = true)
     @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
@@ -81,7 +82,7 @@ public class GepgBillTrxInf {
     private String ccy;
 
     @XmlElement(name = "BillEqvAmt", required = true)
-    private double billEqvAmt;
+    private BigDecimal billEqvAmt;
 
     @XmlElement(name = "RemFlag", required = true)
     private boolean remFlag;
@@ -125,10 +126,10 @@ public class GepgBillTrxInf {
      * @param billPayOpt the bill payment option
      * @param billItems  the list of bill items
      */
-    public GepgBillTrxInf(String billId, String subSpCode, String spSysId, double billAmt, double miscAmt,
+    public GepgBillTrxInf(String billId, String subSpCode, String spSysId, BigDecimal billAmt, BigDecimal miscAmt,
             LocalDateTime billExprDt, String pyrId, String pyrName, String billDesc, LocalDateTime billGenDt,
             String billGenBy, String billApprBy, String pyrCellNum, String pyrEmail, String ccy,
-            double billEqvAmt, boolean remFlag, int billPayOpt, List<GepgBillItem> billItems) {
+            BigDecimal billEqvAmt, boolean remFlag, int billPayOpt, List<GepgBillItem> billItems) {
         this.billId = billId;
         this.subSpCode = subSpCode;
         this.spSysId = spSysId;
@@ -174,10 +175,10 @@ public class GepgBillTrxInf {
      * @param payCntrNum the payment control number
      * @param billItems  the list of bill items
      */
-    public GepgBillTrxInf(String billId, String subSpCode, String spSysId, double billAmt, double miscAmt,
+    public GepgBillTrxInf(String billId, String subSpCode, String spSysId, BigDecimal billAmt, BigDecimal miscAmt,
             LocalDateTime billExprDt, String pyrId, String pyrName, String billDesc, LocalDateTime billGenDt,
             String billGenBy, String billApprBy, String pyrCellNum, String pyrEmail, String ccy,
-            double billEqvAmt, boolean remFlag, int billPayOpt, String payCntrNum, List<GepgBillItem> billItems) {
+            BigDecimal billEqvAmt, boolean remFlag, int billPayOpt, String payCntrNum, List<GepgBillItem> billItems) {
         this.billId = billId;
         this.subSpCode = subSpCode;
         this.spSysId = spSysId;
