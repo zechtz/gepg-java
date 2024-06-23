@@ -1,6 +1,5 @@
 package com.watabelabs.gepg.mappers.bill;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -35,13 +34,13 @@ public class GepgBillItem {
     private String useItemRefOnPay;
 
     @XmlElement(name = "BillItemAmt", required = true)
-    private BigDecimal billItemAmt;
+    private Double billItemAmt;
 
     @XmlElement(name = "BillItemEqvAmt", required = true)
-    private BigDecimal billItemEqvAmt;
+    private Double billItemEqvAmt;
 
     @XmlElement(name = "BillItemMiscAmt", required = true)
-    private BigDecimal billItemMiscAmt;
+    private Double billItemMiscAmt;
 
     @XmlElement(name = "GfsCode", required = true)
     private String gfsCode;
@@ -62,8 +61,8 @@ public class GepgBillItem {
      * @param billItemMiscAmt the bill item miscellaneous amount
      * @param gfsCode         the GFS code
      */
-    public GepgBillItem(String billItemRef, String useItemRefOnPay, BigDecimal billItemAmt, BigDecimal  billItemEqvAmt,
-            BigDecimal  billItemMiscAmt, String gfsCode) {
+    public GepgBillItem(String billItemRef, String useItemRefOnPay, Double billItemAmt, Double  billItemEqvAmt,
+            Double  billItemMiscAmt, String gfsCode) {
         this.billItemRef = billItemRef;
         this.useItemRefOnPay = useItemRefOnPay;
         this.billItemAmt = billItemAmt;
@@ -113,7 +112,7 @@ public class GepgBillItem {
      *
      * @return the bill item amount
      */
-    public BigDecimal getBillItemAmt() {
+    public Double getBillItemAmt() {
         return billItemAmt;
     }
 
@@ -122,7 +121,7 @@ public class GepgBillItem {
      *
      * @param billItemAmt the new bill item amount
      */
-    public void setBillItemAmt(BigDecimal billItemAmt) {
+    public void setBillItemAmt(Double billItemAmt) {
         this.billItemAmt = billItemAmt;
     }
 
@@ -131,7 +130,7 @@ public class GepgBillItem {
      *
      * @return the bill item equivalent amount
      */
-    public BigDecimal getBillItemEqvAmt() {
+    public Double getBillItemEqvAmt() {
         return billItemEqvAmt;
     }
 
@@ -140,7 +139,7 @@ public class GepgBillItem {
      *
      * @param billItemEqvAmt the new bill item equivalent amount
      */
-    public void setBillItemEqvAmt(BigDecimal billItemEqvAmt) {
+    public void setBillItemEqvAmt(Double billItemEqvAmt) {
         this.billItemEqvAmt = billItemEqvAmt;
     }
 
@@ -149,7 +148,7 @@ public class GepgBillItem {
      *
      * @return the bill item miscellaneous amount
      */
-    public BigDecimal getBillItemMiscAmt() {
+    public Double getBillItemMiscAmt() {
         return billItemMiscAmt;
     }
 
@@ -158,7 +157,7 @@ public class GepgBillItem {
      *
      * @param billItemMiscAmt the new bill item miscellaneous amount
      */
-    public void setBillItemMiscAmt(BigDecimal billItemMiscAmt) {
+    public void setBillItemMiscAmt(Double billItemMiscAmt) {
         this.billItemMiscAmt = billItemMiscAmt;
     }
 
