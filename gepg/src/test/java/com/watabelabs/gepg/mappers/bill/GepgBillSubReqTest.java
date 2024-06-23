@@ -15,13 +15,12 @@ import java.util.Arrays;
 import java.util.TimeZone;
 import java.util.concurrent.CountDownLatch;
 
-import com.watabelabs.gepg.GepgRequest;
+import com.watabelabs.gepg.GepgApiClient;
 import com.watabelabs.gepg.utils.MessageUtil;
 import com.watabelabs.gepg.utils.XmlUtil;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.javalin.Javalin;
@@ -62,10 +61,10 @@ public class GepgBillSubReqTest {
         keyAlias = "gepgclient";
 
         // Start Javalin server
-        app = Javalin.create().start(9090);
+        app = Javalin.create().start(8080);
 
         // Setup the callback endpoint to handle GePG system responses
-        app.post("/api/v1/submit-control-number", ctx -> {
+        app.post("/api/v1/bills/submit-control-number", ctx -> {
             latch.countDown();
             GepgBillSubResp response = MessageUtil.parseContent(ctx.body(), GepgBillSubResp.class);
             callbackResponse = response;
@@ -82,24 +81,7 @@ public class GepgBillSubReqTest {
 
     @Test
     public void testBillToXmlConvertion() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-        GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
-        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
-        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
-
-        GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                "7885", "2001", "tjv47", 7885, 0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
-                "Charles Palapala",
-                "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
-                "0699210053",
-                "charlestp@yahoo.com",
-                "TZS", 7885, true, 1, Arrays.asList(item1, item2));
-
-        GepgBillSubReq gepgBillSubReq = new GepgBillSubReq(billHdr, billTrxInf);
+        GepgBillSubReq gepgBillSubReq = createBillSubReq();
 
         String xmlOutput = XmlUtil.convertToXmlString(gepgBillSubReq);
 
@@ -155,21 +137,7 @@ public class GepgBillSubReqTest {
     @Test
     public void testControlNumberReuseConvertionToXml() throws Exception {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-        GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
-        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
-        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
-
-        GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                "7885", "2001", "tjv47", 7885, 0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
-                "Charles Palapala",
-                "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
-                "0699210053",
-                "charlestp@yahoo.com",
-                "TZS", 7885, true, 1, "990239121373", Arrays.asList(item1, item2));
-
-        GepgBillSubReq gepgBillSubReq = new GepgBillSubReq(billHdr, billTrxInf);
+        GepgBillControlNoReuse gepgBillSubReq = createBillControlNoReuse();
 
         String xmlOutput = XmlUtil.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
 
@@ -242,7 +210,6 @@ public class GepgBillSubReqTest {
     }
 
     @Test
-    @Disabled
     public void testSignAndSubmitBillWithCallback() throws Exception {
         // Create a sample message
         GepgBillSubReq mapper = createBillSubReq();
@@ -257,19 +224,19 @@ public class GepgBillSubReqTest {
 
         System.out.println(signedMessage);
 
-        GepgRequest request = new GepgRequest(gepgCode, apiUrl);
+        GepgApiClient apiClient = new GepgApiClient("/api/bill/sigqrequest");
 
         // Simulate a callback from GePG system
         latch = new CountDownLatch(1);
 
         // Submit the signed message
-        GepgBillSubReqAck response = request.submitBill(signedMessage);
+        GepgBillSubReqAck response = apiClient.submitBill(signedMessage);
         assertNotNull(response);
         assertTrue(response.getTrxStsCode() != 0);
 
         // Simulate receiving a control number response from GePG system
         String controlNumberResponse = "<Gepg><gepgBillSubResp><BillTrxInf><BillId>7885</BillId><TrxSts>GF</TrxSts><PayCntrNum>0</PayCntrNum><TrxStsCode>7242;7627</TrxStsCode></BillTrxInf><gepgSignature>...</gepgSignature></gepgBillSubResp></Gepg>";
-        String signedAckXml = request.receiveControlNumber(controlNumberResponse);
+        String signedAckXml = apiClient.receiveControlNumber(controlNumberResponse);
         assertNotNull(signedAckXml);
         assertTrue(signedAckXml.contains("gepgBillSubRespAck"));
 
@@ -285,60 +252,6 @@ public class GepgBillSubReqTest {
         return new GepgBillSubReqAck(7101);
     }
 
-    private GepgBillControlNoReuse createBillControlNoReuse() {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-        // Creating and populating the Bill Header
-        GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
-
-        // Creating and populating Bill Items
-        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
-        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
-
-        LocalDateTime billExprDt = LocalDateTime.parse("2017-05-30T10:00:01", formatter);
-        LocalDateTime billGenDt = LocalDateTime.parse("2017-02-22T10:00:10", formatter);
-
-        // Creating and populating the Bill Transaction Information
-        GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                "7885", "2001", "tjv47", 7885, 0, billGenDt, "Palapala", "Charles Palapala",
-                "Bill Number 7885", billExprDt, "100", "Hashim", "0699210053", "charlestp@yahoo.com",
-                "TZS", 7885, true, 1, "55052", Arrays.asList(item1, item2));
-
-        // Creating and populating the Bill Submission Request
-        GepgBillControlNoReuse request = new GepgBillControlNoReuse(billHdr, billTrxInf);
-
-        // Print the object to verify the data
-        return request;
-
-    }
-
-    private static GepgBillSubReq createBillSubReq() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-        // Creating and populating the Bill Header
-        GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
-
-        // Creating and populating Bill Items
-        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
-        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
-
-        LocalDateTime billExprDt = LocalDateTime.parse("2017-05-30T10:00:01", formatter);
-        LocalDateTime billGenDt = LocalDateTime.parse("2017-02-22T10:00:10", formatter);
-
-        // Creating and populating the Bill Transaction Information
-        GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                "7885", "2001", "tjv47", 7885, 0, billGenDt, "Palapala", "Charles Palapala",
-                "Bill Number 7885", billExprDt, "100", "Hashim", "0699210053", "charlestp@yahoo.com",
-                "TZS", 7885, true, 1, Arrays.asList(item1, item2));
-
-        // Creating and populating the Bill Submission Request
-        GepgBillSubReq request = new GepgBillSubReq(billHdr, billTrxInf);
-
-        // Print the object to verify the data
-        return request;
-    }
-
     public static String postBillResponse(GepgBillSubResp gepgResponse) throws Exception {
         System.out.println(gepgResponse);
         GepgBillSubRespAck billSubRespAckMapper = new GepgBillSubRespAck(
@@ -347,5 +260,47 @@ public class GepgBillSubReqTest {
         String xmlResponse = XmlUtil.convertToXmlString(billSubRespAckMapper);
 
         return xmlResponse;
+    }
+
+    private static GepgBillSubReq createBillSubReq() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
+        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.0, 7885.0, 0.0, "140206");
+        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
+
+        GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
+                "7885", "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                "Charles Palapala",
+                "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
+                "0699210053",
+                "charlestp@yahoo.com",
+                "TZS", 7885.0, true, 1, Arrays.asList(item1, item2));
+
+        return new GepgBillSubReq(billHdr, billTrxInf);
+    }
+
+    private static GepgBillControlNoReuse createBillControlNoReuse() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
+        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.0, 7885.0, 0.0, "140206");
+        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
+
+        GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
+                "7885", "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                "Charles Palapala",
+                "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
+                "0699210053",
+                "charlestp@yahoo.com",
+                "TZS", 7885.0, true, 1, "990239121373",  Arrays.asList(item1, item2));
+
+        return new GepgBillControlNoReuse(billHdr, billTrxInf);
     }
 }

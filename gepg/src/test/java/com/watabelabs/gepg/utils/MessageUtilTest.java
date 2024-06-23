@@ -10,10 +10,11 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
+import java.util.TimeZone;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -23,23 +24,16 @@ import javax.xml.transform.stream.StreamResult;
 import com.watabelabs.gepg.mappers.bill.GepgBillHdr;
 import com.watabelabs.gepg.mappers.bill.GepgBillItem;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReq;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubResp;
 import com.watabelabs.gepg.mappers.bill.GepgBillTrxInf;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import io.javalin.Javalin;
 
 public class MessageUtilTest {
 
     private static String keystorePath;
     private static String keystorePassword;
     private static String keyAlias;
-    private static GepgBillSubResp callbackResponse;
-    private static CountDownLatch latch;
-
-    private static Javalin app;
 
     @BeforeAll
     public static void setup() {
@@ -154,29 +148,24 @@ public class MessageUtilTest {
     }
 
     private static GepgBillSubReq createBillSubReq() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-        // Creating and populating the Bill Header
         GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
+        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.0, 7885.0, 0.0, "140206");
+        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
-        // Creating and populating Bill Items
-        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
-        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
-
-        LocalDateTime billExprDt = LocalDateTime.parse("2017-05-30T10:00:01", formatter);
-        LocalDateTime billGenDt = LocalDateTime.parse("2017-02-22T10:00:10", formatter);
-
-        // Creating and populating the Bill Transaction Information
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                "7885", "2001", "tjv47", 7885, 0, billGenDt, "Palapala", "Charles Palapala",
-                "Bill Number 7885", billExprDt, "100", "Hashim", "0699210053", "charlestp@yahoo.com",
-                "TZS", 7885, true, 1, Arrays.asList(item1, item2));
+                "7885", "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                "Charles Palapala",
+                "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
+                "0699210053",
+                "charlestp@yahoo.com",
+                "TZS", 7885.0, true, 1, Arrays.asList(item1, item2));
 
-        // Creating and populating the Bill Submission Request
-        GepgBillSubReq request = new GepgBillSubReq(billHdr, billTrxInf);
-
-        // Print the object to verify the data
-        return request;
+        return new GepgBillSubReq(billHdr, billTrxInf);
     }
 
 }
