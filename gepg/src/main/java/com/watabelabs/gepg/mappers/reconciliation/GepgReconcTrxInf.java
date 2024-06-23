@@ -1,6 +1,5 @@
 package com.watabelabs.gepg.mappers.reconciliation;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -45,7 +44,7 @@ public class GepgReconcTrxInf {
     private Long payCtrNum;
 
     @XmlElement(name = "PaidAmt")
-    private BigDecimal paidAmt;
+    private Double paidAmt;
 
     @XmlElement(name = "CCy")
     private String cCy;
@@ -109,7 +108,7 @@ public class GepgReconcTrxInf {
      * @param reconcRvs02 reconciliation reversal 2
      * @param reconcRvs03 reconciliation reversal 3
      */
-    public GepgReconcTrxInf(UUID billId, String payRefId, Long payCtrNum, BigDecimal paidAmt, String cCy,
+    public GepgReconcTrxInf(UUID billId, String payRefId, Long payCtrNum, Double paidAmt, String cCy,
             String trxDtTm,
             String ctrAccNum, String usdPayChn, String pyrCellNum, String pyrName, String pyrEmail,
             String remarks, String reconcRvs01, String reconcRvs02, String reconcRvs03) {
@@ -156,11 +155,11 @@ public class GepgReconcTrxInf {
         this.payCtrNum = payCtrNum;
     }
 
-    public BigDecimal getPaidAmt() {
+    public Double getPaidAmt() {
         return paidAmt;
     }
 
-    public void setPaidAmt(BigDecimal paidAmt) {
+    public void setPaidAmt(Double paidAmt) {
         this.paidAmt = paidAmt;
     }
 
