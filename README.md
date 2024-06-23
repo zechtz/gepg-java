@@ -49,6 +49,37 @@ dependencies {
 </dependency>
 ```
 
+## Using the library
+
+To use this library first you need to create a .env file at the root of your
+project then add the dotenv-java library
+
+### For Maven
+
+```
+<dependency>
+    <groupId>io.github.cdimascio</groupId>
+    <artifactId>dotenv-java</artifactId>
+    <version>2.2.0</version>
+</dependency>
+```
+
+### For Gradle
+
+```
+implementation 'io.github.cdimascio:dotenv-java:2.2.0'
+```
+
+Then add the following to your .env
+
+```
+PRIVATE_KEYSTORE_PATH=path/to/privatekey-file
+PRIVATE_KEYSTORE_PASSWORD=password
+PRIVATE_KEY_ALIAS=alias
+GEPG_CODE=gepgCode
+API_URL=http://api.url
+```
+
 ## Features
 
 This library exposes all possible requests and responses to and from GePG.

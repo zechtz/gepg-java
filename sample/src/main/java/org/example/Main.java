@@ -1,16 +1,20 @@
 package org.example;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.TimeZone;
 
-import com.watabelabs.gepg.GepgRequest;
+import com.watabelabs.gepg.GepgApiClient;
 import com.watabelabs.gepg.mappers.bill.GepgBillHdr;
 import com.watabelabs.gepg.mappers.bill.GepgBillItem;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReq;
+import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAck;
 import com.watabelabs.gepg.mappers.bill.GepgBillTrxInf;
 import com.watabelabs.gepg.utils.MessageUtil;
 import com.watabelabs.gepg.utils.XmlUtil;
+import com.watabelabs.gepg.constants.GepgResponseCode;
 
 public class Main {
 
@@ -23,7 +27,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        GepgBillSubReq billSubRequestMapper = createData();
+        GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
         String message = XmlUtil.convertToXmlString(billSubRequestMapper);
 
@@ -33,40 +37,33 @@ public class Main {
         String signedMessage = messageUtil.sign(message, GepgBillSubReq.class);
 
         // Assert that the signed message is not null and contains the digital signature
-        GepgRequest gRequest = new GepgRequest(gepgCode, apiUrl);
+        GepgApiClient gRequest = new GepgApiClient("/api/bill/sigqrequest");
 
-        // GepgBillSubReqAckMapper respMapper = gRequest.submitBill(signedMessage);
+        GepgBillSubReqAck respMapper = gRequest.submitBill(signedMessage);
 
-        // String responseMessage =
-        // GepgResponseCode.getResponseMessage(respMapper.getTrxStsCode());
+        String responseMessage = GepgResponseCode.getResponseMessage(respMapper.getTrxStsCode());
 
-        System.out.println("Hello World!");
+        System.out.println(responseMessage);
     }
 
-    private static GepgBillSubReq createData() {
+    private static GepgBillSubReq createBillSubReq() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-        // Creating and populating the Bill Header
         GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
+        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.0, 7885.0, 0.0, "140206");
+        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
-        // Creating and populating Bill Items
-        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
-        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
-
-        LocalDateTime billExprDt = LocalDateTime.parse("2017-05-30T10:00:01", formatter);
-        LocalDateTime billGenDt = LocalDateTime.parse("2017-02-22T10:00:10", formatter);
-
-        // Creating and populating the Bill Transaction Information
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                "7885", "2001", "tjv47", 7885, 0, billGenDt, "Palapala", "Charles Palapala",
-                "Bill Number 7885", billExprDt, "100", "Hashim", "0699210053", "charlestp@yahoo.com",
-                "TZS", 7885, true, 1, Arrays.asList(item1, item2));
+                "7885", "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                "Charles Palapala",
+                "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
+                "0699210053",
+                "charlestp@yahoo.com",
+                "TZS", 7885.0, true, 1, Arrays.asList(item1, item2));
 
-        // Creating and populating the Bill Submission Request
-        GepgBillSubReq request = new GepgBillSubReq(billHdr, billTrxInf);
-
-        // Print the object to verify the data
-        return request;
+        return new GepgBillSubReq(billHdr, billTrxInf);
     }
 }
