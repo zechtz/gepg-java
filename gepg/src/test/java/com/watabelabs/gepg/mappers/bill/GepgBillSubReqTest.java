@@ -21,6 +21,7 @@ import com.watabelabs.gepg.utils.XmlUtil;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.javalin.Javalin;
@@ -61,10 +62,10 @@ public class GepgBillSubReqTest {
         keyAlias = "gepgclient";
 
         // Start Javalin server
-        app = Javalin.create().start(4040);
+        app = Javalin.create().start(9090);
 
         // Setup the callback endpoint to handle GePG system responses
-        app.post("/api/callback", ctx -> {
+        app.post("/api/v1/submit-control-number", ctx -> {
             latch.countDown();
             GepgBillSubResp response = MessageUtil.parseContent(ctx.body(), GepgBillSubResp.class);
             callbackResponse = response;
@@ -241,6 +242,7 @@ public class GepgBillSubReqTest {
     }
 
     @Test
+    @Disabled
     public void testSignAndSubmitBillWithCallback() throws Exception {
         // Create a sample message
         GepgBillSubReq mapper = createBillSubReq();

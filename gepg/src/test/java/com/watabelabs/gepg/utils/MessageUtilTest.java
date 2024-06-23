@@ -15,9 +15,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.ValidationException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.ValidationException;
 import javax.xml.transform.stream.StreamResult;
 
 import com.watabelabs.gepg.mappers.bill.GepgBillHdr;

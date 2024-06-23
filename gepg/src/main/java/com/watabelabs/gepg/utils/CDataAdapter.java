@@ -1,6 +1,6 @@
 package com.watabelabs.gepg.utils;
 
-import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class CDataAdapter extends XmlAdapter<String, String> {
 
