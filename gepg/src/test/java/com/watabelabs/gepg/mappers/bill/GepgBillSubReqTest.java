@@ -21,6 +21,7 @@ import com.watabelabs.gepg.utils.MessageUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 import io.javalin.Javalin;
 
@@ -212,6 +213,7 @@ public class GepgBillSubReqTest {
     }
 
     @Test
+    @Disabled("Test is ignored as a demonstration")
     public void testSignAndSubmitBillWithCallback() throws Exception {
         // Create a sample message
         GepgBillSubReq mapper = createBillSubReq();

@@ -196,7 +196,6 @@ public void submitBill() throws Exception {
 ### Receiving Control Number
 
 ```
-
 // springboot rest API (this is one of the callback urls you provide gepg)
 @PostMapping(value = "/submit-control-number")
 @Transactional
@@ -220,8 +219,34 @@ public String receiveControlNumber(String xml) throws Exception {
     return gepgApiClient.receiveControlNumber(gepgBillSubResp);
 }
 
+```
 
+## Receive Payment Notification
 
+```
+// springboot rest API (this is one of the callback urls you provide gepg)
+@PostMapping(value = "/receieve-payment-notifications")
+@Transactional
+public String receivePaymentNotifications(@RequestBody String xml) throws Exception {
+    return billService.receiveControlNumber(xml);
+}
+
+### the service
+
+@Override
+public String receivePaymentNotifications(String responseXml) throws Exception {
+    GepgApiClient gepgApiClient = new GepgApiClient();
+
+    // convert this into an a readable java object
+    GepgPmtSpInfo gepgPaymentSpInfo = gepgApiClient.receivePaymentNotification(responseXml);
+
+    // do something with the payment info
+    // eg. update payment
+    // set payment status
+
+    // return the acknowledgement
+    return gepgApiClient.generateResponseAck(GepgPmtSpInfoAck.class);
+}
 
 ```
 
