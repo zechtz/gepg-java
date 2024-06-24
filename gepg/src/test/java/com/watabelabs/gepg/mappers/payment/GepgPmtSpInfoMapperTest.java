@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -55,7 +54,7 @@ public class GepgPmtSpInfoMapperTest {
         // Convert to XML string
         String message = XmlUtil.convertToXmlString(pmtSpInfoMapper);
 
-        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gepgPmtSpInfo><PymtTrxInf><TrxId>TRX123456</TrxId><SpCode>SP001</SpCode><PayRefId>PAYREF123456</PayRefId><BillId>74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c</BillId><PayCtrNum>PAYCTR123456</PayCtrNum><BillAmt>1000.00</BillAmt><PaidAmt>1000.00</PaidAmt><BillPayOpt>1</BillPayOpt><CCy>TZS</CCy><TrxDtTm>2022-01-01T12:00:00</TrxDtTm><UsdPayChnl>MOBILE</UsdPayChnl><PyrCellNum>255712345678</PyrCellNum><PyrName>JohnDoe</PyrName><PyrEmail>johndoe@example.com</PyrEmail><PspReceiptNumber>PSPREC123456</PspReceiptNumber><PspName>PSPName</PspName><CtrAccNum>CTRACC123456</CtrAccNum></PymtTrxInf></gepgPmtSpInfo>";
+        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gepgPmtSpInfo><PymtTrxInf><TrxId>TRX123456</TrxId><SpCode>SP001</SpCode><PayRefId>PAYREF123456</PayRefId><BillId>74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c</BillId><PayCtrNum>PAYCTR123456</PayCtrNum><BillAmt>1000.0</BillAmt><PaidAmt>1000.0</PaidAmt><BillPayOpt>1</BillPayOpt><CCy>TZS</CCy><TrxDtTm>2022-01-01T12:00:00</TrxDtTm><UsdPayChnl>MOBILE</UsdPayChnl><PyrCellNum>255712345678</PyrCellNum><PyrName>JohnDoe</PyrName><PyrEmail>johndoe@example.com</PyrEmail><PspReceiptNumber>PSPREC123456</PspReceiptNumber><PspName>PSPName</PspName><CtrAccNum>CTRACC123456</CtrAccNum></PymtTrxInf></gepgPmtSpInfo>";
 
         assertEquals(expectedXml.replaceAll("\\s+", ""), message.replaceAll("\\s+", ""));
     }
@@ -68,7 +67,7 @@ public class GepgPmtSpInfoMapperTest {
         // Convert to XML string
         String message = XmlUtil.convertToXmlStringWithoutDeclaration(pmtSpInfoMapper);
 
-        String expectedXml = "<gepgPmtSpInfo><PymtTrxInf><TrxId>TRX123456</TrxId><SpCode>SP001</SpCode><PayRefId>PAYREF123456</PayRefId><BillId>74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c</BillId><PayCtrNum>PAYCTR123456</PayCtrNum><BillAmt>1000.00</BillAmt><PaidAmt>1000.00</PaidAmt><BillPayOpt>1</BillPayOpt><CCy>TZS</CCy><TrxDtTm>2022-01-01T12:00:00</TrxDtTm><UsdPayChnl>MOBILE</UsdPayChnl><PyrCellNum>255712345678</PyrCellNum><PyrName>JohnDoe</PyrName><PyrEmail>johndoe@example.com</PyrEmail><PspReceiptNumber>PSPREC123456</PspReceiptNumber><PspName>PSPName</PspName><CtrAccNum>CTRACC123456</CtrAccNum></PymtTrxInf></gepgPmtSpInfo>";
+        String expectedXml = "<gepgPmtSpInfo><PymtTrxInf><TrxId>TRX123456</TrxId><SpCode>SP001</SpCode><PayRefId>PAYREF123456</PayRefId><BillId>74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c</BillId><PayCtrNum>PAYCTR123456</PayCtrNum><BillAmt>1000.0</BillAmt><PaidAmt>1000.0</PaidAmt><BillPayOpt>1</BillPayOpt><CCy>TZS</CCy><TrxDtTm>2022-01-01T12:00:00</TrxDtTm><UsdPayChnl>MOBILE</UsdPayChnl><PyrCellNum>255712345678</PyrCellNum><PyrName>JohnDoe</PyrName><PyrEmail>johndoe@example.com</PyrEmail><PspReceiptNumber>PSPREC123456</PspReceiptNumber><PspName>PSPName</PspName><CtrAccNum>CTRACC123456</CtrAccNum></PymtTrxInf></gepgPmtSpInfo>";
 
         assertEquals(expectedXml.replaceAll("\\s+", ""), message.replaceAll("\\s+", ""));
     }
@@ -97,26 +96,26 @@ public class GepgPmtSpInfoMapperTest {
 
     private static GepgPmtSpInfo createData() {
         // Creating and populating the Payment Transaction Information
-        GepgPymtTrxInf pymtTrxInf = new GepgPymtTrxInf(
-                "TRX123456", // trxId
-                "SP001", // spCode
-                "PAYREF123456", // payRefId
-                "74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c", // Example string, replace with actual if needed
-                "PAYCTR123456", // payCtrNum
-                1000.00, // billAmt
-                1000.00, // paidAmt
-                "EXACT", // billPayOpt
-                "TZS", // CCy
-                "2022-01-01T12:00:00", // trxDtTm
-                "MOBILE", // usdPayChn
-                "255712345678", // pyrCellNum
-                "John Doe", // pyrName
-                "johndoe@example.com", // pyrEmail
-                "PSPREC123456", // pspReceiptNumber
-                "PSPName", // pspName
-                "CTRACC123456" // ctrAccNum
-        );
 
+        GepgPymtTrxInf pymtTrxInf = new GepgPymtTrxInf(
+            "TRX123456",                            // trxId
+            "SP001",                                // spCode
+            "PAYREF123456",                         // payRefId
+            UUID.fromString("74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c"), // billId
+            "PAYCTR123456",                         // payCtrNum
+            1000.0,                                 // billAmt
+            1000.0,                                 // paidAmt
+            "1",                                    // billPayOptString (corresponds to FULL payment option)
+            "TZS",                                  // CCy
+            "2022-01-01T12:00:00",                  // trxDtTm
+            "MOBILE",                               // usdPayChn
+            "255712345678",                         // pyrCellNum
+            "JohnDoe",                              // pyrName
+            "johndoe@example.com",                  // pyrEmail
+            "PSPREC123456",                         // pspReceiptNumber
+            "PSPName",                              // pspName
+            "CTRACC123456"                          // ctrAccNum
+        );
         // Creating and populating the Payment Service Provider Information
         GepgPmtSpInfo pmtSpInfo = new GepgPmtSpInfo(pymtTrxInf);
 

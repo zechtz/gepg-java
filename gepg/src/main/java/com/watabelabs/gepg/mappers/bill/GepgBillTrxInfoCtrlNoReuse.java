@@ -3,6 +3,7 @@ package com.watabelabs.gepg.mappers.bill;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -45,7 +46,7 @@ import com.watabelabs.gepg.utils.LocalDateTimeAdapter;
 public class GepgBillTrxInfoCtrlNoReuse {
 
     @XmlElement(name = "BillId", required = true)
-    private String billId;
+    private UUID billId;
 
     @XmlElement(name = "SubSpCode", required = true)
     private String subSpCode;
@@ -137,7 +138,7 @@ public class GepgBillTrxInfoCtrlNoReuse {
      * @param billPayCntrNumb the bill payment control number
      * @param billItems       the list of bill items
      */
-    public GepgBillTrxInfoCtrlNoReuse(String billId, String subSpCode, String spSysId, BigDecimal billAmt,
+    public GepgBillTrxInfoCtrlNoReuse(UUID billId, String subSpCode, String spSysId, BigDecimal billAmt,
             BigDecimal miscAmt,
             LocalDateTime billExprDt,
             String pyrId, String pyrName, String billDesc, LocalDateTime billGenDt, String billGenBy, String billApprBy,
@@ -200,11 +201,11 @@ public class GepgBillTrxInfoCtrlNoReuse {
     }
 
 
-    public String getBillId() {
+    public UUID getBillId() {
         return billId;
     }
 
-    public void setBillId(String billId) {
+    public void setBillId(UUID billId) {
         this.billId = billId;
     }
 

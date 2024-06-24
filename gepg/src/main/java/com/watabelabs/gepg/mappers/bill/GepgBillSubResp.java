@@ -1,6 +1,7 @@
 package com.watabelabs.gepg.mappers.bill;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -107,7 +108,7 @@ public class GepgBillSubResp {
         private static final long serialVersionUID = 1L;
 
         @XmlElement(name = "BillId")
-        private String billId;
+        private UUID billId;
 
         @XmlElement(name = "TrxSts")
         private String trxSts;
@@ -123,7 +124,7 @@ public class GepgBillSubResp {
         }
 
         // Parameterized constructor
-        public GepgBillTrxInf(String billId, String trxSts, String payCntrNum, int trxStsCode) {
+        public GepgBillTrxInf(UUID billId, String trxSts, String payCntrNum, int trxStsCode) {
             this.billId = billId;
             this.trxSts = trxSts;
             this.payCntrNum = payCntrNum;
@@ -131,11 +132,11 @@ public class GepgBillSubResp {
         }
 
         // Getters and setters
-        public String getBillId() {
+        public UUID getBillId() {
             return billId;
         }
 
-        public void setBillId(String billId) {
+        public void setBillId(UUID billId) {
             this.billId = billId;
         }
 

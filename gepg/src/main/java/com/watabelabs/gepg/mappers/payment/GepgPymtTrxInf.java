@@ -1,5 +1,7 @@
 package com.watabelabs.gepg.mappers.payment;
 
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -39,7 +41,7 @@ public class GepgPymtTrxInf {
     private String payRefId;
 
     @XmlElement(name = "BillId")
-    private String billId;
+    private UUID billId;
 
     @XmlElement(name = "PayCtrNum")
     private String payCtrNum;
@@ -51,7 +53,9 @@ public class GepgPymtTrxInf {
     private Double paidAmt;
 
     @XmlElement(name = "BillPayOpt")
-    private String billPayOpt;
+    private String billPayOptString;
+
+    private GepgBillPaymentOption billPayOpt;
 
     @XmlElement(name = "CCy")
     private String CCy;
@@ -100,6 +104,7 @@ public class GepgPymtTrxInf {
      * @param payCtrNum        the payment control number
      * @param billAmt          the bill amount
      * @param paidAmt          the paid amount
+     * @param billPayOptString the bill payment option string value
      * @param CCy              the currency
      * @param trxDtTm          the transaction date and time
      * @param usdPayChn        the used payment channel
@@ -110,8 +115,8 @@ public class GepgPymtTrxInf {
      * @param pspName          the PSP name
      * @param ctrAccNum        the control account number
      */
-    public GepgPymtTrxInf(String trxId, String spCode, String payRefId, String billId, String payCtrNum,
-            Double billAmt, Double paidAmt, String billPayOpt, String CCy,
+    public GepgPymtTrxInf(String trxId, String spCode, String payRefId, UUID billId, String payCtrNum,
+            Double billAmt, Double paidAmt, String billPayOptString, String CCy,
             String trxDtTm, String usdPayChn, String pyrCellNum, String pyrName,
             String pyrEmail, String pspReceiptNumber, String pspName, String ctrAccNum) {
         this.trxId = trxId;
@@ -121,7 +126,8 @@ public class GepgPymtTrxInf {
         this.payCtrNum = payCtrNum;
         this.billAmt = billAmt;
         this.paidAmt = paidAmt;
-        this.billPayOpt = billPayOpt;
+        this.billPayOptString = billPayOptString;
+        // this.billPayOpt = GepgBillPaymentOption.fromValue(billPayOptString);
         this.CCy = CCy;
         this.trxDtTm = trxDtTm;
         this.usdPayChn = usdPayChn;
@@ -159,11 +165,11 @@ public class GepgPymtTrxInf {
         this.payRefId = payRefId;
     }
 
-    public String getBillId() {
+    public UUID getBillId() {
         return billId;
     }
 
-    public void setBillId(String billId) {
+    public void setBillId(UUID billId) {
         this.billId = billId;
     }
 
@@ -191,12 +197,22 @@ public class GepgPymtTrxInf {
         this.paidAmt = paidAmt;
     }
 
-    public String getBillPayOpt() {
+    public GepgBillPaymentOption getBillPayOpt() {
         return billPayOpt;
     }
 
-    public void setBillPayOpt(String billPayOpt) {
+    public void setBillPayOpt(GepgBillPaymentOption billPayOpt) {
         this.billPayOpt = billPayOpt;
+        this.billPayOptString = billPayOpt.getValue();
+    }
+
+    public String getBillPayOptString() {
+        return billPayOptString;
+    }
+
+    public void setBillPayOptString(String billPayOptString) {
+        this.billPayOptString = billPayOptString;
+        this.billPayOpt = GepgBillPaymentOption.fromValue(billPayOptString);
     }
 
     public String getCCy() {

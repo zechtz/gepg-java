@@ -1,6 +1,7 @@
 package com.watabelabs.gepg.mappers.bill;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -36,7 +37,7 @@ public class GepgBillCanclReq {
     private String canclReasn;
 
     @XmlElement(name = "BillId")
-    private List<String> billIds;
+    private List<UUID> billIds;
 
     /**
      * Default no-argument constructor.
@@ -52,7 +53,7 @@ public class GepgBillCanclReq {
      * @param canclReasn the cancellation reason
      * @param billIds    the list of bill IDs
      */
-    public GepgBillCanclReq(String spCode, String spSysId, String canclReasn, List<String> billIds) {
+    public GepgBillCanclReq(String spCode, String spSysId, String canclReasn, List<UUID> billIds) {
         this.spCode = spCode;
         this.spSysId = spSysId;
         this.canclReasn = canclReasn;
@@ -118,7 +119,7 @@ public class GepgBillCanclReq {
      *
      * @return the list of bill IDs
      */
-    public List<String> getBillIds() {
+    public List<UUID> getBillIds() {
         return billIds;
     }
 
@@ -127,7 +128,7 @@ public class GepgBillCanclReq {
      *
      * @param billIds the list of bill IDs to set
      */
-    public void setBillIds(List<String> billIds) {
+    public void setBillIds(List<UUID> billIds) {
         this.billIds = billIds;
     }
 

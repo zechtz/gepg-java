@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import com.watabelabs.gepg.GepgApiClient;
@@ -91,7 +92,7 @@ public class GepgBillSubReqTest {
                 "<RtrRespFlg>true</RtrRespFlg>" +
                 "</BillHdr>" +
                 "<BillTrxInf>" +
-                "<BillId>7885</BillId>" +
+                "<BillId>11ae8614-ceda-4b32-aa83-2dc651ed4bcd</BillId>" +
                 "<SubSpCode>2001</SubSpCode>" +
                 "<SpSysId>tjv47</SpSysId>" +
                 "<BillAmt>7885.0</BillAmt>" +
@@ -148,7 +149,7 @@ public class GepgBillSubReqTest {
                 "<RtrRespFlg>true</RtrRespFlg>" +
                 "</BillHdr>" +
                 "<BillTrxInf>" +
-                "<BillId>7885</BillId>" +
+                "<BillId>11ae8614-ceda-4b32-aa83-2dc651ed4bcd</BillId>" +
                 "<SubSpCode>2001</SubSpCode>" +
                 "<SpSysId>tjv47</SpSysId>" +
                 "<BillAmt>7885.0</BillAmt>" +
@@ -236,7 +237,7 @@ public class GepgBillSubReqTest {
         assertTrue(response.getTrxStsCode() != 0);
 
         // Simulate receiving a control number response from GePG system
-        String controlNumberResponse = "<Gepg><gepgBillSubResp><BillTrxInf><BillId>7885</BillId><TrxSts>GF</TrxSts><PayCntrNum>0</PayCntrNum><TrxStsCode>7242;7627</TrxStsCode></BillTrxInf><gepgSignature>...</gepgSignature></gepgBillSubResp></Gepg>";
+        String controlNumberResponse = "<Gepg><gepgBillSubResp><BillTrxInf><BillId>11ae8614-ceda-4b32-aa83-2dc651ed4bcd</BillId><TrxSts>GF</TrxSts><PayCntrNum>0</PayCntrNum><TrxStsCode>7242;7627</TrxStsCode></BillTrxInf><gepgSignature>...</gepgSignature></gepgBillSubResp></Gepg>";
 
         GepgBillSubResp gepgBillSubResp = apiClient.convertToJavaObject(controlNumberResponse , GepgBillSubResp.class);
 
@@ -278,7 +279,7 @@ public class GepgBillSubReqTest {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                "7885", "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
                 "0699210053",
@@ -299,7 +300,7 @@ public class GepgBillSubReqTest {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                "7885", "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
                 "0699210053",

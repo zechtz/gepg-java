@@ -2,6 +2,7 @@ package com.watabelabs.gepg.mappers.bill;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -34,7 +35,7 @@ import com.watabelabs.gepg.utils.LocalDateTimeAdapter;
 public class GepgBillTrxInf {
 
     @XmlElement(name = "BillId", required = true)
-    private String billId;
+    private UUID billId;
 
     @XmlElement(name = "SubSpCode", required = true)
     private String subSpCode;
@@ -125,7 +126,7 @@ public class GepgBillTrxInf {
      * @param billPayOpt the bill payment option
      * @param billItems  the list of bill items
      */
-    public GepgBillTrxInf(String billId, String subSpCode, String spSysId, Double billAmt, Double miscAmt,
+    public GepgBillTrxInf(UUID billId, String subSpCode, String spSysId, Double billAmt, Double miscAmt,
             LocalDateTime billExprDt, String pyrId, String pyrName, String billDesc, LocalDateTime billGenDt,
             String billGenBy, String billApprBy, String pyrCellNum, String pyrEmail, String ccy,
             Double billEqvAmt, boolean remFlag, int billPayOpt, List<GepgBillItem> billItems) {
@@ -174,7 +175,7 @@ public class GepgBillTrxInf {
      * @param payCntrNum the payment control number
      * @param billItems  the list of bill items
      */
-    public GepgBillTrxInf(String billId, String subSpCode, String spSysId, Double billAmt, Double miscAmt,
+    public GepgBillTrxInf(UUID billId, String subSpCode, String spSysId, Double billAmt, Double miscAmt,
             LocalDateTime billExprDt, String pyrId, String pyrName, String billDesc, LocalDateTime billGenDt,
             String billGenBy, String billApprBy, String pyrCellNum, String pyrEmail, String ccy,
             Double billEqvAmt, boolean remFlag, int billPayOpt, String payCntrNum, List<GepgBillItem> billItems) {

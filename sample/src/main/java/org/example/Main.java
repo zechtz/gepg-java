@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.TimeZone;
+import java.util.UUID;
 
 import com.watabelabs.gepg.GepgApiClient;
 import com.watabelabs.gepg.mappers.bill.GepgBillHdr;
@@ -57,7 +58,7 @@ public class Main {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                "7885", "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
                 "0699210053",
