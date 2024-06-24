@@ -217,7 +217,7 @@ public class GepgApiClient {
         GepgPmtSpInfoAck paymentSpInfoAck = envelope.getContent().get(0);
 
         // Check if the response contains a valid acknowledgment
-        if (paymentSpInfoAck == null || Integer.parseInt(paymentSpInfoAck.getTrxStsCode()) != 7101) {
+        if (paymentSpInfoAck == null || paymentSpInfoAck.getTrxStsCode() != 7101) {
             throw new Exception("Invalid acknowledgment response");
         }
 
