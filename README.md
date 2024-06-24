@@ -52,7 +52,7 @@ dependencies {
 ## Using the library
 
 To use this library first you need to create a .env file at the root of your
-project then add the dotenv-java library
+project then install the dotenv-java library
 
 ### For Maven
 
@@ -88,116 +88,140 @@ This library exposes all possible requests and responses to and from GePG.
 
 #### For Billing
 
--   `GepgBillCancellationReqMapper`
--   `GepgBillCancellationRespMapper`
--   `GepgBillChangeRequestMapper`
--   `GepgBillControlNoReuseReqMapper`
--   `GepgBillHdrMapper`
--   `GepgBillItemMapper`
--   `GepgBillSubReqAckMapper`
--   `GepgBillSubReqMapper`
--   `GepgBillSubRespAckMapper`
--   `GepgBillSubRespAckResultMapper`
--   `GepgBillSubRespMapper`
--   `GepgBillSubRespPayloadMapper`
--   `GepgBillTrxInfoMapper`
+-   `GepgBillCanclReq`
+-   `GepgBillCanclResp`
+-   `GepgBillControlNoReuse`
+-   `GepgBillHdr`
+-   `GepgBillItem`
+-   `GepgBillSubReq`
+-   `GepgBillSubReqAck`
+-   `GepgBillSubResAck`
+-   `GepgBillSubResp`
+-   `GepgBillSubRespAck`
+-   `GepgBillTrxInf`
 
 #### For Payments
 
--   `GepgPmtSpInfoAckMapper`
--   `GepgPmtSpInfoAckResultMapper`
--   `GepgPmtSpInfoMapper`
--   `GepgPmtSpInfoPayloadMapper`
--   `GepgPymtTrxInfMapper`
+-   `GepgPmtSpInfo`
+-   `GepgPmtSpInfoAck`
+-   `GepgPymtTrxInf`
 
 #### For Reconciliation
 
--   `GepgReconcBatchInfoMapper`
--   `GepgReconcTransMapper`
--   `GepgReconcTrxInfMapper`
--   `GepgSpReconcRespAckMapper`
--   `GepgSpReconcRespAckResultMapper`
--   `GepgSpReconcRespMapper`
--   `GepgSpReconcRespPayload`
+-   `GepgReconcTrans`
+-   `GepgReconcTrxInf`
+-   `GepgSpReconcRespAck`
+-   `GepgReconcBatchInfo`
 
-All these mappers conform to the GePG specification, eliminating the need to maintain your own DTOs.
+All these DTOs conform to the GePG specification, eliminating the need to maintain your own DTOs.
 
 ## API
 
-### Methods
+## Methods
 
-#### MessageUtil Class
+### The GepgApiClient class exposes the following methods
 
--   `sign(String xmlString)`: Instance method that adds a signature to your payload. This method returns a signed XML string as required by GePG.
+-   `submitBill(String signedRequest)`: This method submits a bill to the GePG API, the
+    method takes a signed xml string as a parameter and returns an instance of the GepgBillSubReqAck class
 
-### GepgResponseCode Class
+-   `reuseControlNumber(String signedRequest)`: This method submits a control number reuse request to the GePG API and respond by returning an instance of the GepgBillSubReqAck class
 
--   `getResponseMessage(int responseCode)`: Instance method that returns a gepg response message
-    by response code.
+-   `updateBill(String signedRequest)`: This method submits a bill change/update request to the GePG API and respond by returning an instance of the GepgBillSubReqAck class
 
-#### XmlUtil Class
+-   `cancelBill(String signedRequest)`: This method submits a bill change/update request to the GePG API and responds by returning an instance of the GepgBillSubReqAck class
 
--   `convertToXmlString(Object mapper)`: Static method that takes in any DataMapper and returns its XML string representation, adds the xml declaration `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` to the message.
+-   `submitPayment(String signedRequest)`: This methodSubmits a payment to the GePG API and responds by returning an instance of the GepgPmtSpInfoAck class
 
--   `convertToXmlStringWithoutDeclaration(Object mapper)`: Static method that takes in any DataMapper and returns its XML string representation doesn't add the xml declaration on top of the message.
+-   `receivePaymentNotification(String signedRequest)`: This method receives the payment notification Info as xml and returns an instance of the GepgPmtSpInfo class
 
-#### GepgRequest Class
+-   `receiveControlNumber(String signedRequest)`: This method receives the control number response and sends an acknowledgment back as a signed xml string
 
--   `submitBill(String signedMessage)`: Instance method that takes a signed XML string, makes a request to GePG, and returns a `GepgBillSubReqAckMapper`.
--   `reuseControlNumber(String signedMessage)`: Instance method that takes in a signed XML string, makes a request to GePG and returns a Returns a `GepgBillSubReqMapper`.
--   `updateBill(String signedMessage)`: Instance method that takes in a signed XML string, makes a request to GePG and Returns a `GepgBillSubReqMapper`.
--   `cancelBill(String signedMessage)`: Instance method that takes in a signed XML string, makes a request to GePG and Returns a `GepgBillCancellationRespMapper`.
--   `requestPaymentInfo(String signedMessage)`: Instance method that takes in a signed XML string, makes a request to GePG and.returns a `GepgPmtSpInfoAckMapper`
--   `requestReconciliation(String signedMessage)`: Instance method that takes in a signed XML string, makes a request to GePG and.returns a `GepgSpReconcRespMapper`
+-   `signMessage(String xmlString, Class<T> clazz)`: method that adds a signature to your payload. This method returns a signed xml string of the clazz type.
+
+-   `convertToJavaObject(String xmlString, Class<T> clazz)`: this method converts a JAXB-annotated object to an XML string and returns the xml
+
+-   `convertToXmlString(Object object)`: this method unwraps the provided XML string from the envelope and converts it to the specified POJO class..
+
+-   `convertToXmlString(Object object)`: this method unwraps the provided XML string from the envelope and converts it to the specified POJO class..
 
 ## Usage Example
 
+### Bill Submission
+
 ```java
 public void submitBill() throws Exception {
-    // Create a sample message
-    GepgBillSubReqMapper billSubRequestMapper = createData();
 
-    // Convert it to XML string
-    String message = XmlUtil.convertToXmlString(billSubRequestMapper);
+    // instantiate the apiClient
+    GepgApiClient gepgApiClient = new GepgApiClient(AppConstant.BILL_SUBMISSION_URL);
 
-    // Instantiate MessageUtil, it takes 3 parameters
-    // keystorePath => path to your private file
-    // keystorePassword => its password
-    // keyAlias => its alias
-    MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
+    // create the GepgBillSubReq object and populate it with data
+    GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
-    // Sign the message
-    String signedMessage = messageUtil.sign(message);
+    // convert it to an xml object and sign it
+    String billXml = gepgApiClient.convertToXmlString(billSubReq);
 
-    // Instantiate GepgRequest
-    GepgRequest request = new GepgRequest(gepgCode, apiUrl);
+    // sign the message
+    String signedXml = gepgApiClient.signMessage(billXml, GepgBillSubReq.class);
 
-    // Submit the signed message
-    GepgBillSubReqAckMapper response = request.submitBill(signedMessage);
+    // submit Bill to Gepg
+    GepgBillSubReqAck gepgBillSubResp = gepgApiClient.submitBill(signedXml);
 
-    System.out.println(response);
+    // return the response
+    return gepgBillSubResp;
+ }
+
+    private static GepgBillSubReq createBillSubReq() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
+        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.0, 7885.0, 0.0, "140206");
+        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
+
+        GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
+                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                "Charles Palapala",
+                "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
+                "0699210053",
+                "charlestp@yahoo.com",
+                "TZS", 7885.0, true, 1, Arrays.asList(item1, item2));
+
+        return new GepgBillSubReq(billHdr, billTrxInf);
+    }
+
+```
+
+### Receiving Control Number
+
+```
+
+// springboot rest API (this is one of the callback urls you provide gepg)
+@PostMapping(value = "/submit-control-number")
+@Transactional
+public String postGepgBillSubResps(@RequestBody String xml) throws Exception {
+    return billService.receiveControlNumber(xml);
 }
 
-private static GepgBillSubReqMapper createData() {
-    // Creating and populating the Bill Header
-    GepgBillHdrMapper billHdr = new GepgBillHdrMapper("SP023", true);
+### the service
 
-    // Creating and populating Bill Items
-    GepgBillItemMapper item1 = new GepgBillItemMapper("788578851", "N", 7885.00, 7885.00, 0.00, "140206");
-    GepgBillItemMapper item2 = new GepgBillItemMapper("788578852", "N", 7885.00, 7885.00, 0.00, "140206");
+@Override
+public String receiveControlNumber(String xml) throws Exception {
+    // instantiate the api client
+    GepgApiClient gepgApiClient = new GepgApiClient();
 
-    // Creating and populating the Bill Transaction Information
-    GepgBillTrxInfoMapper billTrxInf = new GepgBillTrxInfoMapper(
-            "7885", "2001", "tjv47", 7885, 0, new Date(), "Palapala", "Charles Palapala",
-            "Bill Number 7885", new Date(), "100", "Hashim", "0699210053", "charlestp@yahoo.com",
-            "TZS", 7885, true, 1, Arrays.asList(item1, item2));
+    // convert the xml string into a readable java object
+    GepgBillSubResp gepgBillSubResp = gepgApiClient.convertToJavaObject(xml, GepgBillSubResp.class);
 
-    // Creating and populating the Bill Submission Request
-    GepgBillSubReqMapper request = new GepgBillSubReqMapper(billHdr, billTrxInf);
+    // probably use this data to update control number and message to bill
 
-    // Print the object to verify the data
-    return request;
+    // respond by return the ack
+    return gepgApiClient.receiveControlNumber(gepgBillSubResp);
 }
+
+
+
 
 ```
 
