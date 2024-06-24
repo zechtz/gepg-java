@@ -1,7 +1,5 @@
 package com.watabelabs.gepg.mappers.reconciliation;
 
-import java.util.UUID;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -35,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class GepgReconcTrxInf {
 
     @XmlElement(name = "SpBillId")
-    private UUID billId;
+    private String billId;
 
     @XmlElement(name = "PayRefId")
     private String payRefId;
@@ -108,7 +106,7 @@ public class GepgReconcTrxInf {
      * @param reconcRvs02 reconciliation reversal 2
      * @param reconcRvs03 reconciliation reversal 3
      */
-    public GepgReconcTrxInf(UUID billId, String payRefId, Long payCtrNum, Double paidAmt, String cCy,
+    public GepgReconcTrxInf(String billId, String payRefId, Long payCtrNum, Double paidAmt, String cCy,
             String trxDtTm,
             String ctrAccNum, String usdPayChn, String pyrCellNum, String pyrName, String pyrEmail,
             String remarks, String reconcRvs01, String reconcRvs02, String reconcRvs03) {
@@ -131,11 +129,11 @@ public class GepgReconcTrxInf {
 
     // Getter and setter methods
 
-    public UUID getBillId() {
+    public String getBillId() {
         return billId;
     }
 
-    public void setBillId(UUID billId) {
+    public void setBillId(String billId) {
         this.billId = billId;
     }
 
