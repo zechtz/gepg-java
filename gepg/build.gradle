@@ -55,14 +55,14 @@ publishing {
                 }
                 developers {
                     developer {
-                        id.set("watabelabs")
+                        id.set("zechtz")
                         name.set("Watabe Labs")
-                        email.set("contact@watabelabs.com")
+                        email.set("zachariahn@gmail.com")
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://github.com/zechtz/gepg-java.git")
-                    developerConnection.set("scm:git:ssh://github.com/zechtz/gepg-java.git")
+                    connection.set("scm:git:git://github.com/zechtz/gepg-java")
+                    developerConnection.set("scm:git:ssh://github.com/zechtz/gepg-java")
                     url.set("https://github.com/zechtz/gepg-java")
                 }
             }
@@ -108,5 +108,3 @@ coveralls {
 tasks.coveralls {
     dependsOn 'jacocoTestReport'
 }
-
-
