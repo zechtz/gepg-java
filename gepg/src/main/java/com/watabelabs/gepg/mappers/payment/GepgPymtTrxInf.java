@@ -1,15 +1,12 @@
 package com.watabelabs.gepg.mappers.payment;
 
-import java.math.BigDecimal;
-import java.util.UUID;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The GepgPymtTrxInfMapper class is used for mapping the XML response
+ * The GepgPymtTrxInf class is used for mapping the XML response
  * to the corresponding Java object. This class represents the payment
  * transaction information.
  *
@@ -17,16 +14,13 @@ import javax.xml.bind.annotation.XmlRootElement;
  * It contains various fields that store details of the payment transaction,
  * such as transaction ID, service provider code, payment reference ID, bill ID,
  * payment control number, bill amount, paid amount, bill payment option,
- * currency,
- * transaction date and time, used payment channel, payer's cell number, payer's
- * name,
- * payer's email, PSP receipt number, PSP name, and control account number.
+ * currency, transaction date and time, used payment channel, payer's cell number,
+ * payer's name, payer's email, PSP receipt number, PSP name, and control account number.
  * </p>
  *
  * <p>
  * The class is annotated with JAXB annotations to specify how the XML elements
- * should be mapped to the Java fields. It uses {@link XmlRootElement} to define
- * the
+ * should be mapped to the Java fields. It uses {@link XmlRootElement} to define the
  * root element name and {@link XmlAccessorType} to specify the access type for
  * the fields.
  * </p>
@@ -45,19 +39,19 @@ public class GepgPymtTrxInf {
     private String payRefId;
 
     @XmlElement(name = "BillId")
-    private UUID billId;
+    private String billId;
 
     @XmlElement(name = "PayCtrNum")
     private String payCtrNum;
 
     @XmlElement(name = "BillAmt")
-    private BigDecimal billAmt;
+    private Double billAmt;
 
     @XmlElement(name = "PaidAmt")
-    private BigDecimal paidAmt;
+    private Double paidAmt;
 
     @XmlElement(name = "BillPayOpt")
-    private BigDecimal billPayOpt;
+    private String billPayOpt;
 
     @XmlElement(name = "CCy")
     private String CCy;
@@ -106,7 +100,6 @@ public class GepgPymtTrxInf {
      * @param payCtrNum        the payment control number
      * @param billAmt          the bill amount
      * @param paidAmt          the paid amount
-     * @param billPayOpt       the bill payment option
      * @param CCy              the currency
      * @param trxDtTm          the transaction date and time
      * @param usdPayChn        the used payment channel
@@ -117,8 +110,8 @@ public class GepgPymtTrxInf {
      * @param pspName          the PSP name
      * @param ctrAccNum        the control account number
      */
-    public GepgPymtTrxInf(String trxId, String spCode, String payRefId, UUID billId, String payCtrNum,
-            BigDecimal billAmt, BigDecimal paidAmt, BigDecimal billPayOpt, String CCy,
+    public GepgPymtTrxInf(String trxId, String spCode, String payRefId, String billId, String payCtrNum,
+            Double billAmt, Double paidAmt, String billPayOpt, String CCy,
             String trxDtTm, String usdPayChn, String pyrCellNum, String pyrName,
             String pyrEmail, String pspReceiptNumber, String pspName, String ctrAccNum) {
         this.trxId = trxId;
@@ -166,11 +159,11 @@ public class GepgPymtTrxInf {
         this.payRefId = payRefId;
     }
 
-    public UUID getBillId() {
+    public String getBillId() {
         return billId;
     }
 
-    public void setBillId(UUID billId) {
+    public void setBillId(String billId) {
         this.billId = billId;
     }
 
@@ -182,27 +175,27 @@ public class GepgPymtTrxInf {
         this.payCtrNum = payCtrNum;
     }
 
-    public BigDecimal getBillAmt() {
+    public Double getBillAmt() {
         return billAmt;
     }
 
-    public void setBillAmt(BigDecimal billAmt) {
+    public void setBillAmt(Double billAmt) {
         this.billAmt = billAmt;
     }
 
-    public BigDecimal getPaidAmt() {
+    public Double getPaidAmt() {
         return paidAmt;
     }
 
-    public void setPaidAmt(BigDecimal paidAmt) {
+    public void setPaidAmt(Double paidAmt) {
         this.paidAmt = paidAmt;
     }
 
-    public BigDecimal getBillPayOpt() {
+    public String getBillPayOpt() {
         return billPayOpt;
     }
 
-    public void setBillPayOpt(BigDecimal billPayOpt) {
+    public void setBillPayOpt(String billPayOpt) {
         this.billPayOpt = billPayOpt;
     }
 
@@ -289,11 +282,11 @@ public class GepgPymtTrxInf {
      */
     @Override
     public String toString() {
-        return "GepgPymtTrxInfMapper{" +
+        return "GepgPymtTrxInf{" +
                 "trxId='" + trxId + '\'' +
                 ", spCode='" + spCode + '\'' +
                 ", payRefId='" + payRefId + '\'' +
-                ", billId=" + billId +
+                ", billId='" + billId + '\'' +
                 ", payCtrNum='" + payCtrNum + '\'' +
                 ", billAmt=" + billAmt +
                 ", paidAmt=" + paidAmt +
@@ -310,3 +303,4 @@ public class GepgPymtTrxInf {
                 '}';
     }
 }
+
