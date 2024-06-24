@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.watabelabs.gepg.constants.GepgResponseCode;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAck;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubResp;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubRespAck;
@@ -243,17 +244,14 @@ public class GepgApiClient {
      * @return the signed acknowledgment XML to be sent back to GePG
      * @throws Exception if an error occurs during the process
      */
-    public String receiveControlNumber(String responseXml) throws Exception {
-
-        Envelope<GepgBillSubResp> envelope = mapResponse(responseXml, GepgBillSubResp.class);
-        GepgBillSubResp responseMapper = envelope.getContent().get(0);
+    public String receiveControlNumber(GepgBillSubResp gepgBillSubResp) throws Exception {
 
         // Prepare the acknowledgment response
-        GepgBillSubRespAck ackMapper = new GepgBillSubRespAck();
-        ackMapper.setTrxStsCode(responseMapper.getBillTrxInf().getTrxStsCode());
+        GepgBillSubRespAck gepgBillSubRespAck = new GepgBillSubRespAck(7101);
+        //ackMapper.setTrxStsCode(responseMapper.getBillTrxInf().getTrxStsCode());
 
         // Convert acknowledgment to XML and sign it
-        String ackXml = XmlUtil.convertToXmlString(ackMapper);
+        String ackXml = XmlUtil.convertToXmlString(gepgBillSubRespAck);
 
         // Initialize with the required parameters
         return signMessage(ackXml, GepgBillSubRespAck.class);
@@ -282,7 +280,7 @@ public class GepgApiClient {
      * @return the content as a POJO
      * @throws Exception if an error occurs during XML conversion
      */
-    public static <T> T convertToJavaObject(String xmlString, Class<T> contentClass) throws Exception {
+    public <T> T convertToJavaObject(String xmlString, Class<T> contentClass) throws Exception {
         return MessageUtil.unwrapAndConvertToPojo(xmlString, contentClass);
     }
 
@@ -293,7 +291,7 @@ public class GepgApiClient {
      * @return the XML string representation of the object
      * @throws Exception if an error occurs during XML conversion
      */
-    public static String convertToXmlString(Object object) throws Exception {
+    public String convertToXmlString(Object object) throws Exception {
         return XmlUtil.convertToXmlString(object);
     }
 
@@ -306,8 +304,42 @@ public class GepgApiClient {
      *         declaration
      * @throws Exception if an error occurs during XML conversion
      */
-    public static String convertToXmlStringWithoutDeclaration(Object object) throws Exception {
+    public String convertToXmlStringWithoutDeclaration(Object object) throws Exception {
         return XmlUtil.convertToXmlStringWithoutDeclaration(object);
+    }
+
+    /**
+     * Returns a message corresponding to the given code.
+     *
+     * @param code the code for which to retrieve the message
+     * @return the message corresponding to the given code
+     * @throws IllegalArgumentException if the code is not recognized
+     */
+    public String getResponseMessage(int code) {
+        String message = GepgResponseCode.getResponseMessage(code);
+        if (message == null) {
+            throw new IllegalArgumentException("Unknown code: " + code);
+        }
+        return message;
+    }
+
+    /**
+     * Checks if the provided XML string contains all specified keys.
+     *
+     * @param xmlString the XML string to check
+     * @param keys the keys to check for in the XML string
+     * @return true if all keys are found in the XML string, false otherwise
+     * @throws Exception if an error occurs during XML parsing or XPath evaluation
+     *
+     * Example usage:
+     * <pre>{@code
+     * String xml = "<root><key1>value1</key1><key2>value2</key2></root>";
+     * boolean containsKeys = XmlUtil.checkKeys(xml, "key1", "key2");
+     * System.out.println(containsKeys); // Outputs: true
+     * }</pre>
+     */
+    public boolean checkKeys(String xmlString, String... keys) throws Exception {
+        return XmlUtil.checkKeys(xmlString, keys);
     }
 
     /*
