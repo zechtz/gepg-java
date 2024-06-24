@@ -17,8 +17,6 @@ import java.util.concurrent.CountDownLatch;
 
 import com.watabelabs.gepg.GepgApiClient;
 import com.watabelabs.gepg.utils.MessageUtil;
-import com.watabelabs.gepg.utils.XmlUtil;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -81,9 +79,10 @@ public class GepgBillSubReqTest {
 
     @Test
     public void testBillToXmlConvertion() throws Exception {
+        GepgApiClient gepgApiClient = new GepgApiClient();
         GepgBillSubReq gepgBillSubReq = createBillSubReq();
 
-        String xmlOutput = XmlUtil.convertToXmlString(gepgBillSubReq);
+        String xmlOutput = gepgApiClient.convertToXmlString(gepgBillSubReq);
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                 "<gepgBillSubReq>" +
@@ -137,9 +136,11 @@ public class GepgBillSubReqTest {
     @Test
     public void testControlNumberReuseConvertionToXml() throws Exception {
 
+        GepgApiClient gepgApiClient = new GepgApiClient();
+
         GepgBillControlNoReuse gepgBillSubReq = createBillControlNoReuse();
 
-        String xmlOutput = XmlUtil.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
+        String xmlOutput = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
 
         String expectedXml = "<gepgBillSubReq>" +
                 "<BillHdr>" +
@@ -192,18 +193,18 @@ public class GepgBillSubReqTest {
 
     @Test
     public void testCorrectGepgBillSubReqAck() throws Exception {
+        GepgApiClient gepgApiClient = new GepgApiClient();
 
-        MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
         GepgBillSubReqAck gepgBillSubReqAckMapper = createBillSubReqAck();
 
-        String xmlString = XmlUtil.convertToXmlString(gepgBillSubReqAckMapper);
-        String signedMessage = messageUtil.sign(xmlString, GepgBillSubReqAck.class);
+        String xmlString = gepgApiClient.convertToXmlString(gepgBillSubReqAckMapper);
+        String signedMessage = gepgApiClient.signMessage(xmlString, GepgBillSubReqAck.class);
 
         // Define expected keys to check in the signed XML
         String[] keys = { "Gepg", "gepgBillSubReqAck", "TrxStsCode", "gepgSignature" };
 
         // Check if all expected keys are present in the signed message
-        boolean allKeysPresent = XmlUtil.checkKeys(signedMessage, keys);
+        boolean allKeysPresent = gepgApiClient.checkKeys(signedMessage, keys);
 
         // Assert that all keys are present
         assertTrue(allKeysPresent, "Not all keys are present in the signed XML message.");
@@ -214,13 +215,13 @@ public class GepgBillSubReqTest {
         // Create a sample message
         GepgBillSubReq mapper = createBillSubReq();
 
-        // Instantiate MessageUtil
-        MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
+        GepgApiClient gepgApiClient = new GepgApiClient();
 
-        String xmlString = XmlUtil.convertToXmlStringWithoutDeclaration(mapper);
+
+        String xmlString = gepgApiClient.convertToXmlStringWithoutDeclaration(mapper);
 
         // Sign the message
-        String signedMessage = messageUtil.sign(xmlString, GepgBillSubReq.class);
+        String signedMessage = gepgApiClient.signMessage(xmlString, GepgBillSubReq.class);
 
         System.out.println(signedMessage);
 
@@ -236,7 +237,10 @@ public class GepgBillSubReqTest {
 
         // Simulate receiving a control number response from GePG system
         String controlNumberResponse = "<Gepg><gepgBillSubResp><BillTrxInf><BillId>7885</BillId><TrxSts>GF</TrxSts><PayCntrNum>0</PayCntrNum><TrxStsCode>7242;7627</TrxStsCode></BillTrxInf><gepgSignature>...</gepgSignature></gepgBillSubResp></Gepg>";
-        String signedAckXml = apiClient.receiveControlNumber(controlNumberResponse);
+
+        GepgBillSubResp gepgBillSubResp = apiClient.convertToJavaObject(controlNumberResponse , GepgBillSubResp.class);
+
+        String signedAckXml = apiClient.receiveControlNumber(gepgBillSubResp);
         assertNotNull(signedAckXml);
         assertTrue(signedAckXml.contains("gepgBillSubRespAck"));
 
@@ -253,11 +257,12 @@ public class GepgBillSubReqTest {
     }
 
     public static String postBillResponse(GepgBillSubResp gepgResponse) throws Exception {
+        GepgApiClient gepgApiClient = new GepgApiClient();
         System.out.println(gepgResponse);
         GepgBillSubRespAck billSubRespAckMapper = new GepgBillSubRespAck(
                 gepgResponse.getBillTrxInf().getTrxStsCode());
 
-        String xmlResponse = XmlUtil.convertToXmlString(billSubRespAckMapper);
+        String xmlResponse = gepgApiClient.convertToXmlString(billSubRespAckMapper);
 
         return xmlResponse;
     }

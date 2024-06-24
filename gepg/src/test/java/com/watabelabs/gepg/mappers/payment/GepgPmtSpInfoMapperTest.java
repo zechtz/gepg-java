@@ -101,11 +101,11 @@ public class GepgPmtSpInfoMapperTest {
                 "TRX123456", // trxId
                 "SP001", // spCode
                 "PAYREF123456", // payRefId
-                UUID.fromString("74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c"), // Example UUID, replace with actual if needed
+                "74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c", // Example string, replace with actual if needed
                 "PAYCTR123456", // payCtrNum
-                new BigDecimal("1000.00"), // billAmt
-                new BigDecimal("1000.00"), // paidAmt
-                new BigDecimal("1"), // billPayOpt
+                1000.00, // billAmt
+                1000.00, // paidAmt
+                "EXACT", // billPayOpt
                 "TZS", // CCy
                 "2022-01-01T12:00:00", // trxDtTm
                 "MOBILE", // usdPayChn
