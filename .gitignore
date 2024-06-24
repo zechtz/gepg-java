@@ -42,4 +42,4 @@ github.properties
 test.xml
 example.xml
 
-keys/private-key.pfx
+# keys/private-key.pfx
