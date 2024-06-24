@@ -232,9 +232,24 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgPmtSpInfo receivePaymentNotification(String responseXml) throws Exception {
-        // unwrapAndConvertToPojo
         GepgPmtSpInfo gepgPmtSpInfo = MessageUtil.unwrapAndConvertToPojo(responseXml, GepgPmtSpInfo.class);
         return gepgPmtSpInfo;
+    }
+
+    /**
+     * Create the PaymentNotification Info Ack xml and return the String
+     *
+     * @param responseXml the payment notification XML response from GePG
+     * @return An Xml String representing GepgPmtSpInfoAck class
+     * @throws Exception if an error occurs during the process
+     */
+    public String getPaymentInfoAck(String responseXml) throws Exception {
+        GepgPmtSpInfoAck gepgPmtSpInfoAck = new GepgPmtSpInfoAck(7101);
+
+        String ackXml = convertToXmlString(gepgPmtSpInfoAck);
+
+        // Initialize with the required parameters
+        return signMessage(ackXml, GepgBillSubRespAck.class);
     }
 
     /**
@@ -340,6 +355,29 @@ public class GepgApiClient {
      */
     public boolean checkKeys(String xmlString, String... keys) throws Exception {
         return XmlUtil.checkKeys(xmlString, keys);
+    }
+
+ /**
+     * Generates a response acknowledgment for the specified class with status code 7101,
+     * converts it to an XML string, signs it, and returns the signed XML string.
+     *
+     * @param clazz the class type to generate the acknowledgment for
+     * @param <T>   the type of the class
+     * @return the signed XML string representing the acknowledgment
+     * @throws Exception if an error occurs during the process
+     */
+    public  <T> String generateResponseAck(Class<T> clazz) throws Exception {
+        // Create an instance of the specified class
+        T instance = clazz.getDeclaredConstructor().newInstance();
+
+        // Set the status code to 7101
+        clazz.getMethod("setTrxStsCode", int.class).invoke(instance, 7101);
+
+        // Convert the instance to an XML string
+        String ackXml = convertToXmlString(instance);
+
+        // Sign the XML string
+        return signMessage(ackXml, clazz);
     }
 
     /*

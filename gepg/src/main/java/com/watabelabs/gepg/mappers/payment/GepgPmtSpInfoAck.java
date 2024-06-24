@@ -36,7 +36,7 @@ public class GepgPmtSpInfoAck {
      * </p>
      */
     @XmlElement(name = "TrxStsCode")
-    private String trxStsCode;
+    private int trxStsCode;
 
     /**
      * Default no-argument constructor.
@@ -54,7 +54,7 @@ public class GepgPmtSpInfoAck {
      *
      * @param trxStsCode the transaction status code to set
      */
-    public GepgPmtSpInfoAck(String trxStsCode) {
+    public GepgPmtSpInfoAck(int trxStsCode) {
         this.trxStsCode = trxStsCode;
     }
 
@@ -63,7 +63,7 @@ public class GepgPmtSpInfoAck {
      *
      * @return the transaction status code
      */
-    public String getTrxStsCode() {
+    public int getTrxStsCode() {
         return trxStsCode;
     }
 
@@ -72,7 +72,7 @@ public class GepgPmtSpInfoAck {
      *
      * @param trxStsCode the transaction status code to set
      */
-    public void setTrxStsCode(String trxStsCode) {
+    public void setTrxStsCode(int trxStsCode) {
         this.trxStsCode = trxStsCode;
     }
 
