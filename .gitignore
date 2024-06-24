@@ -40,7 +40,6 @@ bin/
 github.properties
 
 test.xml
-.env
 example.xml
 
 keys/private-key.pfx
