@@ -16,7 +16,7 @@ Integrating with GePG often requires writing repetitive code. This library simpl
 
 repositories {
     maven {
-        url = uri("https://maven.pkg.github.com/watabelabs/gepg")
+        url = uri("https://maven.pkg.github.com/zechtz/gepg-java")
         credentials {
             username = project.findProperty("gpr.usr") ?: System.getenv("GITHUB_ACTOR")
             password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
@@ -35,7 +35,7 @@ dependencies {
 <repositories>
     <repository>
         <id>github</id>
-        <url>https://maven.pkg.github.com/watabelabs/gepg</url>
+        <url>https://maven.pkg.github.com/zechtz/gepg-java</url>
         <releases>
             <enabled>true</enabled>
         </releases>
@@ -149,7 +149,7 @@ All these DTOs conform to the GePG specification, eliminating the need to mainta
 ### Bill Submission
 
 ```java
-public void submitBill() throws Exception {
+public GepgBillSubReqAck submitBill() throws Exception {
 
     // instantiate the apiClient
     GepgApiClient gepgApiClient = new GepgApiClient(AppConstant.BILL_SUBMISSION_URL);
