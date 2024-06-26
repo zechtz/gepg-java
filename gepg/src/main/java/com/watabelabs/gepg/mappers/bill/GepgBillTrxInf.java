@@ -105,6 +105,7 @@ public class GepgBillTrxInf {
 
     /**
      * All-args constructor except payCntrNum.
+     * use this when doing a Bill submition, as the control number is not needed
      *
      * @param billId     the bill ID
      * @param subSpCode  the sub service provider code
@@ -153,6 +154,7 @@ public class GepgBillTrxInf {
 
     /**
      * All-args constructor including payCntrNum.
+     * use this when doing a control number reuse submition, as the control number is needed
      *
      * @param billId     the bill ID
      * @param subSpCode  the sub service provider code

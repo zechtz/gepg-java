@@ -32,6 +32,14 @@ if (rootProject.file("github.properties").exists()) {
 publishing {
     repositories {
         maven {
+            name = "OSSRH"
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+        maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/zechtz/gepg-java")
             credentials {

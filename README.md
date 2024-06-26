@@ -14,14 +14,20 @@ Integrating with GePG often requires writing repetitive code. This library simpl
 
 ```sh
 
+def githubProperties = new Properties()
+if (rootProject.file("github.properties").exists()) {
+    githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
+}
+
 repositories {
+    mavenCentral()
     maven {
-        url = uri("https://maven.pkg.github.com/zechtz/gepg-java")
-        credentials {
-            username = project.findProperty("gpr.usr") ?: System.getenv("GITHUB_ACTOR")
-            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
-        }
+     url = uri("https://maven.pkg.github.com/zechtz/gepg-java")
+     credentials {
+        username = githubProperties['gpr.usr'] ?: System.getenv("GITHUB_ACTOR")
+        password = githubProperties['gpr.key'] ?: System.getenv("GITHUB_TOKEN")
     }
+  }
 }
 
 dependencies {

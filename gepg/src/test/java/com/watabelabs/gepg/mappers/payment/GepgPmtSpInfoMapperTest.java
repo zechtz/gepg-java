@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.watabelabs.gepg.utils.MessageUtil;
@@ -105,9 +106,9 @@ public class GepgPmtSpInfoMapperTest {
             "PAYCTR123456",                         // payCtrNum
             1000.0,                                 // billAmt
             1000.0,                                 // paidAmt
-            "1",                                    // billPayOptString (corresponds to FULL payment option)
+            "1",                         // billPayOptString (corresponds to FULL payment option)
             "TZS",                                  // CCy
-            "2022-01-01T12:00:00",                  // trxDtTm
+            LocalDateTime.parse("2022-01-01T12:00:00"), // trxDtTm
             "MOBILE",                               // usdPayChn
             "255712345678",                         // pyrCellNum
             "JohnDoe",                              // pyrName

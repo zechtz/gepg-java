@@ -1,11 +1,16 @@
 package com.watabelabs.gepg.mappers.payment;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.watabelabs.gepg.utils.LocalDateTimeAdapter;
+import com.watabelabs.gepg.utils.LocalDateTimeAdapterWithoutZone;
 
 /**
  * The GepgPymtTrxInf class is used for mapping the XML response
@@ -61,7 +66,8 @@ public class GepgPymtTrxInf {
     private String CCy;
 
     @XmlElement(name = "TrxDtTm")
-    private String trxDtTm;
+    @XmlJavaTypeAdapter(LocalDateTimeAdapterWithoutZone.class)
+    private LocalDateTime trxDtTm;
 
     @XmlElement(name = "UsdPayChnl")
     private String usdPayChn;
@@ -117,7 +123,7 @@ public class GepgPymtTrxInf {
      */
     public GepgPymtTrxInf(String trxId, String spCode, String payRefId, UUID billId, String payCtrNum,
             Double billAmt, Double paidAmt, String billPayOptString, String CCy,
-            String trxDtTm, String usdPayChn, String pyrCellNum, String pyrName,
+            LocalDateTime trxDtTm, String usdPayChn, String pyrCellNum, String pyrName,
             String pyrEmail, String pspReceiptNumber, String pspName, String ctrAccNum) {
         this.trxId = trxId;
         this.spCode = spCode;
@@ -223,11 +229,11 @@ public class GepgPymtTrxInf {
         this.CCy = CCy;
     }
 
-    public String getTrxDtTm() {
+    public LocalDateTime getTrxDtTm() {
         return trxDtTm;
     }
 
-    public void setTrxDtTm(String trxDtTm) {
+    public void setTrxDtTm(LocalDateTime trxDtTm) {
         this.trxDtTm = trxDtTm;
     }
 
