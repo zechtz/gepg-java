@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "ReconcBatchInfo")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class ReconcBatchInfo {
+public class GepgReconcBatchInfo {
 
     /**
      * The service provider reconciliation request ID.
@@ -77,7 +77,7 @@ public class ReconcBatchInfo {
      * the class when unmarshalling XML data.
      * </p>
      */
-    public ReconcBatchInfo() {
+    public GepgReconcBatchInfo() {
     }
 
     /**
@@ -88,7 +88,7 @@ public class ReconcBatchInfo {
      * @param spName        the service provider name
      * @param reconcStsCode the reconciliation status code
      */
-    public ReconcBatchInfo(Long spReconcReqId, String spCode, String spName, String reconcStsCode) {
+    public GepgReconcBatchInfo(Long spReconcReqId, String spCode, String spName, String reconcStsCode) {
         this.spReconcReqId = spReconcReqId;
         this.spCode = spCode;
         this.spName = spName;

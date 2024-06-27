@@ -8,25 +8,25 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The ReconcTrxInfMapper class is used for mapping the XML response
+ * The ReconcTrxInf class is used for mapping the XML response
  * to the corresponding Java object. This class represents the reconciliation
  * transaction information.
  *
  * <p>
  * It contains fields that store details of a reconciliation transaction, such
- * as
- * bill ID, payment reference ID, payment control number, paid amount, currency,
+ * as bill ID, payment reference ID, payment control number, paid amount,
+ * currency,
  * transaction date and time, control account number, used payment channel,
- * payer's
- * cell number, payer's name, payer's email, remarks, and various reconciliation
+ * payer's cell number, payer's name, payer's email, remarks, and various
+ * reconciliation
  * reversals.
  * </p>
  *
  * <p>
  * The class is annotated with JAXB annotations to specify how the XML elements
  * should be mapped to the Java fields. It uses {@link XmlRootElement} to define
- * the
- * root element name and {@link XmlAccessorType} to specify the access type for
+ * the root element name and {@link XmlAccessorType} to specify the access type
+ * for
  * the fields.
  * </p>
  */
@@ -35,19 +35,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class GepgReconcTrxInf {
 
     @XmlElement(name = "SpBillId")
-    private UUID billId;
-
-    @XmlElement(name = "PayRefId")
-    private String payRefId;
+    private UUID spBillId;
 
     @XmlElement(name = "BillCtrNum")
-    private Long payCtrNum;
+    private Long billCtrNum;
+
+    @XmlElement(name = "pspTrxId")
+    private String pspTrxId;
 
     @XmlElement(name = "PaidAmt")
     private Double paidAmt;
 
     @XmlElement(name = "CCy")
     private String cCy;
+
+    @XmlElement(name = "PayRefId")
+    private String payRefId;
 
     @XmlElement(name = "TrxDtTm")
     private String trxDtTm;
@@ -56,103 +59,87 @@ public class GepgReconcTrxInf {
     private String ctrAccNum;
 
     @XmlElement(name = "UsdPayChnl")
-    private String usdPayChn;
+    private String usdPayChnl;
+
+    @XmlElement(name = "PspName")
+    private String pspName;
+
+    @XmlElement(name = "PspCode")
+    private String pspCode;
 
     @XmlElement(name = "DptCellNum")
-    private String pyrCellNum;
+    private String dptCellNum;
 
     @XmlElement(name = "DptName")
-    private String pyrName;
+    private String dptName;
 
-    @XmlElement(name = "DptNameEmailAddr")
-    private String pyrEmail;
+    @XmlElement(name = "DptEmailAddr")
+    private String dptEmailAddr;
 
     @XmlElement(name = "Remarks")
     private String remarks;
 
-    @XmlElement(name = "ReconcRvs01")
-    private String reconcRvs01;
+    @XmlElement(name = "ReconcRvs1")
+    private String reconcRvs1;
 
-    @XmlElement(name = "ReconcRvs02")
-    private String reconcRvs02;
+    @XmlElement(name = "ReconcRvs2")
+    private String reconcRvs2;
 
-    @XmlElement(name = "ReconcRvs03")
-    private String reconcRvs03;
+    @XmlElement(name = "ReconcRvs3")
+    private String reconcRvs3;
 
-    /**
-     * Default no-argument constructor.
-     * <p>
-     * This constructor is required for JAXB to be able to create an instance of
-     * the class when unmarshalling XML data.
-     * </p>
-     */
+    // Default no-argument constructor
     public GepgReconcTrxInf() {
     }
 
-    /**
-     * Parameterized constructor to initialize the object with the provided values.
-     *
-     * @param billId      the bill ID
-     * @param payRefId    the payment reference ID
-     * @param payCtrNum   the payment control number
-     * @param paidAmt     the paid amount
-     * @param cCy         the currency
-     * @param trxDtTm     the transaction date and time
-     * @param ctrAccNum   the control account number
-     * @param usdPayChn   the used payment channel
-     * @param pyrCellNum  the payer's cell number
-     * @param pyrName     the payer's name
-     * @param pyrEmail    the payer's email
-     * @param remarks     remarks regarding the transaction
-     * @param reconcRvs01 reconciliation reversal 1
-     * @param reconcRvs02 reconciliation reversal 2
-     * @param reconcRvs03 reconciliation reversal 3
-     */
-    public GepgReconcTrxInf(UUID billId, String payRefId, Long payCtrNum, Double paidAmt, String cCy,
-            String trxDtTm,
-            String ctrAccNum, String usdPayChn, String pyrCellNum, String pyrName, String pyrEmail,
-            String remarks, String reconcRvs01, String reconcRvs02, String reconcRvs03) {
-        this.billId = billId;
-        this.payRefId = payRefId;
-        this.payCtrNum = payCtrNum;
+    // Parameterized constructor to initialize the object with the provided values
+    public GepgReconcTrxInf(UUID spBillId, Long billCtrNum, String pspTrxId, Double paidAmt, String cCy,
+            String payRefId, String trxDtTm, String ctrAccNum, String usdPayChnl, String pspName,
+            String pspCode, String dptCellNum, String dptName, String dptEmailAddr, String remarks,
+            String reconcRvs1, String reconcRvs2, String reconcRvs3) {
+        this.spBillId = spBillId;
+        this.billCtrNum = billCtrNum;
+        this.pspTrxId = pspTrxId;
         this.paidAmt = paidAmt;
         this.cCy = cCy;
+        this.payRefId = payRefId;
         this.trxDtTm = trxDtTm;
         this.ctrAccNum = ctrAccNum;
-        this.usdPayChn = usdPayChn;
-        this.pyrCellNum = pyrCellNum;
-        this.pyrName = pyrName;
-        this.pyrEmail = pyrEmail;
+        this.usdPayChnl = usdPayChnl;
+        this.pspName = pspName;
+        this.pspCode = pspCode;
+        this.dptCellNum = dptCellNum;
+        this.dptName = dptName;
+        this.dptEmailAddr = dptEmailAddr;
         this.remarks = remarks;
-        this.reconcRvs01 = reconcRvs01;
-        this.reconcRvs02 = reconcRvs02;
-        this.reconcRvs03 = reconcRvs03;
+        this.reconcRvs1 = reconcRvs1;
+        this.reconcRvs2 = reconcRvs2;
+        this.reconcRvs3 = reconcRvs3;
     }
 
     // Getter and setter methods
-
-    public UUID getBillId() {
-        return billId;
+    public UUID getSpBillId() {
+        return spBillId;
     }
 
-    public void setBillId(UUID billId) {
-        this.billId = billId;
+    public void setSpBillId(UUID spBillId) {
+        this.spBillId = spBillId;
     }
 
-    public String getPayRefId() {
-        return payRefId;
+    public Long getBillCtrNum() {
+        return billCtrNum;
     }
 
-    public void setPayRefId(String payRefId) {
-        this.payRefId = payRefId;
+    public void setBillCtrNum(Long billCtrNum) {
+        this.billCtrNum = billCtrNum;
     }
 
-    public Long getPayCtrNum() {
-        return payCtrNum;
+    public String getPspTrxId() {
+        return pspTrxId;
     }
 
-    public void setPayCtrNum(Long payCtrNum) {
-        this.payCtrNum = payCtrNum;
+    public void setPspTrxId(String pspTrxId) {
+        this.pspTrxId = pspTrxId;
     }
 
     public Double getPaidAmt() {
@@ -171,6 +158,14 @@ public class GepgReconcTrxInf {
         this.cCy = cCy;
     }
 
+    public String getPayRefId() {
+        return payRefId;
+    }
+
+    public void setPayRefId(String payRefId) {
+        this.payRefId = payRefId;
+    }
+
     public String getTrxDtTm() {
         return trxDtTm;
     }
@@ -187,36 +182,52 @@ public class GepgReconcTrxInf {
         this.ctrAccNum = ctrAccNum;
     }
 
-    public String getUsdPayChn() {
-        return usdPayChn;
+    public String getUsdPayChnl() {
+        return usdPayChnl;
     }
 
-    public void setUsdPayChn(String usdPayChn) {
-        this.usdPayChn = usdPayChn;
+    public void setUsdPayChnl(String usdPayChnl) {
+        this.usdPayChnl = usdPayChnl;
     }
 
-    public String getPyrCellNum() {
-        return pyrCellNum;
+    public String getPspName() {
+        return pspName;
     }
 
-    public void setPyrCellNum(String pyrCellNum) {
-        this.pyrCellNum = pyrCellNum;
+    public void setPspName(String pspName) {
+        this.pspName = pspName;
     }
 
-    public String getPyrName() {
-        return pyrName;
+    public String getPspCode() {
+        return pspCode;
     }
 
-    public void setPyrName(String pyrName) {
-        this.pyrName = pyrName;
+    public void setPspCode(String pspCode) {
+        this.pspCode = pspCode;
     }
 
-    public String getPyrEmail() {
-        return pyrEmail;
+    public String getDptCellNum() {
+        return dptCellNum;
     }
 
-    public void setPyrEmail(String pyrEmail) {
-        this.pyrEmail = pyrEmail;
+    public void setDptCellNum(String dptCellNum) {
+        this.dptCellNum = dptCellNum;
+    }
+
+    public String getDptName() {
+        return dptName;
+    }
+
+    public void setDptName(String dptName) {
+        this.dptName = dptName;
+    }
+
+    public String getDptEmailAddr() {
+        return dptEmailAddr;
+    }
+
+    public void setDptEmailAddr(String dptEmailAddr) {
+        this.dptEmailAddr = dptEmailAddr;
     }
 
     public String getRemarks() {
@@ -227,57 +238,52 @@ public class GepgReconcTrxInf {
         this.remarks = remarks;
     }
 
-    public String getReconcRvs01() {
-        return reconcRvs01;
+    public String getReconcRvs1() {
+        return reconcRvs1;
     }
 
-    public void setReconcRvs01(String reconcRvs01) {
-        this.reconcRvs01 = reconcRvs01;
+    public void setReconcRvs1(String reconcRvs1) {
+        this.reconcRvs1 = reconcRvs1;
     }
 
-    public String getReconcRvs02() {
-        return reconcRvs02;
+    public String getReconcRvs2() {
+        return reconcRvs2;
     }
 
-    public void setReconcRvs02(String reconcRvs02) {
-        this.reconcRvs02 = reconcRvs02;
+    public void setReconcRvs2(String reconcRvs2) {
+        this.reconcRvs2 = reconcRvs2;
     }
 
-    public String getReconcRvs03() {
-        return reconcRvs03;
+    public String getReconcRvs3() {
+        return reconcRvs3;
     }
 
-    public void setReconcRvs03(String reconcRvs03) {
-        this.reconcRvs03 = reconcRvs03;
+    public void setReconcRvs3(String reconcRvs3) {
+        this.reconcRvs3 = reconcRvs3;
     }
 
-    /**
-     * Returns a string representation of the object.
-     * <p>
-     * This method is overridden to provide a string representation of the object
-     * that includes the values of the fields.
-     * </p>
-     *
-     * @return a string representation of the object
-     */
     @Override
     public String toString() {
-        return "ReconcTrxInfMapper{" +
-                "billId=" + billId +
-                ", payRefId='" + payRefId + '\'' +
-                ", payCtrNum=" + payCtrNum +
+        return "ReconcTrxInf{" +
+                "spBillId='" + spBillId + '\'' +
+                ", billCtrNum=" + billCtrNum +
+                ", pspTrxId='" + pspTrxId + '\'' +
                 ", paidAmt=" + paidAmt +
                 ", cCy='" + cCy + '\'' +
+                ", payRefId='" + payRefId + '\'' +
                 ", trxDtTm='" + trxDtTm + '\'' +
                 ", ctrAccNum='" + ctrAccNum + '\'' +
-                ", usdPayChn='" + usdPayChn + '\'' +
-                ", pyrCellNum='" + pyrCellNum + '\'' +
-                ", pyrName='" + pyrName + '\'' +
-                ", pyrEmail='" + pyrEmail + '\'' +
+                ", usdPayChnl='" + usdPayChnl + '\'' +
+                ", pspName='" + pspName + '\'' +
+                ", pspCode='" + pspCode + '\'' +
+                ", dptCellNum='" + dptCellNum + '\'' +
+                ", dptName='" + dptName + '\'' +
+                ", dptEmailAddr='" + dptEmailAddr + '\'' +
                 ", remarks='" + remarks + '\'' +
-                ", reconcRvs01='" + reconcRvs01 + '\'' +
-                ", reconcRvs02='" + reconcRvs02 + '\'' +
-                ", reconcRvs03='" + reconcRvs03 + '\'' +
+                ", reconcRvs1='" + reconcRvs1 + '\'' +
+                ", reconcRvs2='" + reconcRvs2 + '\'' +
+                ", reconcRvs3='" + reconcRvs3 + '\'' +
                 '}';
     }
 }
+
