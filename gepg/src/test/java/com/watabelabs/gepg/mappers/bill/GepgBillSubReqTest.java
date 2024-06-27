@@ -15,6 +15,7 @@ import java.util.concurrent.CountDownLatch;
 import com.watabelabs.gepg.GepgApiClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import io.javalin.Javalin;
 
@@ -177,6 +178,7 @@ public class GepgBillSubReqTest {
     }
 
     @Test
+    @Disabled("This test requires a running Gepg server, still havent figured out how to mack the server on github")
     public void testSignAndSubmitBillWithCallback() throws Exception {
         // Create a sample message
         GepgBillSubReq mapper = createBillSubReq();
