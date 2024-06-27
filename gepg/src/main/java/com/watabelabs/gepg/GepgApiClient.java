@@ -4,6 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -24,6 +25,9 @@ import com.watabelabs.gepg.mappers.bill.GepgBillSubResp;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubRespAck;
 import com.watabelabs.gepg.mappers.payment.GepgPmtSpInfo;
 import com.watabelabs.gepg.mappers.payment.GepgPmtSpInfoAck;
+import com.watabelabs.gepg.mappers.reconciliation.GepgSpReconcResp;
+import com.watabelabs.gepg.mappers.reconciliation.GepgSpReconcRespAck;
+import com.watabelabs.gepg.utils.GepgEndpoints;
 import com.watabelabs.gepg.utils.MessageUtil;
 import com.watabelabs.gepg.utils.XmlUtil;
 
@@ -51,10 +55,16 @@ public class GepgApiClient {
         this.privateKeyAlias = getEnvVariable("PRIVATE_KEY_ALIAS");
         this.gepgCode = getEnvVariable("GEPG_CODE");
         this.apiUrl = getEnvVariable("API_URL");
+
+        // Verify file existence
+        File keystoreFile = new File(this.privateKeystorePath);
+        if (!keystoreFile.exists() || !keystoreFile.canRead()) {
+            throw new RuntimeException("Keystore file not found or not readable: " + this.privateKeystorePath);
+        }
     }
 
-    // Constructor that accepts only the endpoint
-    public GepgApiClient(String endpoint) {
+    // make this private Constructor so that it can not be instantiated
+    private GepgApiClient(String endpoint) {
         this();
         this.apiUrl = this.apiUrl + endpoint;
     }
@@ -123,6 +133,8 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgBillSubReqAck submitBill(String signedRequest) throws Exception {
+        this.setApiUrl(apiUrl + GepgEndpoints.SUBMIT_BILL);
+
         // Step 1: Send the bill submission request
         String response = sendRequest(signedRequest);
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
@@ -144,6 +156,7 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgBillSubReqAck reuseControlNumber(String signedRequest) throws Exception {
+        this.setApiUrl(apiUrl + GepgEndpoints.REUSE_CONTROL_NUMBER);
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest);
@@ -166,6 +179,7 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgBillSubReqAck updateBill(String signedRequest) throws Exception {
+        this.setApiUrl(apiUrl + GepgEndpoints.UPDATE_BILL);
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest);
@@ -189,6 +203,8 @@ public class GepgApiClient {
      */
     public GepgBillSubReqAck cancelBill(String signedRequest) throws Exception {
 
+        this.setApiUrl(apiUrl + GepgEndpoints.CANCEL_BILL);
+
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest);
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
@@ -210,6 +226,7 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgPmtSpInfoAck submitPayment(String signedRequest) throws Exception {
+        this.setApiUrl(apiUrl + GepgEndpoints.SEND_PAYMENT);
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest);
@@ -225,7 +242,41 @@ public class GepgApiClient {
     }
 
     /**
-     * Receives the PaymentNotification Info as xml and return the POJO
+     * Submits a reconciliaiton request to the GePG API.
+     *
+     * @param signedRequest the signed XML request
+     * @return the acknowledgment response from the GePG API
+     * @throws Exception if an error occurs during the process
+     */
+    public GepgSpReconcRespAck requestReconciliation(String signedRequest) throws Exception {
+        this.setApiUrl(apiUrl + GepgEndpoints.REQUEST_RECONCILIATION);
+
+        // Step 1: Send the control number reuse request
+        String response = sendRequest(signedRequest);
+        Envelope<GepgSpReconcRespAck> envelope = mapResponse(response, GepgSpReconcRespAck.class);
+        GepgSpReconcRespAck reconciliationRespAck = envelope.getContent().get(0);
+
+        // Check if the response contains a valid acknowledgment
+        if (reconciliationRespAck == null || Integer.valueOf(reconciliationRespAck.getReconcStsCode()) != 7241) {
+            throw new Exception("Invalid acknowledgment response");
+        }
+
+        return reconciliationRespAck;
+    }
+
+    /**
+     * Receives the Reconciliation response as xml and return the POJO
+     *
+     * @param responseXml the payment notification XML response from GePG
+     * @return GepgSpReconcResp the java GepgSpReconcResp class
+     * @throws Exception if an error occurs during the process
+     */
+    public GepgSpReconcResp receiveReconciliationResponse(String responseXml) throws Exception {
+        return MessageUtil.unwrapAndConvertToPojo(responseXml, GepgSpReconcResp.class);
+    }
+
+    /**
+     * Receives the Payment Notification Info as xml and return the POJO
      *
      * @param responseXml the payment notification XML response from GePG
      * @return GepgPmtSpInfo the java GepgPmtSpInfo class
@@ -253,6 +304,22 @@ public class GepgApiClient {
     }
 
     /**
+     * Create the Reconciliation Response Ack xml and return the String
+     *
+     * @param responseXml the reconciliation response XML response from GePG
+     * @return An Xml String representing GepgPmtSpInfoAck class
+     * @throws Exception if an error occurs during the process
+     */
+    public String getReconciliationAck(String responseXml) throws Exception {
+        GepgBillSubRespAck gepgBillSubRespAck = new GepgBillSubRespAck(7101);
+
+        String ackXml = convertToXmlString(gepgBillSubRespAck);
+
+        // Initialize with the required parameters
+        return signMessage(ackXml, GepgBillSubRespAck.class);
+    }
+
+    /**
      * Receives the control number response and sends an acknowledgment back.
      *
      * @param responseXml the XML response from GePG
@@ -263,7 +330,7 @@ public class GepgApiClient {
 
         // Prepare the acknowledgment response
         GepgBillSubRespAck gepgBillSubRespAck = new GepgBillSubRespAck(7101);
-        //ackMapper.setTrxStsCode(responseMapper.getBillTrxInf().getTrxStsCode());
+        // ackMapper.setTrxStsCode(responseMapper.getBillTrxInf().getTrxStsCode());
 
         // Convert acknowledgment to XML and sign it
         String ackXml = XmlUtil.convertToXmlString(gepgBillSubRespAck);
@@ -282,7 +349,8 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during signing or XML conversion
      */
     public <T> String signMessage(String message, Class<T> contentClass) throws Exception {
-        MessageUtil messageUtil = new MessageUtil(this.privateKeystorePath, this.privateKeystorePassword, this.privateKeyAlias);
+        MessageUtil messageUtil = new MessageUtil(this.privateKeystorePath, this.privateKeystorePassword,
+                this.privateKeyAlias);
         return messageUtil.sign(message, contentClass);
     }
 
@@ -342,12 +410,13 @@ public class GepgApiClient {
      * Checks if the provided XML string contains all specified keys.
      *
      * @param xmlString the XML string to check
-     * @param keys the keys to check for in the XML string
+     * @param keys      the keys to check for in the XML string
      * @return true if all keys are found in the XML string, false otherwise
      * @throws Exception if an error occurs during XML parsing or XPath evaluation
      *
-     * Example usage:
-     * <pre>{@code
+     *                   Example usage:
+     *
+     *                   <pre>{@code
      * String xml = "<root><key1>value1</key1><key2>value2</key2></root>";
      * boolean containsKeys = XmlUtil.checkKeys(xml, "key1", "key2");
      * System.out.println(containsKeys); // Outputs: true
@@ -357,8 +426,9 @@ public class GepgApiClient {
         return XmlUtil.checkKeys(xmlString, keys);
     }
 
- /**
-     * Generates a response acknowledgment for the specified class with status code 7101,
+    /**
+     * Generates a response acknowledgment for the specified class with status code
+     * 7101,
      * converts it to an XML string, signs it, and returns the signed XML string.
      *
      * @param clazz the class type to generate the acknowledgment for
@@ -366,7 +436,7 @@ public class GepgApiClient {
      * @return the signed XML string representing the acknowledgment
      * @throws Exception if an error occurs during the process
      */
-    public  <T> String generateResponseAck(Class<T> clazz) throws Exception {
+    public <T> String generateResponseAck(Class<T> clazz) throws Exception {
         // Create an instance of the specified class
         T instance = clazz.getDeclaredConstructor().newInstance();
 
@@ -462,4 +532,3 @@ public class GepgApiClient {
     }
 
 }
-
