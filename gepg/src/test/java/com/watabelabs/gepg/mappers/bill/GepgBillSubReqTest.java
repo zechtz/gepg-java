@@ -4,10 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,56 +13,29 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import com.watabelabs.gepg.GepgApiClient;
-import com.watabelabs.gepg.utils.MessageUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
-
 import io.javalin.Javalin;
 
 public class GepgBillSubReqTest {
 
-    private static String keystorePath;
-    private static String keystorePassword;
-    private static String keyAlias;
+    private static GepgApiClient gepgApiClient;
     private static GepgBillSubResp callbackResponse;
     private static CountDownLatch latch;
 
-    private final String gepgCode = "SP19940";
-    private final String apiUrl = "http://localhost:3005/api/bill/sigqrequest";
     private static Javalin app;
 
     @BeforeAll
     public static void setup() {
-        try {
-            // Load the keystore file from the classpath
-            InputStream resourceStream = GepgBillSubReqTest.class.getResourceAsStream("/keys/private-key.pfx");
-            if (resourceStream == null) {
-                throw new RuntimeException("Keystore file not found");
-            }
+        gepgApiClient = new GepgApiClient();
 
-            // Copy the resource to a temporary file
-            Path tempFile = Files.createTempFile("private-key", ".pfx");
-            Files.copy(resourceStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
-
-            // Set the keystore path to the temporary file location
-            keystorePath = tempFile.toAbsolutePath().toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to load keystore", e);
-        }
-
-        keystorePassword = "passpass";
-        keyAlias = "gepgclient";
-
-        // Start Javalin server
         app = Javalin.create().start(8080);
 
         // Setup the callback endpoint to handle GePG system responses
         app.post("/api/v1/bills/submit-control-number", ctx -> {
             latch.countDown();
-            GepgBillSubResp response = MessageUtil.parseContent(ctx.body(), GepgBillSubResp.class);
+            GepgBillSubResp response = gepgApiClient.convertToJavaObject(ctx.body(), GepgBillSubResp.class);
             callbackResponse = response;
             ctx.result(postBillResponse(response));
         });
@@ -81,7 +50,6 @@ public class GepgBillSubReqTest {
 
     @Test
     public void testBillToXmlConvertion() throws Exception {
-        GepgApiClient gepgApiClient = new GepgApiClient();
         GepgBillSubReq gepgBillSubReq = createBillSubReq();
 
         String xmlOutput = gepgApiClient.convertToXmlString(gepgBillSubReq);
@@ -138,8 +106,6 @@ public class GepgBillSubReqTest {
     @Test
     public void testControlNumberReuseConvertionToXml() throws Exception {
 
-        GepgApiClient gepgApiClient = new GepgApiClient();
-
         GepgBillControlNoReuse gepgBillSubReq = createBillControlNoReuse();
 
         String xmlOutput = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
@@ -195,8 +161,6 @@ public class GepgBillSubReqTest {
 
     @Test
     public void testCorrectGepgBillSubReqAck() throws Exception {
-        GepgApiClient gepgApiClient = new GepgApiClient();
-
         GepgBillSubReqAck gepgBillSubReqAckMapper = createBillSubReqAck();
 
         String xmlString = gepgApiClient.convertToXmlString(gepgBillSubReqAckMapper);
@@ -213,13 +177,9 @@ public class GepgBillSubReqTest {
     }
 
     @Test
-    @Disabled("Test is ignored as a demonstration")
     public void testSignAndSubmitBillWithCallback() throws Exception {
         // Create a sample message
         GepgBillSubReq mapper = createBillSubReq();
-
-        GepgApiClient gepgApiClient = new GepgApiClient();
-
 
         String xmlString = gepgApiClient.convertToXmlStringWithoutDeclaration(mapper);
 
@@ -228,22 +188,21 @@ public class GepgBillSubReqTest {
 
         System.out.println(signedMessage);
 
-        GepgApiClient apiClient = new GepgApiClient("/api/bill/sigqrequest");
-
         // Simulate a callback from GePG system
         latch = new CountDownLatch(1);
 
         // Submit the signed message
-        GepgBillSubReqAck response = apiClient.submitBill(signedMessage);
+        GepgBillSubReqAck response = gepgApiClient.submitBill(signedMessage);
         assertNotNull(response);
         assertTrue(response.getTrxStsCode() != 0);
 
         // Simulate receiving a control number response from GePG system
         String controlNumberResponse = "<Gepg><gepgBillSubResp><BillTrxInf><BillId>11ae8614-ceda-4b32-aa83-2dc651ed4bcd</BillId><TrxSts>GF</TrxSts><PayCntrNum>0</PayCntrNum><TrxStsCode>7242;7627</TrxStsCode></BillTrxInf><gepgSignature>...</gepgSignature></gepgBillSubResp></Gepg>";
 
-        GepgBillSubResp gepgBillSubResp = apiClient.convertToJavaObject(controlNumberResponse , GepgBillSubResp.class);
+        GepgBillSubResp gepgBillSubResp = gepgApiClient.convertToJavaObject(controlNumberResponse,
+                GepgBillSubResp.class);
 
-        String signedAckXml = apiClient.receiveControlNumber(gepgBillSubResp);
+        String signedAckXml = gepgApiClient.receiveControlNumber(gepgBillSubResp);
         assertNotNull(signedAckXml);
         assertTrue(signedAckXml.contains("gepgBillSubRespAck"));
 
@@ -281,7 +240,8 @@ public class GepgBillSubReqTest {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0,
+                LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
                 "0699210053",
@@ -302,12 +262,13 @@ public class GepgBillSubReqTest {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0,
+                LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
                 "0699210053",
                 "charlestp@yahoo.com",
-                "TZS", 7885.0, true, 1, "990239121373",  Arrays.asList(item1, item2));
+                "TZS", 7885.0, true, 1, "990239121373", Arrays.asList(item1, item2));
 
         return new GepgBillControlNoReuse(billHdr, billTrxInf);
     }
