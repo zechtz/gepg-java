@@ -13,34 +13,20 @@ import com.watabelabs.gepg.mappers.bill.GepgBillItem;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReq;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAck;
 import com.watabelabs.gepg.mappers.bill.GepgBillTrxInf;
-import com.watabelabs.gepg.utils.MessageUtil;
-import com.watabelabs.gepg.utils.XmlUtil;
 import com.watabelabs.gepg.constants.GepgResponseCode;
 
 public class Main {
-
-    private static String gepgCode = "SP1000";
-    private static String apiUrl = "https://uat1.gepg.go.tz/api/sigqrequest";
-
-    private static String keystorePath = "/data/sites/tfra/tfra-api/gepg-keys/private-key.pfx";
-    private static String keystorePassword = "passpass";
-    private static String keyAlias = "gepgclient";
-
     public static void main(String[] args) throws Exception {
+        GepgApiClient gepgApiClient = new GepgApiClient();
 
         GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
-        String message = XmlUtil.convertToXmlString(billSubRequestMapper);
-
-        MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
+        String message = gepgApiClient.convertToXmlString(billSubRequestMapper);
 
         // Sign the message
-        String signedMessage = messageUtil.sign(message, GepgBillSubReq.class);
+        String signedMessage = gepgApiClient.signMessage(message, GepgBillSubReq.class);
 
-        // Assert that the signed message is not null and contains the digital signature
-        GepgApiClient gRequest = new GepgApiClient("/api/bill/sigqrequest");
-
-        GepgBillSubReqAck respMapper = gRequest.submitBill(signedMessage);
+        GepgBillSubReqAck respMapper = gepgApiClient.submitBill(signedMessage);
 
         String responseMessage = GepgResponseCode.getResponseMessage(respMapper.getTrxStsCode());
 
@@ -58,7 +44,8 @@ public class Main {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0,
+                LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
                 "0699210053",
