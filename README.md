@@ -12,8 +12,17 @@ Integrating with GePG often requires writing repetitive code. This library simpl
 
 ### For Gradle
 
-```sh
+You need to generate a github token, [read more here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens), after getting your github token, create a github.properties file in the
+root of your project (don't forget to .gitignore this file), the file content should look like this
 
+```
+gpr.usr=useaname
+gpr.key=ghp_pTheRestofyourtoken
+```
+
+#### Then add the following to your gradle.build file
+
+```
 def githubProperties = new Properties()
 if (rootProject.file("github.properties").exists()) {
     githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
@@ -37,14 +46,31 @@ dependencies {
 
 ### For maven
 
-```sh
+**Step 1: Configure settings.xml**
+
+Edit the settings.xml file (usually located in ~/.m2/settings.xml) create one it it doesn't exist
+
+**Step 2: Add this in your settings.xml**
+
+```
+<settings>
+    <servers>
+        <server>
+            <id>github</id>
+            <username>username</username>
+            <password>ghp_pTheRestofyourtoken</password>
+        </server>
+    </servers>
+</settings>
+```
+
+**Step 3: Add this to your pom.xml**
+
+```
 <repositories>
     <repository>
         <id>github</id>
         <url>https://maven.pkg.github.com/zechtz/gepg-java</url>
-        <releases>
-            <enabled>true</enabled>
-        </releases>
     </repository>
 </repositories>
 
@@ -60,7 +86,7 @@ dependencies {
 To use this library first you need to create a .env file at the root of your
 project then install the dotenv-java library
 
-### For Maven
+**For Maven**
 
 ```
 <dependency>
@@ -70,13 +96,13 @@ project then install the dotenv-java library
 </dependency>
 ```
 
-### For Gradle
+**For Gradle**
 
 ```
 implementation 'io.github.cdimascio:dotenv-java:2.2.0'
 ```
 
-Then add the following to your .env
+**Then add the following to your .env**
 
 ```
 PRIVATE_KEYSTORE_PATH=path/to/privatekey-file
@@ -114,6 +140,7 @@ This library exposes all possible requests and responses to and from GePG.
 
 #### For Reconciliation
 
+-   `GepgSpReconcResp`
 -   `GepgReconcTrans`
 -   `GepgReconcTrxInf`
 -   `GepgSpReconcRespAck`
@@ -127,28 +154,30 @@ All these DTOs conform to the GePG specification, eliminating the need to mainta
 
 ### The GepgApiClient class exposes the following methods
 
--   `submitBill(String signedRequest)`: This method submits a bill to the GePG API, the
-    method takes a signed xml string as a parameter and returns an instance of the GepgBillSubReqAck class
+-   `submitBill(String signedRequestXml)`: This method submits a bill to the GePG API, the
+    method takes a signed xml string as a parameter and returns an instance of the `GepgBillSubReqAck` class
 
--   `reuseControlNumber(String signedRequest)`: This method submits a control number reuse request to the GePG API and respond by returning an instance of the GepgBillSubReqAck class
+-   `reuseControlNumber(String signedRequest)`: This method submits a control number reuse request to the GePG API and respond by returning an instance of the `GepgBillSubReqAck` class
 
--   `updateBill(String signedRequest)`: This method submits a bill change/update request to the GePG API and respond by returning an instance of the GepgBillSubReqAck class
+-   `updateBill(String signedRequest)`: This method submits a bill change/update request to the GePG API and respond by returning an instance of the `GepgBillSubReqAck` class
 
--   `cancelBill(String signedRequest)`: This method submits a bill change/update request to the GePG API and responds by returning an instance of the GepgBillSubReqAck class
+-   `cancelBill(String signedRequest)`: This method submits a bill change/update request to the GePG API and responds by returning an instance of the `GepgBillSubReqAck` class
 
--   `submitPayment(String signedRequest)`: This methodSubmits a payment to the GePG API and responds by returning an instance of the GepgPmtSpInfoAck class
+-   `submitPayment(String signedRequest)`: This method Submits a payment to the GePG API and responds by returning an instance of the `GepgPmtSpInfoAck` class
 
--   `receivePaymentNotification(String signedRequest)`: This method receives the payment notification Info as xml and returns an instance of the GepgPmtSpInfo class
+-   `requestReconciliation(String signedRequest)`: This method Submits a reconciliation request to the GePG API and responds by returning an instance of the `GepgSpReconcRespAck` class
+
+-   `receivePaymentNotification(String signedRequest)`: This method receives the payment notification Info as xml and returns an instance of the `GepgPmtSpInfo` class
 
 -   `receiveControlNumber(String signedRequest)`: This method receives the control number response and sends an acknowledgment back as a signed xml string
 
+-   `receiveReconciliationResponse(String gepgSpReconcResp)`: This method receives the reconciliation response and return the `GepgSpReconcResp` object
+
 -   `signMessage(String xmlString, Class<T> clazz)`: method that adds a signature to your payload. This method returns a signed xml string of the clazz type.
 
--   `convertToJavaObject(String xmlString, Class<T> clazz)`: this method converts a JAXB-annotated object to an XML string and returns the xml
+-   `convertToJavaObject(String xmlString, Class<T> clazz)`: this method converts an xml string into a JAXB-annotated object an returns it
 
--   `convertToXmlString(Object object)`: this method unwraps the provided XML string from the envelope and converts it to the specified POJO class..
-
--   `convertToXmlString(Object object)`: this method unwraps the provided XML string from the envelope and converts it to the specified POJO class..
+-   `convertToXmlString(Object object)`: this method takes a java JAXB-annotated object and converts it into an xml string nad returns it
 
 ## Usage Example
 
@@ -158,7 +187,7 @@ All these DTOs conform to the GePG specification, eliminating the need to mainta
 public GepgBillSubReqAck submitBill() throws Exception {
 
     // instantiate the apiClient
-    GepgApiClient gepgApiClient = new GepgApiClient(AppConstant.BILL_SUBMISSION_URL);
+    GepgApiClient gepgApiClient = new GepgApiClient();
 
     // create the GepgBillSubReq object and populate it with data
     GepgBillSubReq billSubRequestMapper = createBillSubReq();
@@ -176,41 +205,44 @@ public GepgBillSubReqAck submitBill() throws Exception {
     return gepgBillSubResp;
  }
 
-    private static GepgBillSubReq createBillSubReq() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+private static GepgBillSubReq createBillSubReq() {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-        GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
-        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.0, 7885.0, 0.0, "140206");
-        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
+    GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
+    GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.0, 7885.0, 0.0, "140206");
+    GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
-        GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
-                "Charles Palapala",
-                "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
-                "0699210053",
-                "charlestp@yahoo.com",
-                "TZS", 7885.0, true, 1, Arrays.asList(item1, item2));
+    GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
+            UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+            "Charles Palapala",
+            "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
+            "0699210053",
+            "charlestp@yahoo.com",
+            "TZS", 7885.0, true, 1, Arrays.asList(item1, item2));
 
-        return new GepgBillSubReq(billHdr, billTrxInf);
-    }
+    return new GepgBillSubReq(billHdr, billTrxInf);
+}
 
 ```
 
 ### Receiving Control Number
 
+**This is the callback url you will provide to GePG so that they can send control numbers to your system, here we are using Springboot Rest API**
+
 ```
-// springboot rest API (this is one of the callback urls you provide gepg)
 @PostMapping(value = "/submit-control-number")
 @Transactional
 public String postGepgBillSubResps(@RequestBody String xml) throws Exception {
     return billService.receiveControlNumber(xml);
 }
+```
 
-### the service
+**The service method that will handle the request**
 
+```
 @Override
 public String receiveControlNumber(String xml) throws Exception {
     // instantiate the api client
@@ -227,18 +259,21 @@ public String receiveControlNumber(String xml) throws Exception {
 
 ```
 
-## Receive Payment Notification
+### Receiving Payment Notifications
+
+**This is the callback url you will provide to GePG so that they can send payment notifications to your system, again, we are using Springboot Rest API**
 
 ```
-// springboot rest API (this is one of the callback urls you provide gepg)
 @PostMapping(value = "/receieve-payment-notifications")
 @Transactional
 public String receivePaymentNotifications(@RequestBody String xml) throws Exception {
     return billService.receiveControlNumber(xml);
 }
+```
 
-### the service
+**The service method that will handle the request from the rest API**
 
+```
 @Override
 public String receivePaymentNotifications(String responseXml) throws Exception {
     GepgApiClient gepgApiClient = new GepgApiClient();
