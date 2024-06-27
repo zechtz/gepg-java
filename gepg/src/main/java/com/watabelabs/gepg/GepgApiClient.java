@@ -272,7 +272,7 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgSpReconcResp receiveReconciliationResponse(String responseXml) throws Exception {
-        return MessageUtil.unwrapAndConvertToPojo(responseXml, GepgSpReconcResp.class);
+        return convertToJavaObject(responseXml, GepgSpReconcResp.class);
     }
 
     /**
@@ -283,8 +283,7 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgPmtSpInfo receivePaymentNotification(String responseXml) throws Exception {
-        GepgPmtSpInfo gepgPmtSpInfo = MessageUtil.unwrapAndConvertToPojo(responseXml, GepgPmtSpInfo.class);
-        return gepgPmtSpInfo;
+        return convertToJavaObject(responseXml, GepgPmtSpInfo.class);
     }
 
     /**
@@ -333,7 +332,7 @@ public class GepgApiClient {
         // ackMapper.setTrxStsCode(responseMapper.getBillTrxInf().getTrxStsCode());
 
         // Convert acknowledgment to XML and sign it
-        String ackXml = XmlUtil.convertToXmlString(gepgBillSubRespAck);
+        String ackXml = convertToXmlString(gepgBillSubRespAck);
 
         // Initialize with the required parameters
         return signMessage(ackXml, GepgBillSubRespAck.class);
