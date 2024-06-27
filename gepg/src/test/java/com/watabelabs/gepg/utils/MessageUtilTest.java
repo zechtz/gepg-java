@@ -22,22 +22,22 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.ValidationException;
 import javax.xml.transform.stream.StreamResult;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import com.watabelabs.gepg.GepgApiClient;
 import com.watabelabs.gepg.mappers.bill.GepgBillHdr;
 import com.watabelabs.gepg.mappers.bill.GepgBillItem;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReq;
 import com.watabelabs.gepg.mappers.bill.GepgBillTrxInf;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 public class MessageUtilTest {
 
-    private static String keystorePath;
-    private static String keystorePassword;
-    private static String keyAlias;
+    private static GepgApiClient gepgApiClient;
 
     @BeforeAll
     public static void setup() {
+        gepgApiClient = new GepgApiClient();
         try {
             // Load the keystore file from the classpath
             InputStream resourceStream = MessageUtilTest.class.getResourceAsStream("/keys/private-key.pfx");
@@ -50,14 +50,10 @@ public class MessageUtilTest {
             Files.copy(resourceStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
             // Set the keystore path to the temporary file location
-            keystorePath = tempFile.toAbsolutePath().toString();
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to load keystore", e);
         }
-
-        keystorePassword = "passpass";
-        keyAlias = "gepgclient";
     }
 
     @Test
@@ -66,10 +62,9 @@ public class MessageUtilTest {
         String message = "<gepgBillSubReq><BillHdr><SpCode>S023</SpCode><RtrRespFlg>true</RtrRespFlg></BillHdr></gepgBillSubReq>";
 
         // Instantiate MessageUtil
-        MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
 
         // Sign the message
-        String signedMessage = messageUtil.sign(message, GepgBillSubReq.class);
+        String signedMessage = gepgApiClient.signMessage(message, GepgBillSubReq.class);
 
         // Assert that the signed message is not null and contains the digital signature
         assertNotNull(signedMessage);
@@ -110,23 +105,19 @@ public class MessageUtilTest {
 
     @Test
     public void testSignMessageWithNullInput() {
-        // Instantiate MessageUtil
-        MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
-
         // Sign the message with null input
         assertThrows(ValidationException.class, () -> {
-            messageUtil.sign(null, GepgBillSubReq.class);
+            gepgApiClient.signMessage(null, GepgBillSubReq.class);
         });
     }
 
     @Test
     public void testSignMessageWithEmptyInput() {
         // Instantiate MessageUtil
-        MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
 
         // Sign the message with empty input
         assertThrows(ValidationException.class, () -> {
-            messageUtil.sign("", GepgBillSubReq.class);
+            gepgApiClient.signMessage("", GepgBillSubReq.class);
         });
     }
 
@@ -135,12 +126,10 @@ public class MessageUtilTest {
         // Create a sample message
         GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
-        String message = XmlUtil.convertToXmlString(billSubRequestMapper);
-
-        MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
+        String message = gepgApiClient.convertToXmlString(billSubRequestMapper);
 
         // Sign the message
-        String signedMessage = messageUtil.sign(message, GepgBillSubReq.class);
+        String signedMessage = gepgApiClient.signMessage(message, GepgBillSubReq.class);
 
         // Assert that the signed message is not null and contains the digital signature
         assertNotNull(signedMessage);
@@ -159,7 +148,8 @@ public class MessageUtilTest {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0,
+                LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
                 "0699210053",
