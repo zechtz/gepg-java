@@ -154,7 +154,8 @@ public class GepgBillTrxInf {
 
     /**
      * All-args constructor including payCntrNum.
-     * use this when doing a control number reuse submition, as the control number is needed
+     * use this when doing a control number reuse submition, as the control number
+     * is needed
      *
      * @param billId     the bill ID
      * @param subSpCode  the sub service provider code
@@ -240,11 +241,163 @@ public class GepgBillTrxInf {
 
     // Additional getters and setters for new fields
 
+    public UUID getBillId() {
+        return billId;
+    }
+
+    public void setBillId(UUID billId) {
+        this.billId = billId;
+    }
+
+    public String getSubSpCode() {
+        return subSpCode;
+    }
+
+    public void setSubSpCode(String subSpCode) {
+        this.subSpCode = subSpCode;
+    }
+
+    public String getSpSysId() {
+        return spSysId;
+    }
+
+    public void setSpSysId(String spSysId) {
+        this.spSysId = spSysId;
+    }
+
+    public Double getBillAmt() {
+        return billAmt;
+    }
+
+    public void setBillAmt(Double billAmt) {
+        this.billAmt = billAmt;
+    }
+
+    public Double getMiscAmt() {
+        return miscAmt;
+    }
+
+    public void setMiscAmt(Double miscAmt) {
+        this.miscAmt = miscAmt;
+    }
+
+    public LocalDateTime getBillExprDt() {
+        return billExprDt;
+    }
+
+    public void setBillExprDt(LocalDateTime billExprDt) {
+        this.billExprDt = billExprDt;
+    }
+
+    public String getPyrId() {
+        return pyrId;
+    }
+
+    public void setPyrId(String pyrId) {
+        this.pyrId = pyrId;
+    }
+
+    public String getPyrName() {
+        return pyrName;
+    }
+
+    public void setPyrName(String pyrName) {
+        this.pyrName = pyrName;
+    }
+
+    public String getBillDesc() {
+        return billDesc;
+    }
+
+    public void setBillDesc(String billDesc) {
+        this.billDesc = billDesc;
+    }
+
+    public LocalDateTime getBillGenDt() {
+        return billGenDt;
+    }
+
+    public void setBillGenDt(LocalDateTime billGenDt) {
+        this.billGenDt = billGenDt;
+    }
+
+    public String getBillGenBy() {
+        return billGenBy;
+    }
+
+    public void setBillGenBy(String billGenBy) {
+        this.billGenBy = billGenBy;
+    }
+
+    public String getBillApprBy() {
+        return billApprBy;
+    }
+
+    public void setBillApprBy(String billApprBy) {
+        this.billApprBy = billApprBy;
+    }
+
+    public String getPyrCellNum() {
+        return pyrCellNum;
+    }
+
+    public void setPyrCellNum(String pyrCellNum) {
+        this.pyrCellNum = pyrCellNum;
+    }
+
+    public String getPyrEmail() {
+        return pyrEmail;
+    }
+
+    public void setPyrEmail(String pyrEmail) {
+        this.pyrEmail = pyrEmail;
+    }
+
+    public String getCcy() {
+        return ccy;
+    }
+
+    public void setCcy(String ccy) {
+        this.ccy = ccy;
+    }
+
+    public Double getBillEqvAmt() {
+        return billEqvAmt;
+    }
+
+    public void setBillEqvAmt(Double billEqvAmt) {
+        this.billEqvAmt = billEqvAmt;
+    }
+
+    public boolean isRemFlag() {
+        return remFlag;
+    }
+
+    public void setRemFlag(boolean remFlag) {
+        this.remFlag = remFlag;
+    }
+
+    public int getBillPayOpt() {
+        return billPayOpt;
+    }
+
+    public void setBillPayOpt(int billPayOpt) {
+        this.billPayOpt = billPayOpt;
+    }
+
     public String getPayCntrNum() {
         return payCntrNum;
     }
 
     public void setPayCntrNum(String payCntrNum) {
         this.payCntrNum = payCntrNum;
+    }
+
+    public List<GepgBillItem> getBillItems() {
+        return billItems;
+    }
+
+    public void setBillItems(List<GepgBillItem> billItems) {
+        this.billItems = billItems;
     }
 }

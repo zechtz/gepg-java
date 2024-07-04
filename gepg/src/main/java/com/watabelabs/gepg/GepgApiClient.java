@@ -1,9 +1,5 @@
 package com.watabelabs.gepg;
 
-import io.github.cdimascio.dotenv.Dotenv;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
@@ -19,6 +15,9 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.watabelabs.gepg.constants.GepgResponseCode;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAck;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubResp;
@@ -31,6 +30,8 @@ import com.watabelabs.gepg.utils.GepgEndpoints;
 import com.watabelabs.gepg.utils.MessageUtil;
 import com.watabelabs.gepg.utils.XmlUtil;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class GepgApiClient {
 
     private static final Logger logger = LoggerFactory.getLogger(GepgApiClient.class);
@@ -38,7 +39,7 @@ public class GepgApiClient {
     private String privateKeystorePath;
     private String privateKeystorePassword;
     private String privateKeyAlias;
-    private String spCode;
+    private String gepgCode;
     private String apiUrl;
 
     private String publicKeystorePath;
@@ -50,6 +51,8 @@ public class GepgApiClient {
     // these are default http headers
     private static final String CONTENT_TYPE = "Application/xml";
     private static final String GEPG_COM = "default.sp.in";
+    private static final String GEPG_COM_CN_REUSE = "reusebill.sp.in";
+    private static final String GEPG_COM_BILL_CHANGE = "changebill.sp.in";
 
     // Load environment variables once
     private static final Dotenv dotenv = Dotenv.load();
@@ -118,12 +121,12 @@ public class GepgApiClient {
         this.privateKeyAlias = privateKeyAlias;
     }
 
-    public String getSpCode() {
-        return spCode;
+    public String getGepgCode() {
+        return gepgCode;
     }
 
-    public void setSpCode(String gepgCode) {
-        this.spCode = gepgCode;
+    public void setGepgCode(String gepgCode) {
+        this.gepgCode = gepgCode;
     }
 
     public String getApiUrl() {
@@ -174,7 +177,7 @@ public class GepgApiClient {
         this.setApiUrl(apiUrl + GepgEndpoints.REUSE_CONTROL_NUMBER);
 
         // Step 1: Send the control number reuse request
-        String response = sendRequest(signedRequest);
+        String response = sendRequest(signedRequest, GEPG_COM_CN_REUSE);
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
@@ -197,7 +200,7 @@ public class GepgApiClient {
         this.setApiUrl(apiUrl + GepgEndpoints.UPDATE_BILL);
 
         // Step 1: Send the control number reuse request
-        String response = sendRequest(signedRequest);
+        String response = sendRequest(signedRequest, GEPG_COM_BILL_CHANGE);
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
@@ -363,9 +366,31 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during signing or XML conversion
      */
     public <T> String signMessage(String message, Class<T> contentClass) throws Exception {
-        MessageUtil messageUtil = new MessageUtil(this.privateKeystorePath, this.privateKeystorePassword,
+        MessageUtil messageUtil = new MessageUtil(this.privateKeystorePath, this.publicKeystorePath,
+                this.privateKeystorePassword,
                 this.privateKeyAlias);
         return messageUtil.sign(message, contentClass);
+    }
+
+    /**
+     * Verifies the provided XML string using the public key.
+     *
+     * @param xmlString         the XML string containing the envelope
+     * @param contentClass      the class of the content to be verified
+     * @param publicKeyPath     the path to the public key
+     * @param publicKeyPassword the password for the public key
+     * @param publicKeyAlias    the alias of the public key
+     * @return true if the signature is valid, false otherwise
+     * @throws Exception if an error occurs during verification
+     */
+    public <T> boolean verify(String xmlString, Class<T> contentClass, String publicKeyPath, String publicKeyPassword,
+            String publicKeyAlias) throws Exception {
+
+        MessageUtil messageUtil = new MessageUtil(this.privateKeystorePath, this.publicKeystorePath,
+                this.privateKeystorePassword,
+                this.privateKeyAlias);
+
+        return messageUtil.verify(xmlString, contentClass);
     }
 
     /**
@@ -478,14 +503,30 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the request
      */
     private String sendRequest(String signedRequest) throws Exception {
+        return sendRequest(signedRequest, GEPG_COM);
+    }
+
+    /**
+     * Sends the signed request to the GePG API with a specified header and returns
+     * the response.
+     *
+     * @param signedRequest the signed XML request
+     * @param headerInfo    the header info for Gepg-Com
+     * @return the response from the GePG API
+     * @throws Exception if an error occurs during the request
+     */
+    private String sendRequest(String signedRequest, String headerInfo) throws Exception {
         URL url = new URL(apiUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", CONTENT_TYPE);
-        connection.setRequestProperty("Gepg-Com", GEPG_COM);
-        connection.setRequestProperty("Gepg-Code", spCode);
+        connection.setRequestProperty("Gepg-Com", headerInfo);
+        connection.setRequestProperty("Gepg-Code", gepgCode);
         connection.setDoOutput(true);
         connection.getOutputStream().write(signedRequest.getBytes("UTF-8"));
+
+        // log the request headers
+        logger.info("Request Headers: {}", connection.getRequestProperties());
 
         Scanner scanner = new Scanner(connection.getInputStream());
         String response = scanner.useDelimiter("\\A").next();

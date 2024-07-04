@@ -3,6 +3,7 @@ package com.watabelabs.gepg.utils;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,12 +43,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * // Sign the message
  * String signedMessage = messageUtil.sign(message, GepgBillSubReq.class);
  * System.out.println(signedMessage);
+ *
+ * // Verify the message
+ * boolean isVerified = messageUtil.verify(signedMessage, GepgBillSubReq.class, publicKeyPath, publicKeyPassword,
+ *         publicKeyAlias);
+ * System.out.println("Signature is valid: " + isVerified);
  * }
  * </pre>
  */
 public class MessageUtil {
 
-    private String keystorePath;
+    private String privateKeystorePath;
+    private String publicKeystorePath;
     private String keystorePassword;
     private String keyAlias;
 
@@ -62,12 +69,15 @@ public class MessageUtil {
      * All-args constructor.
      * This constructor initializes the MessageUtil with the necessary parameters.
      *
-     * @param keystorePath     the path to the PKCS#12 keystore
-     * @param keystorePassword the password for the keystore
-     * @param keyAlias         the alias of the private key in the keystore
+     * @param privateKeystorePath the path to the PKCS#12 keystore
+     * @param publicKeystorePath  the path to the PKCS#12 keystore
+     * @param keystorePassword    the password for the keystore
+     * @param keyAlias            the alias of the private key in the keystore
      */
-    public MessageUtil(String keystorePath, String keystorePassword, String keyAlias) {
-        this.keystorePath = keystorePath;
+    public MessageUtil(String privateKeystorePath, String publicKeystorePath, String keystorePassword,
+            String keyAlias) {
+        this.privateKeystorePath = privateKeystorePath;
+        this.publicKeystorePath = publicKeystorePath;
         this.keystorePassword = keystorePassword;
         this.keyAlias = keyAlias;
     }
@@ -86,7 +96,7 @@ public class MessageUtil {
             throw new ValidationException("Message cannot be null or empty");
         }
 
-        PrivateKey privateKey = DigitalSignatureUtil.loadPrivateKey(keystorePath, keystorePassword, keyAlias);
+        PrivateKey privateKey = DigitalSignatureUtil.loadPrivateKey(privateKeystorePath, keystorePassword, keyAlias);
         String digitalSignature = DigitalSignatureUtil.signData(message, privateKey);
 
         T content = parseContent(message, contentClass);
@@ -149,6 +159,43 @@ public class MessageUtil {
 
         // Extract the content and return the first item (assuming there's only one)
         return envelope.getContent().get(0);
+    }
+
+    /**
+     * Verifies the provided XML string using the public key.
+     *
+     * @param xmlString         the XML string containing the envelope
+     * @param contentClass      the class of the content to be verified
+     * @param publicKeyPath     the path to the public key
+     * @param publicKeyPassword the password for the public key
+     * @param publicKeyAlias    the alias of the public key
+     * @return true if the signature is valid, false otherwise
+     * @throws Exception if an error occurs during verification
+     */
+    public <T> boolean verify(String xmlString, Class<T> contentClass) throws Exception {
+        // Unmarshal the Envelope
+        JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+        @SuppressWarnings("unchecked")
+        Envelope<T> envelope = (Envelope<T>) unmarshaller.unmarshal(new StringReader(xmlString));
+
+        // Extract the content and the signature
+        T content = envelope.getContent().get(0);
+        String digitalSignature = envelope.getGepgSignature();
+
+        // Convert the content to XML string
+        StringWriter sw = new StringWriter();
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.marshal(content, sw);
+        String message = sw.toString();
+
+        // Load the public key
+        PublicKey publicKey = DigitalSignatureUtil.loadPublicKey(publicKeystorePath, keystorePassword,
+                keyAlias);
+
+        // Verify the signature
+        return DigitalSignatureUtil.verifySignature(message, digitalSignature, publicKey);
     }
 
     /**

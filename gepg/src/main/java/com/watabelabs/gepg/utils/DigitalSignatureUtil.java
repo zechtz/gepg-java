@@ -5,13 +5,15 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.cert.Certificate;
 import java.util.Base64;
 import java.util.Enumeration;
 
 /**
  * The DigitalSignatureUtil class provides utility methods for loading a private
- * key from a PKCS#12 keystore
- * and generating a digital signature using that private key.
+ * key from a PKCS#12 keystore,
+ * generating a digital signature using that private key, and verifying the
+ * signature using a public key.
  *
  * <h2>Usage Example:</h2>
  *
@@ -29,6 +31,13 @@ import java.util.Enumeration;
  *
  * // Output the signature
  * System.out.println("Digital Signature: " + signature);
+ *
+ * // Load the public key from the keystore
+ * PublicKey publicKey = DigitalSignatureUtil.loadPublicKey(keystorePath, keystorePassword, alias);
+ *
+ * // Verify the signature
+ * boolean isValid = DigitalSignatureUtil.verifySignature(data, signature, publicKey);
+ * System.out.println("Signature is valid: " + isValid);
  * }
  * </pre>
  */
@@ -39,7 +48,6 @@ public class DigitalSignatureUtil {
      *
      * @param keystorePath     the path to the PKCS#12 keystore
      * @param keystorePassword the password for the keystore
-     * @param keyStoreType     the keystore type
      * @param alias            the alias of the private key in the keystore
      * @return the loaded private key
      * @throws Exception if an error occurs while loading the private key
@@ -83,6 +91,30 @@ public class DigitalSignatureUtil {
     }
 
     /**
+     * Loads a public key from a PKCS#12 keystore.
+     *
+     * @param keystorePath     the path to the PKCS#12 keystore
+     * @param keystorePassword the password for the keystore
+     * @param alias            the alias of the certificate in the keystore
+     * @return the loaded public key
+     * @throws Exception if an error occurs while loading the public key
+     */
+    public static PublicKey loadPublicKey(String keystorePath, String keystorePassword, String alias)
+            throws Exception {
+        KeyStore keystore = KeyStore.getInstance("PKCS12");
+        try (FileInputStream fis = new FileInputStream(keystorePath)) {
+            keystore.load(fis, keystorePassword.toCharArray());
+        }
+
+        Certificate certificate = keystore.getCertificate(alias);
+        if (certificate == null) {
+            throw new IllegalArgumentException("Alias " + alias + " does not exist or does not have a certificate.");
+        }
+
+        return certificate.getPublicKey();
+    }
+
+    /**
      * Verifies the digital signature of the given data using the provided public
      * key.
      *
@@ -100,3 +132,4 @@ public class DigitalSignatureUtil {
         return signature.verify(signatureBytes);
     }
 }
+
