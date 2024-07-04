@@ -70,6 +70,12 @@ public class GepgApiClient {
         if (!keystoreFile.exists() || !keystoreFile.canRead()) {
             throw new RuntimeException("Keystore file not found or not readable: " + this.privateKeystorePath);
         }
+
+        // Verify publick keystoreFile existence
+        File publicKeystoreFile = new File(this.publicKeystorePath);
+        if (!publicKeystoreFile.exists() || !publicKeystoreFile.canRead()) {
+            throw new RuntimeException("Public Keystore file not found or not readable: " + this.publicKeystorePath);
+        }
     }
 
     // make this private Constructor so that it can not be instantiated

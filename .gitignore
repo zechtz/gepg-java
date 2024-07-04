@@ -43,3 +43,5 @@ test.xml
 example.xml
 
 # keys/private-key.pfx
+
+gepg/.env
