@@ -38,8 +38,14 @@ public class GepgApiClient {
     private String privateKeystorePath;
     private String privateKeystorePassword;
     private String privateKeyAlias;
-    private String gepgCode;
+    private String spCode;
     private String apiUrl;
+
+    private String publicKeystorePath;
+    private String subSpCode;
+    private String subSpGfsCode;
+    private String systemId;
+    private String gfsCode;
 
     // these are default http headers
     private static final String CONTENT_TYPE = "Application/xml";
@@ -53,8 +59,11 @@ public class GepgApiClient {
         this.privateKeystorePath = getEnvVariable("PRIVATE_KEYSTORE_PATH");
         this.privateKeystorePassword = getEnvVariable("PRIVATE_KEYSTORE_PASSWORD");
         this.privateKeyAlias = getEnvVariable("PRIVATE_KEY_ALIAS");
-        this.gepgCode = getEnvVariable("GEPG_CODE");
         this.apiUrl = getEnvVariable("API_URL");
+        this.publicKeystorePath = getEnvVariable("PUBLIC_KEYSTORE_PATH");
+        this.gfsCode = getEnvVariable("GFS_CODE");
+        this.subSpCode = getEnvVariable("SUB_SP_CODE");
+        this.subSpGfsCode = getEnvVariable("SUB_SP_GFS_CODE");
 
         // Verify file existence
         File keystoreFile = new File(this.privateKeystorePath);
@@ -103,12 +112,12 @@ public class GepgApiClient {
         this.privateKeyAlias = privateKeyAlias;
     }
 
-    public String getGepgCode() {
-        return gepgCode;
+    public String getSpCode() {
+        return spCode;
     }
 
-    public void setGepgCode(String gepgCode) {
-        this.gepgCode = gepgCode;
+    public void setSpCode(String gepgCode) {
+        this.spCode = gepgCode;
     }
 
     public String getApiUrl() {
@@ -468,7 +477,7 @@ public class GepgApiClient {
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", CONTENT_TYPE);
         connection.setRequestProperty("Gepg-Com", GEPG_COM);
-        connection.setRequestProperty("Gepg-Code", gepgCode);
+        connection.setRequestProperty("Gepg-Code", spCode);
         connection.setDoOutput(true);
         connection.getOutputStream().write(signedRequest.getBytes("UTF-8"));
 

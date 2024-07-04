@@ -105,11 +105,16 @@ implementation 'io.github.cdimascio:dotenv-java:2.2.0'
 **Then add the following to your .env**
 
 ```
-PRIVATE_KEYSTORE_PATH=path/to/privatekey-file
-PRIVATE_KEYSTORE_PASSWORD=password
-PRIVATE_KEY_ALIAS=alias
-GEPG_CODE=gepgCode
-API_URL=http://api.url
+PRIVATE_KEYSTORE_PATH=path-to-private-key.pfx
+PUBLIC_KEYSTORE_PATH=path-to-public-key.pfx
+PRIVATE_KEYSTORE_PASSWORD=keypassword
+PRIVATE_KEY_ALIAS=keyalias
+SP_CODE=spcode
+SUB_SP_CODE=subspcode
+SUB_SP_GFS_CODE=sub-sp-gfs-code
+SYSTEM_ID=system-id
+GFS_CODE=gfs-code
+API_URL=gepg-testing-url
 ```
 
 ## Features
