@@ -3,6 +3,7 @@ package com.watabelabs.gepg.utils;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Signature;
 import java.util.Base64;
 import java.util.Enumeration;
@@ -79,5 +80,23 @@ public class DigitalSignatureUtil {
         signature.update(data.getBytes());
         byte[] signedData = signature.sign();
         return Base64.getEncoder().encodeToString(signedData);
+    }
+
+    /**
+     * Verifies the digital signature of the given data using the provided public
+     * key.
+     *
+     * @param data          the data to verify
+     * @param signatureData the Base64-encoded signature to verify
+     * @param publicKey     the public key to verify with
+     * @return true if the signature is valid, false otherwise
+     * @throws Exception if an error occurs while verifying the signature
+     */
+    public static boolean verifySignature(String data, String signatureData, PublicKey publicKey) throws Exception {
+        Signature signature = Signature.getInstance("SHA1withRSA");
+        signature.initVerify(publicKey);
+        signature.update(data.getBytes());
+        byte[] signatureBytes = Base64.getDecoder().decode(signatureData);
+        return signature.verify(signatureBytes);
     }
 }
