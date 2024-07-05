@@ -58,6 +58,7 @@ public class MessageUtil {
     private String publicKeystorePath;
     private String keystorePassword;
     private String keyAlias;
+    private String publicKeyAlias;
 
     /**
      * No-args constructor.
@@ -76,11 +77,12 @@ public class MessageUtil {
      * @param keyAlias            the alias of the private key in the keystore
      */
     public MessageUtil(String privateKeystorePath, String publicKeystorePath, String keystorePassword,
-            String keyAlias) {
+            String keyAlias, String publicKeyAlias) {
         this.privateKeystorePath = privateKeystorePath;
         this.publicKeystorePath = publicKeystorePath;
         this.keystorePassword = keystorePassword;
         this.keyAlias = keyAlias;
+        this.publicKeyAlias = publicKeyAlias;
     }
 
     /**
@@ -246,7 +248,7 @@ public class MessageUtil {
         System.out.println("Message to Verify: " + message);
         System.out.println("Digital Signature: " + digitalSignature);
 
-        PublicKey publicKey = DigitalSignatureUtil.loadPublicKey(publicKeystorePath, keystorePassword, keyAlias);
+        PublicKey publicKey = DigitalSignatureUtil.loadPublicKey(publicKeystorePath, keystorePassword, publicKeyAlias);
 
         return DigitalSignatureUtil.verifySignature(message, digitalSignature, publicKey);
     }

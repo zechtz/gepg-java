@@ -1,7 +1,6 @@
 package com.watabelabs.gepg;
 
 import java.io.File;
-import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -42,12 +41,9 @@ public class GepgApiClient {
     private String privateKeyAlias;
     private String gepgCode;
     private String apiUrl;
+    private String publicKeyAlias;
 
     private String publicKeystorePath;
-    private String subSpCode;
-    private String subSpGfsCode;
-    private String systemId;
-    private String gfsCode;
 
     // these are default http headers
     private static final String CONTENT_TYPE = "Application/xml";
@@ -63,11 +59,9 @@ public class GepgApiClient {
         this.privateKeystorePath = getEnvVariable("PRIVATE_KEYSTORE_PATH");
         this.privateKeystorePassword = getEnvVariable("PRIVATE_KEYSTORE_PASSWORD");
         this.privateKeyAlias = getEnvVariable("PRIVATE_KEY_ALIAS");
+        this.publicKeyAlias = getEnvVariable("PUBLIC_KEY_ALIAS");
         this.apiUrl = getEnvVariable("API_URL");
         this.publicKeystorePath = getEnvVariable("PUBLIC_KEYSTORE_PATH");
-        this.gfsCode = getEnvVariable("GFS_CODE");
-        this.subSpCode = getEnvVariable("SUB_SP_CODE");
-        this.subSpGfsCode = getEnvVariable("SUB_SP_GFS_CODE");
         this.gepgCode = getEnvVariable("GEPG_CODE");
 
         // Verify file existence
@@ -370,7 +364,7 @@ public class GepgApiClient {
     public <T> String signMessage(String message, Class<T> contentClass) throws Exception {
         MessageUtil messageUtil = new MessageUtil(this.privateKeystorePath, this.publicKeystorePath,
                 this.privateKeystorePassword,
-                this.privateKeyAlias);
+                this.privateKeyAlias, this.publicKeyAlias);
         return messageUtil.signAndVerify(message, contentClass);
     }
 
@@ -390,7 +384,7 @@ public class GepgApiClient {
 
         MessageUtil messageUtil = new MessageUtil(this.privateKeystorePath, this.publicKeystorePath,
                 this.privateKeystorePassword,
-                this.privateKeyAlias);
+                this.privateKeyAlias, this.publicKeyAlias);
 
         return messageUtil.verify(xmlString, contentClass);
     }
