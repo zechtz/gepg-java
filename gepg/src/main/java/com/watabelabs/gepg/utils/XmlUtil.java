@@ -29,8 +29,9 @@ public class XmlUtil {
      * @return the XML string representation of the object
      * @throws Exception if an error occurs during XML conversion
      *
-     * Example usage:
-     * <pre>{@code
+     *                   Example usage:
+     *
+     *                   <pre>{@code
      * MyJaxbObject obj = new MyJaxbObject();
      * String xml = XmlUtil.convertToXmlString(obj);
      * System.out.println(xml);
@@ -47,14 +48,17 @@ public class XmlUtil {
     }
 
     /**
-     * Converts a JAXB-annotated object to an XML string without the XML declaration.
+     * Converts a JAXB-annotated object to an XML string without the XML
+     * declaration.
      *
      * @param object the JAXB-annotated object to convert
-     * @return the XML string representation of the object without the XML declaration
+     * @return the XML string representation of the object without the XML
+     *         declaration
      * @throws Exception if an error occurs during XML conversion
      *
-     * Example usage:
-     * <pre>{@code
+     *                   Example usage:
+     *
+     *                   <pre>{@code
      * MyJaxbObject obj = new MyJaxbObject();
      * String xmlWithoutDecl = XmlUtil.convertToXmlStringWithoutDeclaration(obj);
      * System.out.println(xmlWithoutDecl);
@@ -75,12 +79,13 @@ public class XmlUtil {
      * Checks if the provided XML string contains all specified keys.
      *
      * @param xmlString the XML string to check
-     * @param keys the keys to check for in the XML string
+     * @param keys      the keys to check for in the XML string
      * @return true if all keys are found in the XML string, false otherwise
      * @throws Exception if an error occurs during XML parsing or XPath evaluation
      *
-     * Example usage:
-     * <pre>{@code
+     *                   Example usage:
+     *
+     *                   <pre>{@code
      * String xml = "<root><key1>value1</key1><key2>value2</key2></root>";
      * boolean containsKeys = XmlUtil.checkKeys(xml, "key1", "key2");
      * System.out.println(containsKeys); // Outputs: true

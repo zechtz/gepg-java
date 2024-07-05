@@ -51,6 +51,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * }
  * </pre>
  */
+
 public class MessageUtil {
 
     private String privateKeystorePath;
@@ -96,8 +97,13 @@ public class MessageUtil {
             throw new ValidationException("Message cannot be null or empty");
         }
 
+        System.out.println("Original Message: " + message);
+
         PrivateKey privateKey = DigitalSignatureUtil.loadPrivateKey(privateKeystorePath, keystorePassword, keyAlias);
         String digitalSignature = DigitalSignatureUtil.signData(message, privateKey);
+        digitalSignature = digitalSignature.replaceAll("\\s", "");
+
+        System.out.println("Digital Signature: " + digitalSignature);
 
         T content = parseContent(message, contentClass);
 
@@ -105,7 +111,37 @@ public class MessageUtil {
         envelope.setContent(Collections.singletonList(content));
         envelope.setGepgSignature(digitalSignature);
 
-        return convertToXmlString(envelope, contentClass);
+        return convertToXmlStringWithoutDeclaration(envelope, contentClass);
+    }
+
+    public <T> String signAndVerify(String message, Class<T> contentClass) throws Exception {
+        if (message == null || message.isEmpty()) {
+            throw new ValidationException("Message cannot be null or empty");
+        }
+
+        System.out.println("Original Message: " + message);
+
+        PrivateKey privateKey = DigitalSignatureUtil.loadPrivateKey(privateKeystorePath, keystorePassword, keyAlias);
+        String digitalSignature = DigitalSignatureUtil.signData(message, privateKey);
+        digitalSignature = digitalSignature.replaceAll("\\s", "");
+
+        System.out.println("Digital Signature: " + digitalSignature);
+
+        T content = parseContent(message, contentClass);
+
+        Envelope<T> envelope = new Envelope<>();
+        envelope.setContent(Collections.singletonList(content));
+        envelope.setGepgSignature(digitalSignature);
+
+        String signedXml = convertToXmlStringWithoutDeclaration(envelope, contentClass);
+
+        // Verify the signature before sending
+        boolean isVerified = verify(signedXml, contentClass);
+        if (!isVerified) {
+            throw new ValidationException("Signature verification failed after signing.");
+        }
+
+        return signedXml;
     }
 
     /**
@@ -142,6 +178,28 @@ public class MessageUtil {
     }
 
     /**
+     * Converts the envelope object to an XML string without the XML declaration.
+     *
+     * @param envelope     the envelope object containing the content and the
+     *                     digital signature
+     * @param contentClass the class of the content to be wrapped
+     * @return the XML string representation of the envelope without the XML
+     *         declaration
+     * @throws Exception if an error occurs during XML conversion
+     */
+    private <T> String convertToXmlStringWithoutDeclaration(Envelope<T> envelope, Class<T> contentClass)
+            throws Exception {
+        JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE); // This omits the XML declaration
+
+        StringWriter sw = new StringWriter();
+        marshaller.marshal(envelope, sw);
+        return sw.toString();
+    }
+
+    /**
      * Unwraps the provided XML string from the envelope and converts it to the
      * specified POJO class.
      *
@@ -151,13 +209,10 @@ public class MessageUtil {
      * @throws Exception if an error occurs during XML conversion
      */
     public static <T> T unwrapAndConvertToPojo(String xmlString, Class<T> contentClass) throws Exception {
-        // Unmarshal the Envelope
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         @SuppressWarnings("unchecked")
         Envelope<T> envelope = (Envelope<T>) unmarshaller.unmarshal(new StringReader(xmlString));
-
-        // Extract the content and return the first item (assuming there's only one)
         return envelope.getContent().get(0);
     }
 
@@ -173,28 +228,26 @@ public class MessageUtil {
      * @throws Exception if an error occurs during verification
      */
     public <T> boolean verify(String xmlString, Class<T> contentClass) throws Exception {
-        // Unmarshal the Envelope
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         @SuppressWarnings("unchecked")
         Envelope<T> envelope = (Envelope<T>) unmarshaller.unmarshal(new StringReader(xmlString));
 
-        // Extract the content and the signature
         T content = envelope.getContent().get(0);
         String digitalSignature = envelope.getGepgSignature();
+        digitalSignature = digitalSignature.replaceAll("\\s", "");
 
-        // Convert the content to XML string
         StringWriter sw = new StringWriter();
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.marshal(content, sw);
         String message = sw.toString();
 
-        // Load the public key
-        PublicKey publicKey = DigitalSignatureUtil.loadPublicKey(publicKeystorePath, keystorePassword,
-                keyAlias);
+        System.out.println("Message to Verify: " + message);
+        System.out.println("Digital Signature: " + digitalSignature);
 
-        // Verify the signature
+        PublicKey publicKey = DigitalSignatureUtil.loadPublicKey(publicKeystorePath, keystorePassword, keyAlias);
+
         return DigitalSignatureUtil.verifySignature(message, digitalSignature, publicKey);
     }
 
@@ -211,8 +264,6 @@ public class MessageUtil {
 
         @XmlElement(name = "gepgSignature", required = true)
         private String gepgSignature;
-
-        // Getters and setters
 
         public List<T> getContent() {
             return content;

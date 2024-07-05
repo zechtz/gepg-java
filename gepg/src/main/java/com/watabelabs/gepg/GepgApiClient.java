@@ -1,6 +1,7 @@
 package com.watabelabs.gepg;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -67,6 +68,7 @@ public class GepgApiClient {
         this.gfsCode = getEnvVariable("GFS_CODE");
         this.subSpCode = getEnvVariable("SUB_SP_CODE");
         this.subSpGfsCode = getEnvVariable("SUB_SP_GFS_CODE");
+        this.gepgCode = getEnvVariable("GEPG_CODE");
 
         // Verify file existence
         File keystoreFile = new File(this.privateKeystorePath);
@@ -154,7 +156,7 @@ public class GepgApiClient {
         this.setApiUrl(apiUrl + GepgEndpoints.SUBMIT_BILL);
 
         // Step 1: Send the bill submission request
-        String response = sendRequest(signedRequest);
+        String response = sendRequest(signedRequest, GEPG_COM);
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
@@ -224,7 +226,7 @@ public class GepgApiClient {
         this.setApiUrl(apiUrl + GepgEndpoints.CANCEL_BILL);
 
         // Step 1: Send the control number reuse request
-        String response = sendRequest(signedRequest);
+        String response = sendRequest(signedRequest, CONTENT_TYPE);
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
@@ -247,7 +249,7 @@ public class GepgApiClient {
         this.setApiUrl(apiUrl + GepgEndpoints.SEND_PAYMENT);
 
         // Step 1: Send the control number reuse request
-        String response = sendRequest(signedRequest);
+        String response = sendRequest(signedRequest, CONTENT_TYPE);
         Envelope<GepgPmtSpInfoAck> envelope = mapResponse(response, GepgPmtSpInfoAck.class);
         GepgPmtSpInfoAck paymentSpInfoAck = envelope.getContent().get(0);
 
@@ -270,7 +272,7 @@ public class GepgApiClient {
         this.setApiUrl(apiUrl + GepgEndpoints.REQUEST_RECONCILIATION);
 
         // Step 1: Send the control number reuse request
-        String response = sendRequest(signedRequest);
+        String response = sendRequest(signedRequest, CONTENT_TYPE);
         Envelope<GepgSpReconcRespAck> envelope = mapResponse(response, GepgSpReconcRespAck.class);
         GepgSpReconcRespAck reconciliationRespAck = envelope.getContent().get(0);
 
@@ -369,7 +371,7 @@ public class GepgApiClient {
         MessageUtil messageUtil = new MessageUtil(this.privateKeystorePath, this.publicKeystorePath,
                 this.privateKeystorePassword,
                 this.privateKeyAlias);
-        return messageUtil.sign(message, contentClass);
+        return messageUtil.signAndVerify(message, contentClass);
     }
 
     /**
@@ -502,19 +504,6 @@ public class GepgApiClient {
      * @return the response from the GePG API
      * @throws Exception if an error occurs during the request
      */
-    private String sendRequest(String signedRequest) throws Exception {
-        return sendRequest(signedRequest, GEPG_COM);
-    }
-
-    /**
-     * Sends the signed request to the GePG API with a specified header and returns
-     * the response.
-     *
-     * @param signedRequest the signed XML request
-     * @param headerInfo    the header info for Gepg-Com
-     * @return the response from the GePG API
-     * @throws Exception if an error occurs during the request
-     */
     private String sendRequest(String signedRequest, String headerInfo) throws Exception {
         URL url = new URL(apiUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -524,9 +513,6 @@ public class GepgApiClient {
         connection.setRequestProperty("Gepg-Code", gepgCode);
         connection.setDoOutput(true);
         connection.getOutputStream().write(signedRequest.getBytes("UTF-8"));
-
-        // log the request headers
-        logger.info("Request Headers: {}", connection.getRequestProperties());
 
         Scanner scanner = new Scanner(connection.getInputStream());
         String response = scanner.useDelimiter("\\A").next();

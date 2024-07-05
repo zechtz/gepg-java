@@ -178,7 +178,8 @@ public class GepgBillSubReqTest {
     }
 
     @Test
-    @Disabled("This test requires a running Gepg server, still havent figured out how to mack the server on github")
+    // @Disabled("This test requires a running Gepg server, still havent figured out
+    // how to mack the server on github")
     public void testSignAndSubmitBillWithCallback() throws Exception {
         // Create a sample message
         GepgBillSubReq mapper = createBillSubReq();
@@ -195,6 +196,7 @@ public class GepgBillSubReqTest {
 
         // Submit the signed message
         GepgBillSubReqAck response = gepgApiClient.submitBill(signedMessage);
+
         assertNotNull(response);
         assertTrue(response.getTrxStsCode() != 0);
 

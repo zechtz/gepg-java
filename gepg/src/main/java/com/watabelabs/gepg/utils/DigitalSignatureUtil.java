@@ -9,6 +9,8 @@ import java.security.cert.Certificate;
 import java.util.Base64;
 import java.util.Enumeration;
 
+import javax.validation.ValidationException;
+
 /**
  * The DigitalSignatureUtil class provides utility methods for loading a private
  * key from a PKCS#12 keystore,
@@ -83,11 +85,23 @@ public class DigitalSignatureUtil {
      * @throws Exception if an error occurs during the signing process
      */
     public static String signData(String data, PrivateKey privateKey) throws Exception {
-        Signature signature = Signature.getInstance("SHA1withRSA");
-        signature.initSign(privateKey);
-        signature.update(data.getBytes());
-        byte[] signedData = signature.sign();
-        return Base64.getEncoder().encodeToString(signedData);
+        try {
+            // Load the keystore containing the private key
+            // Initialize a Signature object with the private key
+            Signature signature = Signature.getInstance("SHA1withRSA");
+            signature.initSign(privateKey);
+
+            // Sign the message
+            byte[] messageBytes = data.getBytes();
+            signature.update(messageBytes);
+            byte[] signatureBytes = signature.sign();
+
+            // Return the signature as a Base64-encoded string
+            return Base64.getEncoder().encodeToString(signatureBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ValidationException(e.getLocalizedMessage());
+        }
     }
 
     /**
@@ -132,4 +146,3 @@ public class DigitalSignatureUtil {
         return signature.verify(signatureBytes);
     }
 }
-
