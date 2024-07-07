@@ -44,7 +44,6 @@ example.xml
 
 # keys/private-key.pfx
 
-gepg/.env
 keys/
 
 .env
