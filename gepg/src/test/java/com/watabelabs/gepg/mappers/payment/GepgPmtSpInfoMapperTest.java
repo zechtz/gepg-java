@@ -75,8 +75,12 @@ public class GepgPmtSpInfoMapperTest {
         // Convert to XML string
         String message = gepgApiClient.convertToXmlStringWithoutDeclaration(pmtSpInfoMapper);
 
+        System.out.println("THE_CONVERTED_MESSAGE" + message);
+
         // Sign the message
         String signedMessage = gepgApiClient.signMessage(message, GepgPmtSpInfo.class);
+
+        System.out.println("THE_SIGNED_MESSAGE" + signedMessage);
 
         // Assert that the signed message is not null and contains <Gepg> and
         // <gepgSignature>

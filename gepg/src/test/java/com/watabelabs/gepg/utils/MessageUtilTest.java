@@ -17,12 +17,13 @@ import java.util.Arrays;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import javax.validation.ValidationException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.ValidationException;
 import javax.xml.transform.stream.StreamResult;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.watabelabs.gepg.GepgApiClient;
@@ -74,33 +75,71 @@ public class MessageUtilTest {
 
     @Test
     public void testXmlConversion() throws Exception {
-        // Create a sample message
-        String message = "<gepgBillSubReq><BillHdr><SpCode>S023</SpCode><RtrRespFlg>true</RtrRespFlg></BillHdr></gepgBillSubReq>";
+        GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
-        // Instantiate MessageUtil
-        MessageUtil.Envelope<GepgBillSubReq> envelope = new MessageUtil.Envelope<>();
-        GepgBillSubReq billSubReq = new GepgBillSubReq();
-        envelope.setContent(Arrays.asList(billSubReq));
-        envelope.setGepgSignature("dummySignature");
+        String message = gepgApiClient.convertToXmlStringWithoutDeclaration(billSubRequestMapper);
 
-        // Convert to XML string
-        JAXBContext context = JAXBContext.newInstance(MessageUtil.Envelope.class, GepgBillSubReq.class);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        // Sign the message
+        String signedMessage = gepgApiClient.signMessage(message, GepgBillSubReq.class);
 
-        StringWriter sw = new StringWriter();
-        marshaller.marshal(envelope, new StreamResult(sw));
-        String xmlString = sw.toString();
+        // extract <gepgSignature> from signedMessage
+        String signature = signedMessage.substring(signedMessage.indexOf("<gepgSignature>") + 15,
+                signedMessage.indexOf("</gepgSignature>"));
 
-        // Expected XML structure
-        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
-                + "<Gepg>\n"
-                + "    <gepgBillSubReq/>\n"
-                + "    <gepgSignature>dummySignature</gepgSignature>\n"
-                + "</Gepg>";
+        // Assert that the signed message is not null and contains the digital signature
+        assertNotNull(signedMessage);
+        System.out.println(signedMessage);
+        assertTrue(signedMessage.contains("<gepgSignature>"));
 
-        // Assert the XML string matches the expected structure
-        assertEquals(expectedXml.replaceAll("\\s+", ""), xmlString.trim().replaceAll("\\s+", ""));
+        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                "<Gepg>" +
+                "<gepgBillSubReq>" +
+                "<BillHdr>" +
+                "<SpCode>SP023</SpCode>" +
+                "<RtrRespFlg>true</RtrRespFlg>" +
+                "</BillHdr>" +
+                "<BillTrxInf>" +
+                "<BillId>11ae8614-ceda-4b32-aa83-2dc651ed4bcd</BillId>" +
+                "<SubSpCode>2001</SubSpCode>" +
+                "<SpSysId>tjv47</SpSysId>" +
+                "<BillAmt>7885.0</BillAmt>" +
+                "<MiscAmt>0.0</MiscAmt>" +
+                "<BillExprDt>2017-05-30T10:00:01Z</BillExprDt>" +
+                "<PyrId>Palapala</PyrId>" +
+                "<PyrName>Charles Palapala</PyrName>" +
+                "<BillDesc>Bill Number 7885</BillDesc>" +
+                "<BillGenDt>2017-02-22T10:00:10Z</BillGenDt>" +
+                "<BillGenBy>100</BillGenBy>" +
+                "<BillApprBy>Hashim</BillApprBy>" +
+                "<PyrCellNum>0699210053</PyrCellNum>" +
+                "<PyrEmail>charlestp@yahoo.com</PyrEmail>" +
+                "<Ccy>TZS</Ccy>" +
+                "<BillEqvAmt>7885.0</BillEqvAmt>" +
+                "<RemFlag>true</RemFlag>" +
+                "<BillPayOpt>1</BillPayOpt>" +
+                "<BillItems>" +
+                "<BillItem>" +
+                "<BillItemRef>788578851</BillItemRef>" +
+                "<UseItemRefOnPay>N</UseItemRefOnPay>" +
+                "<BillItemAmt>7885.0</BillItemAmt>" +
+                "<BillItemEqvAmt>7885.0</BillItemEqvAmt>" +
+                "<BillItemMiscAmt>0.0</BillItemMiscAmt>" +
+                "<GfsCode>140206</GfsCode>" +
+                "</BillItem>" +
+                "<BillItem>" +
+                "<BillItemRef>788578852</BillItemRef>" +
+                "<UseItemRefOnPay>N</UseItemRefOnPay>" +
+                "<BillItemAmt>7885.0</BillItemAmt>" +
+                "<BillItemEqvAmt>7885.0</BillItemEqvAmt>" +
+                "<BillItemMiscAmt>0.0</BillItemMiscAmt>" +
+                "<GfsCode>140206</GfsCode>" +
+                "</BillItem>" +
+                "</BillItems>" +
+                "</BillTrxInf>" +
+                "</gepgBillSubReq>" +
+                "<gepgSignature>" + signature + "</gepgSignature>" +
+                "</Gepg>";
+        assertEquals(expectedXml.replaceAll("\\s+", ""), signedMessage.replaceAll("\\s+", ""));
     }
 
     @Test
@@ -113,8 +152,6 @@ public class MessageUtilTest {
 
     @Test
     public void testSignMessageWithEmptyInput() {
-        // Instantiate MessageUtil
-
         // Sign the message with empty input
         assertThrows(ValidationException.class, () -> {
             gepgApiClient.signMessage("", GepgBillSubReq.class);
@@ -126,7 +163,7 @@ public class MessageUtilTest {
         // Create a sample message
         GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
-        String message = gepgApiClient.convertToXmlString(billSubRequestMapper);
+        String message = gepgApiClient.convertToXmlStringWithoutDeclaration(billSubRequestMapper);
 
         // Sign the message
         String signedMessage = gepgApiClient.signMessage(message, GepgBillSubReq.class);
