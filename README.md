@@ -190,6 +190,8 @@ All these DTOs conform to the GePG specification, eliminating the need to mainta
 
 -   `convertToXmlString(Object object)`: this method takes a java JAXB-annotated object and converts it into an xml string nad returns it
 
+-   `convertToXmlStringWithoutDeclaration(Object object)`: this method takes a java JAXB-annotated object and converts it into an xml string without the xml declaration nad returns it
+
 ## Usage Example
 
 ### Bill Submission
@@ -204,7 +206,7 @@ public GepgBillSubReqAck submitBill() throws Exception {
     GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
     // convert it to an xml object and sign it
-    String billXml = gepgApiClient.convertToXmlString(billSubReq);
+    String billXml = gepgApiClient.convertToXmlStringWithoutDeclaration(billSubReq);
 
     // sign the message
     String signedXml = gepgApiClient.signMessage(billXml, GepgBillSubReq.class);
