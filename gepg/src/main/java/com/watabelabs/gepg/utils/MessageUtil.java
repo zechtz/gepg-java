@@ -2,174 +2,128 @@ package com.watabelabs.gepg.utils;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Signature;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
+import javax.validation.ValidationException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-/**
- * The MessageUtil class provides functionality to sign messages using a digital
- * signature. It wraps the message and the signature into an XML envelope.
- *
- * <p>
- * The digital signature is generated using a private key loaded from a PKCS#12
- * keystore.
- * </p>
- *
- * <h2>Usage Example:</h2>
- *
- * <pre>
- * {@code
- * // Instantiate MessageUtil with required parameters
- * String keystorePath = "path/to/keystore.p12";
- * String keystorePassword = "your_keystore_password";
- * String keyAlias = "your_key_alias";
- *
- * MessageUtil messageUtil = new MessageUtil(keystorePath, keystorePassword, keyAlias);
- *
- * // Create a sample message
- * String message = "<gepgBillSubReq>...</gepgBillSubReq>";
- *
- * // Sign the message
- * String signedMessage = messageUtil.sign(message, GepgBillSubReq.class);
- * System.out.println(signedMessage);
- *
- * // Verify the message
- * boolean isVerified = messageUtil.verify(signedMessage, GepgBillSubReq.class, publicKeyPath, publicKeyPassword,
- *         publicKeyAlias);
- * System.out.println("Signature is valid: " + isVerified);
- * }
- * </pre>
- */
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 public class MessageUtil {
 
-    private String privateKeystorePath;
-    private String publicKeystorePath;
-    private String keystorePassword;
-    private String keyAlias;
-    private String publicKeyAlias;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageUtil.class);
 
-    /**
-     * No-args constructor.
-     * This constructor can be used if the parameters are set separately.
-     */
+    private String privateKeyPath;
+    private String publicKeyPath;
+    private String privateKeyPassword;
+    private String publicKeyPassword;
+    private String privateKeyAlias;
+    private String publicKeyAlias;
+    private String keyStoreType;
+    private String signatureAlgorithm;
+
+    private PublicKey publicKey;
+
     public MessageUtil() {
     }
 
-    /**
-     * All-args constructor.
-     * This constructor initializes the MessageUtil with the necessary parameters.
-     *
-     * @param privateKeystorePath the path to the PKCS#12 keystore
-     * @param publicKeystorePath  the path to the PKCS#12 keystore
-     * @param keystorePassword    the password for the keystore
-     * @param keyAlias            the alias of the private key in the keystore
-     */
-    public MessageUtil(String privateKeystorePath, String publicKeystorePath, String keystorePassword,
-            String keyAlias, String publicKeyAlias) {
-        this.privateKeystorePath = privateKeystorePath;
-        this.publicKeystorePath = publicKeystorePath;
-        this.keystorePassword = keystorePassword;
-        this.keyAlias = keyAlias;
+    public MessageUtil(
+            String privateKeyPath,
+            String publicKeyPath,
+            String privateKeyPassword,
+            String privateKeyAlias,
+            String publicKeyAlias,
+            String publicKeyPassword,
+            String keyStoreType,
+            String signatureAlgorithm) {
+        this.privateKeyPath = privateKeyPath;
+        this.publicKeyPath = publicKeyPath;
+        this.privateKeyPassword = privateKeyPassword;
+        this.publicKeyPassword = publicKeyPassword;
+        this.privateKeyAlias = privateKeyAlias;
         this.publicKeyAlias = publicKeyAlias;
+        this.keyStoreType = keyStoreType;
+        this.signatureAlgorithm = signatureAlgorithm;
     }
 
-    /**
-     * Signs the provided message using the private key and wraps it in an XML
-     * envelope.
-     *
-     * @param message      the message to be signed
-     * @param contentClass the class of the content to be wrapped
-     * @return the signed message wrapped in an XML envelope
-     * @throws Exception if an error occurs during signing or XML conversion
-     */
     public <T> String sign(String message, Class<T> contentClass) throws Exception {
         if (message == null || message.isEmpty()) {
             throw new ValidationException("Message cannot be null or empty");
         }
 
-        System.out.println("Original Message: " + message);
+        LOGGER.info("Original Message: " + message);
 
-        PrivateKey privateKey = DigitalSignatureUtil.loadPrivateKey(privateKeystorePath, keystorePassword, keyAlias);
-        String digitalSignature = DigitalSignatureUtil.signData(message, privateKey);
-        digitalSignature = digitalSignature.replaceAll("\\s", "");
+        // Read private key
+        PrivateKey privateKey = PrivateKeyReader.get(privateKeyPath, keyStoreType, privateKeyPassword, privateKeyAlias);
 
-        System.out.println("Digital Signature: " + digitalSignature);
+        byte[] dataBytes = message.getBytes(StandardCharsets.UTF_8);
 
-        T content = parseContent(message, contentClass);
+        byte[] digitalSignature;
+        String encodedSignature;
 
-        Envelope<T> envelope = new Envelope<>();
-        envelope.setContent(Collections.singletonList(content));
-        envelope.setGepgSignature(digitalSignature);
+        try {
+            Signature signature = Signature.getInstance(signatureAlgorithm);
+            signature.initSign(privateKey);
+            signature.update(dataBytes);
+            digitalSignature = signature.sign();
 
-        return convertToXmlStringWithoutDeclaration(envelope, contentClass);
-    }
-
-    public <T> String signAndVerify(String message, Class<T> contentClass) throws Exception {
-        if (message == null || message.isEmpty()) {
-            throw new ValidationException("Message cannot be null or empty");
+            // Base64 encode the digital signature
+            encodedSignature = Base64.getEncoder().encodeToString(digitalSignature);
+        } catch (Exception e) {
+            LOGGER.error("Signing error: " + e.getMessage());
+            throw new ValidationException(e.getLocalizedMessage());
         }
 
-        System.out.println("Original Message: " + message);
-
-        PrivateKey privateKey = DigitalSignatureUtil.loadPrivateKey(privateKeystorePath, keystorePassword, keyAlias);
-        String digitalSignature = DigitalSignatureUtil.signData(message, privateKey);
-        digitalSignature = digitalSignature.replaceAll("\\s", "");
-
-        System.out.println("Digital Signature: " + digitalSignature);
-
         T content = parseContent(message, contentClass);
 
         Envelope<T> envelope = new Envelope<>();
         envelope.setContent(Collections.singletonList(content));
-        envelope.setGepgSignature(digitalSignature);
+        envelope.setGepgSignature(encodedSignature.getBytes(StandardCharsets.UTF_8));
 
-        String signedXml = convertToXmlStringWithoutDeclaration(envelope, contentClass);
+        String signedXml = convertToXmlString(envelope, contentClass);
 
-        // Verify the signature before sending
-        boolean isVerified = verify(signedXml, contentClass);
-        if (!isVerified) {
-            throw new ValidationException("Signature verification failed after signing.");
+        LOGGER.info("Signed XML: " + signedXml);
+
+        boolean isValid = verify(signedXml, contentClass);
+
+        if (!isValid) {
+            String errorMessage = "Signature verification failed after signing.";
+            LOGGER.error(errorMessage);
+            throw new ValidationException(errorMessage);
         }
 
         return signedXml;
     }
 
-    /**
-     * Parses the content from the provided message.
-     *
-     * @param message      the message containing the content
-     * @param contentClass the class of the content to be parsed
-     * @return the parsed content
-     * @throws Exception if an error occurs during parsing
-     */
     public static <T> T parseContent(String message, Class<T> contentClass) throws Exception {
         JAXBContext context = JAXBContext.newInstance(contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         return contentClass.cast(unmarshaller.unmarshal(new StringReader(message)));
     }
 
-    /**
-     * Converts the envelope object to an XML string.
-     *
-     * @param envelope     the envelope object containing the content and the
-     *                     digital signature
-     * @param contentClass the class of the content to be wrapped
-     * @return the XML string representation of the envelope
-     * @throws Exception if an error occurs during XML conversion
-     */
-    private <T> String convertToXmlString(Envelope<T> envelope, Class<T> contentClass) throws Exception {
+    public <T> String convertToXmlString(Envelope<T> envelope, Class<T> contentClass) throws Exception {
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -179,37 +133,39 @@ public class MessageUtil {
         return sw.toString();
     }
 
-    /**
-     * Converts the envelope object to an XML string without the XML declaration.
-     *
-     * @param envelope     the envelope object containing the content and the
-     *                     digital signature
-     * @param contentClass the class of the content to be wrapped
-     * @return the XML string representation of the envelope without the XML
-     *         declaration
-     * @throws Exception if an error occurs during XML conversion
-     */
     private <T> String convertToXmlStringWithoutDeclaration(Envelope<T> envelope, Class<T> contentClass)
             throws Exception {
-        JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE); // This omits the XML declaration
+        // Create a new instance of DocumentBuilderFactory
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        // Create a new DocumentBuilder
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+        // Create a new Document
+        Document doc = docBuilder.newDocument();
 
-        StringWriter sw = new StringWriter();
-        marshaller.marshal(envelope, sw);
-        return sw.toString();
+        // Create a JAXB context for the Envelope class and content class
+        JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
+        // Create a Marshaller
+        Marshaller marshaller = context.createMarshaller();
+        // Set Marshaller properties
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+
+        // Marshal the envelope to the Document
+        marshaller.marshal(envelope, doc);
+
+        // Create a TransformerFactory
+        TransformerFactory tf = TransformerFactory.newInstance();
+        // Create a Transformer
+        Transformer transformer = tf.newTransformer();
+        // Create a StringWriter
+        StringWriter writer = new StringWriter();
+        // Transform the Document to a string
+        transformer.transform(new DOMSource(doc), new StreamResult(writer));
+
+        // Return the transformed XML string
+        return writer.toString();
     }
 
-    /**
-     * Unwraps the provided XML string from the envelope and converts it to the
-     * specified POJO class.
-     *
-     * @param xmlString    the XML string containing the envelope
-     * @param contentClass the class of the content to be extracted
-     * @return the content as a POJO
-     * @throws Exception if an error occurs during XML conversion
-     */
     public static <T> T unwrapAndConvertToPojo(String xmlString, Class<T> contentClass) throws Exception {
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -218,45 +174,61 @@ public class MessageUtil {
         return envelope.getContent().get(0);
     }
 
-    /**
-     * Verifies the provided XML string using the public key.
-     *
-     * @param xmlString         the XML string containing the envelope
-     * @param contentClass      the class of the content to be verified
-     * @param publicKeyPath     the path to the public key
-     * @param publicKeyPassword the password for the public key
-     * @param publicKeyAlias    the alias of the public key
-     * @return true if the signature is valid, false otherwise
-     * @throws Exception if an error occurs during verification
-     */
     public <T> boolean verify(String xmlString, Class<T> contentClass) throws Exception {
+        // Create a DocumentBuilderFactory
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        // Create a DocumentBuilder
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+        // Parse the XML string to a Document
+        Document doc = docBuilder.parse(new InputSource(new StringReader(xmlString)));
+
+        // Create a JAXB context for the Envelope and content class
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         @SuppressWarnings("unchecked")
-        Envelope<T> envelope = (Envelope<T>) unmarshaller.unmarshal(new StringReader(xmlString));
+        Envelope<T> envelope = (Envelope<T>) unmarshaller.unmarshal(doc);
 
         T content = envelope.getContent().get(0);
-        String digitalSignature = envelope.getGepgSignature();
-        digitalSignature = digitalSignature.replaceAll("\\s", "");
+        byte[] digitalSignature = envelope.getGepgSignature();
 
-        StringWriter sw = new StringWriter();
+        // Marshal the content back to XML using Document
+        Document contentDoc = docBuilder.newDocument();
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.marshal(content, sw);
-        String message = sw.toString();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+        marshaller.marshal(content, contentDoc);
 
-        System.out.println("Message to Verify: " + message);
-        System.out.println("Digital Signature: " + digitalSignature);
+        // Transform the Document to a string
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer transformer = tf.newTransformer();
+        StringWriter writer = new StringWriter();
+        transformer.transform(new DOMSource(contentDoc), new StreamResult(writer));
+        String message = writer.toString();
 
-        PublicKey publicKey = DigitalSignatureUtil.loadPublicKey(publicKeystorePath, keystorePassword, publicKeyAlias);
+        // Remove XML declaration from the marshalled message
+        message = message.replaceAll("^<\\?xml.*?\\?>", "").trim();
+        LOGGER.info("Message to Verify: " + message);
 
-        return DigitalSignatureUtil.verifySignature(message, digitalSignature, publicKey);
+        LOGGER.info("Digital Signature (Base64 Encoded): " + Base64.getEncoder().encodeToString(digitalSignature));
+
+        publicKey = PublicKeyReader.get(publicKeyPath, keyStoreType, publicKeyPassword, publicKeyAlias);
+
+        try {
+            // Verify the incoming request's signature
+            Signature verifier = Signature.getInstance(signatureAlgorithm);
+            verifier.initVerify(publicKey);
+            verifier.update(message.getBytes(StandardCharsets.UTF_8));
+
+            // Decode the signature from Base64
+            boolean isVerified = verifier.verify(Base64.getDecoder().decode(digitalSignature));
+            LOGGER.info("Signature Verification Result: {}", isVerified);
+            return isVerified;
+        } catch (Exception e) {
+            LOGGER.error("Verification error: " + e.getMessage());
+            throw new ValidationException(e.getMessage());
+        }
     }
 
-    /**
-     * The Envelope class wraps any content and the digital signature into an XML
-     * structure.
-     */
     @XmlRootElement(name = "Gepg")
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Envelope<T> {
@@ -265,7 +237,7 @@ public class MessageUtil {
         private List<T> content;
 
         @XmlElement(name = "gepgSignature", required = true)
-        private String gepgSignature;
+        private byte[] gepgSignature;
 
         public List<T> getContent() {
             return content;
@@ -275,11 +247,11 @@ public class MessageUtil {
             this.content = content;
         }
 
-        public String getGepgSignature() {
+        public byte[] getGepgSignature() {
             return gepgSignature;
         }
 
-        public void setGepgSignature(String gepgSignature) {
+        public void setGepgSignature(byte[] gepgSignature) {
             this.gepgSignature = gepgSignature;
         }
     }

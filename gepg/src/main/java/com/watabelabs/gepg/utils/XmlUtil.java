@@ -7,6 +7,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -14,6 +19,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
@@ -65,14 +71,74 @@ public class XmlUtil {
      * }</pre>
      */
     public static String convertToXmlStringWithoutDeclaration(Object object) throws Exception {
+        // Create a new instance of DocumentBuilderFactory
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        // Create a new DocumentBuilder
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+        // Create a new Document
+        Document doc = docBuilder.newDocument();
+
+        // Create a JAXB context for the object's class
         JAXBContext context = JAXBContext.newInstance(object.getClass());
+        // Create a Marshaller
         Marshaller marshaller = context.createMarshaller();
+        // Set Marshaller properties
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 
-        StringWriter sw = new StringWriter();
-        marshaller.marshal(object, sw);
-        return sw.toString();
+        // Marshal the object to the Document
+        marshaller.marshal(object, doc);
+
+        // Create a TransformerFactory
+        TransformerFactory tf = TransformerFactory.newInstance();
+        // Create a Transformer
+        Transformer transformer = tf.newTransformer();
+        // Create a StringWriter
+        StringWriter writer = new StringWriter();
+        // Transform the Document to a string
+        transformer.transform(new DOMSource(doc), new StreamResult(writer));
+
+        // Return the transformed XML string
+        return sanitizeRequest(writer.toString());
+    }
+
+    /**
+     * Sanitizes an XML string by removing the XML declaration if it exists.
+     *
+     * @param xml The XML string to sanitize.
+     * @return A sanitized XML string with the XML declaration removed, or the
+     *         original XML in case of
+     *         an error.
+     */
+    public static String sanitizeRequest(String inputXml) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new org.xml.sax.InputSource(new java.io.StringReader(inputXml)));
+
+            // Find the XML declaration node and remove it
+            NodeList nodeList = doc.getChildNodes();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+                if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE) {
+                    doc.removeChild(node);
+                    break;
+                }
+            }
+
+            // Serialize the modified document back to a string
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+
+            StringWriter writer = new StringWriter();
+            transformer.transform(new DOMSource(doc), new StreamResult(writer));
+
+            return writer.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return inputXml; // Return the input XML as-is in case of an error
+        }
     }
 
     /**
