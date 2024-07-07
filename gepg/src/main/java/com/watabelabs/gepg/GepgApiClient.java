@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
 import java.util.List;
 import java.util.Scanner;
 
@@ -13,6 +17,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.slf4j.Logger;
@@ -28,6 +33,8 @@ import com.watabelabs.gepg.mappers.reconciliation.GepgSpReconcResp;
 import com.watabelabs.gepg.mappers.reconciliation.GepgSpReconcRespAck;
 import com.watabelabs.gepg.utils.GepgEndpoints;
 import com.watabelabs.gepg.utils.MessageUtil;
+import com.watabelabs.gepg.utils.PrivateKeyReader;
+import com.watabelabs.gepg.utils.PublicKeyReader;
 import com.watabelabs.gepg.utils.XmlUtil;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -36,14 +43,18 @@ public class GepgApiClient {
 
     private static final Logger logger = LoggerFactory.getLogger(GepgApiClient.class);
 
+    private String gepgCode;
+    private String apiUrl;
+
     private String privateKeystorePath;
     private String privateKeystorePassword;
     private String privateKeyAlias;
-    private String gepgCode;
-    private String apiUrl;
-    private String publicKeyAlias;
 
     private String publicKeystorePath;
+    private String publicKeystorePassword;
+    private String publicKeyAlias;
+    private String keystoreType;
+    private String signatureAlgorithm;
 
     // these are default http headers
     private static final String CONTENT_TYPE = "Application/xml";
@@ -56,13 +67,19 @@ public class GepgApiClient {
 
     // No-args constructor
     public GepgApiClient() {
+        this.apiUrl = getEnvVariable("API_URL");
+        this.gepgCode = getEnvVariable("GEPG_CODE");
+
         this.privateKeystorePath = getEnvVariable("PRIVATE_KEYSTORE_PATH");
         this.privateKeystorePassword = getEnvVariable("PRIVATE_KEYSTORE_PASSWORD");
         this.privateKeyAlias = getEnvVariable("PRIVATE_KEY_ALIAS");
-        this.publicKeyAlias = getEnvVariable("PUBLIC_KEY_ALIAS");
-        this.apiUrl = getEnvVariable("API_URL");
+
         this.publicKeystorePath = getEnvVariable("PUBLIC_KEYSTORE_PATH");
-        this.gepgCode = getEnvVariable("GEPG_CODE");
+        this.publicKeyAlias = getEnvVariable("PUBLIC_KEY_ALIAS");
+        this.publicKeystorePassword = getEnvVariable("PUBLIC_KEYSTORE_PASSWORD");
+
+        this.keystoreType = getEnvVariable("KEYSTORE_TYPE");
+        this.signatureAlgorithm = getEnvVariable("SIGNATURE_ALGORITHM");
 
         // Verify file existence
         File keystoreFile = new File(this.privateKeystorePath);
@@ -131,6 +148,43 @@ public class GepgApiClient {
 
     public void setApiUrl(String apiUrl) {
         this.apiUrl = apiUrl;
+    }
+
+    public boolean checkKeyPair() {
+        try {
+            PrivateKey privateKey = PrivateKeyReader.get(privateKeystorePath, keystoreType, privateKeystorePassword,
+                    privateKeyAlias);
+            PublicKey publicKey = PublicKeyReader.get(publicKeystorePath, keystoreType, publicKeystorePassword,
+                    publicKeyAlias);
+
+            // Generate a test message
+            String testMessage = "Test message for key pair validation";
+            byte[] testMessageBytes = testMessage.getBytes(StandardCharsets.UTF_8);
+
+            // Sign the test message with the private key
+            Signature signature = Signature.getInstance(signatureAlgorithm);
+            signature.initSign(privateKey);
+            signature.update(testMessageBytes);
+            byte[] digitalSignature = signature.sign();
+
+            // Verify the test message with the public key
+            signature.initVerify(publicKey);
+            signature.update(testMessageBytes);
+            boolean isVerified = signature.verify(digitalSignature);
+
+            if (!isVerified) {
+                logger.error(
+                        "Key pair mismatch: The public key did not verify the signature created by the private key.");
+            } else {
+                logger.info(
+                        "Key pair match: The public key successfully verified the signature created by the private key.");
+            }
+
+            return isVerified;
+        } catch (Exception e) {
+            logger.error("Exception occurred while checking key pair: ", e);
+            return false;
+        }
     }
 
     /*
@@ -346,7 +400,7 @@ public class GepgApiClient {
         // ackMapper.setTrxStsCode(responseMapper.getBillTrxInf().getTrxStsCode());
 
         // Convert acknowledgment to XML and sign it
-        String ackXml = convertToXmlString(gepgBillSubRespAck);
+        String ackXml = convertToXmlStringWithoutDeclaration(gepgBillSubRespAck);
 
         // Initialize with the required parameters
         return signMessage(ackXml, GepgBillSubRespAck.class);
@@ -362,10 +416,16 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during signing or XML conversion
      */
     public <T> String signMessage(String message, Class<T> contentClass) throws Exception {
-        MessageUtil messageUtil = new MessageUtil(this.privateKeystorePath, this.publicKeystorePath,
+        MessageUtil messageUtil = new MessageUtil(
+                this.privateKeystorePath,
+                this.publicKeystorePath,
                 this.privateKeystorePassword,
-                this.privateKeyAlias, this.publicKeyAlias);
-        return messageUtil.signAndVerify(message, contentClass);
+                this.privateKeyAlias,
+                this.publicKeyAlias,
+                this.publicKeystorePassword,
+                this.keystoreType,
+                this.signatureAlgorithm);
+        return messageUtil.sign(message, contentClass);
     }
 
     /**
@@ -383,8 +443,8 @@ public class GepgApiClient {
             String publicKeyAlias) throws Exception {
 
         MessageUtil messageUtil = new MessageUtil(this.privateKeystorePath, this.publicKeystorePath,
-                this.privateKeystorePassword,
-                this.privateKeyAlias, this.publicKeyAlias);
+                this.privateKeystorePassword, this.privateKeyAlias, this.publicKeyAlias, this.publicKeystorePassword,
+                this.keystoreType, this.signatureAlgorithm);
 
         return messageUtil.verify(xmlString, contentClass);
     }
@@ -565,5 +625,4 @@ public class GepgApiClient {
             this.gepgSignature = gepgSignature;
         }
     }
-
 }
