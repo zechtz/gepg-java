@@ -11,6 +11,9 @@ import java.util.Enumeration;
 
 import javax.validation.ValidationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The DigitalSignatureUtil class provides utility methods for loading a private
  * key from a PKCS#12 keystore,
@@ -43,36 +46,38 @@ import javax.validation.ValidationException;
  * }
  * </pre>
  */
+
 public class DigitalSignatureUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DigitalSignatureUtil.class);
 
     /**
      * Loads a private key from a PKCS#12 keystore.
      *
-     * @param keystorePath     the path to the PKCS#12 keystore
-     * @param keystorePassword the password for the keystore
-     * @param alias            the alias of the private key in the keystore
+     * @param privateKeyPath     the path to the PKCS#12 keystore
+     * @param privateKeyPassword the password for the keystore
+     * @param privateKeyAlias    the alias of the private key in the keystore
      * @return the loaded private key
      * @throws Exception if an error occurs while loading the private key
      */
-    public static PrivateKey loadPrivateKey(String keystorePath, String keystorePassword, String alias)
+    public static PrivateKey loadPrivateKey(String privateKeyPath, String privateKeyPassword, String privateKeyAlias)
             throws Exception {
         KeyStore keystore = KeyStore.getInstance("PKCS12");
-        try (FileInputStream fis = new FileInputStream(keystorePath)) {
-            keystore.load(fis, keystorePassword.toCharArray());
+        try (FileInputStream fis = new FileInputStream(privateKeyPath)) {
+            keystore.load(fis, privateKeyPassword.toCharArray());
         }
 
-        // Print available aliases
         Enumeration<String> aliases = keystore.aliases();
         while (aliases.hasMoreElements()) {
             String a = aliases.nextElement();
             System.out.println("Alias: " + a);
         }
 
-        if (!keystore.isKeyEntry(alias)) {
-            throw new IllegalArgumentException("Alias " + alias + " does not exist or is not a key entry.");
+        if (!keystore.isKeyEntry(privateKeyAlias)) {
+            throw new IllegalArgumentException("Alias " + privateKeyAlias + " does not exist or is not a key entry.");
         }
 
-        return (PrivateKey) keystore.getKey(alias, keystorePassword.toCharArray());
+        return (PrivateKey) keystore.getKey(privateKeyAlias, privateKeyPassword.toCharArray());
     }
 
     /**
@@ -86,20 +91,17 @@ public class DigitalSignatureUtil {
      */
     public static String signData(String data, PrivateKey privateKey) throws Exception {
         try {
-            // Load the keystore containing the private key
-            // Initialize a Signature object with the private key
             Signature signature = Signature.getInstance("SHA1withRSA");
             signature.initSign(privateKey);
 
-            // Sign the message
             byte[] messageBytes = data.getBytes();
+            LOGGER.info("Data Bytes to Sign: {}", Base64.getEncoder().encodeToString(messageBytes));
             signature.update(messageBytes);
             byte[] signatureBytes = signature.sign();
 
-            // Return the signature as a Base64-encoded string
             return Base64.getEncoder().encodeToString(signatureBytes);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Signing error: " + e.getMessage(), e);
             throw new ValidationException(e.getLocalizedMessage());
         }
     }
@@ -107,22 +109,26 @@ public class DigitalSignatureUtil {
     /**
      * Loads a public key from a PKCS#12 keystore.
      *
-     * @param keystorePath     the path to the PKCS#12 keystore
-     * @param keystorePassword the password for the keystore
-     * @param alias            the alias of the certificate in the keystore
+     * @param publicKeyPath     the path to the PKCS#12 keystore
+     * @param publicKeyPassword the password for the keystore
+     * @param publicKeyAlias    the alias of the certificate in the keystore
      * @return the loaded public key
      * @throws Exception if an error occurs while loading the public key
      */
-    public static PublicKey loadPublicKey(String keystorePath, String keystorePassword, String alias)
+    public static PublicKey loadPublicKey(String publicKeyPath, String publicKeyPassword, String publicKeyAlias)
             throws Exception {
         KeyStore keystore = KeyStore.getInstance("PKCS12");
-        try (FileInputStream fis = new FileInputStream(keystorePath)) {
-            keystore.load(fis, keystorePassword.toCharArray());
+        try (FileInputStream fis = new FileInputStream(publicKeyPath)) {
+            keystore.load(fis, publicKeyPassword.toCharArray());
         }
 
-        Certificate certificate = keystore.getCertificate(alias);
+        Certificate certificate = keystore.getCertificate(publicKeyAlias);
+
         if (certificate == null) {
-            throw new IllegalArgumentException("Alias " + alias + " does not exist or does not have a certificate.");
+            String errorMessage = String.format("Public Key Alias %s does not exist or does not have a certificate.",
+                    publicKeyAlias);
+            LOGGER.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         return certificate.getPublicKey();
@@ -139,10 +145,17 @@ public class DigitalSignatureUtil {
      * @throws Exception if an error occurs while verifying the signature
      */
     public static boolean verifySignature(String data, String signatureData, PublicKey publicKey) throws Exception {
-        Signature signature = Signature.getInstance("SHA1withRSA");
-        signature.initVerify(publicKey);
-        signature.update(data.getBytes());
-        byte[] signatureBytes = Base64.getDecoder().decode(signatureData);
-        return signature.verify(signatureBytes);
+        try {
+            Signature signature = Signature.getInstance("SHA1withRSA");
+            signature.initVerify(publicKey);
+            byte[] messageBytes = data.getBytes();
+            LOGGER.info("Data Bytes to Verify: {}", Base64.getEncoder().encodeToString(messageBytes));
+            signature.update(messageBytes);
+            byte[] signatureBytes = Base64.getDecoder().decode(signatureData);
+            return signature.verify(signatureBytes);
+        } catch (Exception e) {
+            LOGGER.error("Verification error: " + e.getMessage(), e);
+            throw new ValidationException(e.getLocalizedMessage());
+        }
     }
 }
