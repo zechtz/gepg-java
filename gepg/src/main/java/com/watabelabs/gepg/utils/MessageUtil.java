@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+/**
+ * Utility class for handling XML message signing and verification.
+ */
 public class MessageUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageUtil.class);
@@ -46,9 +49,26 @@ public class MessageUtil {
 
     private PublicKey publicKey;
 
+    /**
+     * Default constructor.
+     */
     public MessageUtil() {
     }
 
+    /**
+     * Parameterized constructor for initializing MessageUtil with key and signature
+     * information.
+     *
+     * @param privateKeyPath     Path to the private key keystore.
+     * @param publicKeyPath      Path to the public key keystore.
+     * @param privateKeyPassword Password for the private key keystore.
+     * @param privateKeyAlias    Alias for the private key in the keystore.
+     * @param publicKeyAlias     Alias for the public key in the keystore.
+     * @param publicKeyPassword  Password for the public key keystore.
+     * @param keyStoreType       Type of the keystore (e.g., PKCS12).
+     * @param signatureAlgorithm Algorithm used for signing and verification (e.g.,
+     *                           SHA256withRSA).
+     */
     public MessageUtil(
             String privateKeyPath,
             String publicKeyPath,
@@ -68,6 +88,16 @@ public class MessageUtil {
         this.signatureAlgorithm = signatureAlgorithm;
     }
 
+    /**
+     * Signs the given XML message using the private key and wraps it in an
+     * Envelope.
+     *
+     * @param message      The XML message to be signed.
+     * @param contentClass The class of the content within the message.
+     * @param <T>          The type of the content.
+     * @return The signed XML message wrapped in an Envelope.
+     * @throws Exception If an error occurs during the signing process.
+     */
     public <T> String sign(String message, Class<T> contentClass) throws Exception {
         if (message == null || message.isEmpty()) {
             throw new ValidationException("Message cannot be null or empty");
@@ -117,12 +147,32 @@ public class MessageUtil {
         return signedXml;
     }
 
+    /**
+     * Parses the content of the given XML message into an instance of the specified
+     * class.
+     *
+     * @param message      The XML message to be parsed.
+     * @param contentClass The class of the content.
+     * @param <T>          The type of the content.
+     * @return An instance of the specified content class.
+     * @throws Exception If an error occurs during parsing.
+     */
     public static <T> T parseContent(String message, Class<T> contentClass) throws Exception {
         JAXBContext context = JAXBContext.newInstance(contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         return contentClass.cast(unmarshaller.unmarshal(new StringReader(message)));
     }
 
+    /**
+     * Converts an Envelope containing the specified content class into an XML
+     * string.
+     *
+     * @param envelope     The Envelope containing the content.
+     * @param contentClass The class of the content.
+     * @param <T>          The type of the content.
+     * @return The XML string representation of the Envelope.
+     * @throws Exception If an error occurs during the conversion.
+     */
     public <T> String convertToXmlString(Envelope<T> envelope, Class<T> contentClass) throws Exception {
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Marshaller marshaller = context.createMarshaller();
@@ -133,6 +183,17 @@ public class MessageUtil {
         return sw.toString();
     }
 
+    /**
+     * Converts an Envelope containing the specified content class into an XML
+     * string without the XML declaration.
+     *
+     * @param envelope     The Envelope containing the content.
+     * @param contentClass The class of the content.
+     * @param <T>          The type of the content.
+     * @return The XML string representation of the Envelope without the XML
+     *         declaration.
+     * @throws Exception If an error occurs during the conversion.
+     */
     private <T> String convertToXmlStringWithoutDeclaration(Envelope<T> envelope, Class<T> contentClass)
             throws Exception {
         // Create a new instance of DocumentBuilderFactory
@@ -166,6 +227,16 @@ public class MessageUtil {
         return writer.toString();
     }
 
+    /**
+     * Unwraps the provided XML string from the Envelope and converts it to the
+     * specified POJO class.
+     *
+     * @param xmlString    The XML string containing the Envelope.
+     * @param contentClass The class of the content to be extracted.
+     * @param <T>          The type of the content.
+     * @return The content as a POJO.
+     * @throws Exception If an error occurs during the conversion.
+     */
     public static <T> T unwrapAndConvertToPojo(String xmlString, Class<T> contentClass) throws Exception {
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -174,6 +245,17 @@ public class MessageUtil {
         return envelope.getContent().get(0);
     }
 
+    /**
+     * Verifies the digital signature of the provided XML string using the public
+     * key.
+     *
+     * @param xmlString    The XML string containing the Envelope with the digital
+     *                     signature.
+     * @param contentClass The class of the content within the Envelope.
+     * @param <T>          The type of the content.
+     * @return True if the signature is valid, false otherwise.
+     * @throws Exception If an error occurs during verification.
+     */
     public <T> boolean verify(String xmlString, Class<T> contentClass) throws Exception {
         // Create a DocumentBuilderFactory
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -229,6 +311,10 @@ public class MessageUtil {
         }
     }
 
+    /**
+     * The Envelope class wraps any content and the digital signature into an XML
+     * structure.
+     */
     @XmlRootElement(name = "Gepg")
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Envelope<T> {
