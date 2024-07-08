@@ -45,3 +45,5 @@ example.xml
 # keys/private-key.pfx
 
 keys/
+
+actual-keys
