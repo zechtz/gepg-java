@@ -205,7 +205,7 @@ public GepgBillSubReqAck submitBill() throws Exception {
     // create the GepgBillSubReq object and populate it with data
     GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
-    // convert it to an xml object and sign it
+    // convert it to an xml string
     String billXml = gepgApiClient.convertToXmlStringWithoutDeclaration(billSubReq);
 
     // sign the message
