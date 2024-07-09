@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -134,8 +135,6 @@ public class MessageUtil {
 
         String signedXml = convertToXmlString(envelope, contentClass);
 
-        LOGGER.info("Signed XML: " + signedXml);
-
         boolean isValid = verify(signedXml, contentClass);
 
         if (!isValid) {
@@ -144,7 +143,10 @@ public class MessageUtil {
             throw new ValidationException(errorMessage);
         }
 
-        return signedXml;
+        // add back the xml declaration that was stripped off by the sanitize method
+        String signedXmlMessage = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" + signedXml;
+        LOGGER.info("Signed XML: " + signedXmlMessage);
+        return signedXmlMessage;
     }
 
     /**
@@ -174,13 +176,36 @@ public class MessageUtil {
      * @throws Exception If an error occurs during the conversion.
      */
     public <T> String convertToXmlString(Envelope<T> envelope, Class<T> contentClass) throws Exception {
+        // Create a new instance of DocumentBuilderFactory
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        // Create a new DocumentBuilder
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+        // Create a new Document
+        Document doc = docBuilder.newDocument();
+
+        // Create a JAXB context for the Envelope and content class
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
+        // Create a Marshaller
         Marshaller marshaller = context.createMarshaller();
+        // Set Marshaller properties
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-        StringWriter sw = new StringWriter();
-        marshaller.marshal(envelope, sw);
-        return sw.toString();
+        // Marshal the envelope to the Document
+        marshaller.marshal(envelope, doc);
+
+        // Create a TransformerFactory
+        TransformerFactory tf = TransformerFactory.newInstance();
+        // Create a Transformer
+        Transformer transformer = tf.newTransformer();
+        // Set the output property for standalone
+        transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
+        // Create a StringWriter
+        StringWriter writer = new StringWriter();
+        // Transform the Document to a string
+        transformer.transform(new DOMSource(doc), new StreamResult(writer));
+
+        // Return the transformed XML string
+        return XmlUtil.sanitizeRequest(writer.toString());
     }
 
     /**

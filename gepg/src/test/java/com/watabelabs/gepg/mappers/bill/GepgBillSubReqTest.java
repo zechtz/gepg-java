@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import io.javalin.Javalin;
 import io.github.cdimascio.dotenv.Dotenv;
+import static org.mockito.Mockito.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,15 +40,6 @@ public class GepgBillSubReqTest {
     public static void setup() {
         gepgApiClient = new GepgApiClient();
 
-        app = Javalin.create().start(8080);
-
-        // Setup the callback endpoint to handle GePG system responses
-        app.post("/api/v1/bills/submit-control-number", ctx -> {
-            latch.countDown();
-            GepgBillSubResp response = gepgApiClient.convertToJavaObject(ctx.body(), GepgBillSubResp.class);
-            callbackResponse = response;
-            ctx.result(postBillResponse(response));
-        });
     }
 
     @AfterAll
@@ -117,9 +109,10 @@ public class GepgBillSubReqTest {
 
         GepgBillControlNoReuse gepgBillSubReq = createBillControlNoReuse();
 
-        String xmlOutput = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
+        String xmlOutput = gepgApiClient.convertToXmlString(gepgBillSubReq);
 
-        String expectedXml = "<gepgBillSubReq>" +
+        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                "<gepgBillSubReq>" +
                 "<BillHdr>" +
                 "<SpCode>SP023</SpCode>" +
                 "<RtrRespFlg>true</RtrRespFlg>" +
@@ -187,7 +180,6 @@ public class GepgBillSubReqTest {
     }
 
     @Test
-    @Disabled("Cant run this test because it requires a callback from GePG system")
     public void testSignAndSubmitBillWithCallback() throws Exception {
         // Create a sample message
         GepgBillSubReq mapper = createActualBillWithValidSpCode();
@@ -199,17 +191,25 @@ public class GepgBillSubReqTest {
 
         System.out.println(signedMessage);
 
+        // Mock the response from GePG system
+        String mockResponse = "<Gepg><gepgBillSubReqAck><TrxStsCode>7101</TrxStsCode><gepgSignature>...</gepgSignature></gepgBillSubReqAck></Gepg>";
+
+        // Mock the GepgApiClient to simulate the server response
+        GepgApiClient mockClient = mock(GepgApiClient.class);
+
+        when(mockClient.submitBill(signedMessage)).thenReturn(createBillSubReqAck());
+
         // Simulate a callback from GePG system
         latch = new CountDownLatch(1);
 
-        // Submit the signed message
-        GepgBillSubReqAck response = gepgApiClient.submitBill(signedMessage);
+        // Use the mocked client to submit the signed message
+        GepgBillSubReqAck response = mockClient.submitBill(signedMessage);
 
         assertNotNull(response);
         assertTrue(response.getTrxStsCode() != 0);
 
         // Simulate receiving a control number response from GePG system
-        String controlNumberResponse = "<Gepg><gepgBillSubResp><BillTrxInf><BillId>11ae8614-ceda-4b32-aa83-2dc651ed4bcd</BillId><TrxSts>GF</TrxSts><PayCntrNum>0</PayCntrNum><TrxStsCode>7242;7627</TrxStsCode></BillTrxInf><gepgSignature>...</gepgSignature></gepgBillSubResp></Gepg>";
+        String controlNumberResponse = "<Gepg><gepgBillSubResp><BillTrxInf><BillId>11ae8614-ceda-4b32-aa83-2dc651ed4bcd</BillId><TrxSts>GF</TrxSts><PayCntrNum>5522023232</PayCntrNum><TrxStsCode>7242;7627</TrxStsCode></BillTrxInf><gepgSignature>...</gepgSignature></gepgBillSubResp></Gepg>";
 
         GepgBillSubResp gepgBillSubResp = gepgApiClient.convertToJavaObject(controlNumberResponse,
                 GepgBillSubResp.class);
@@ -217,6 +217,9 @@ public class GepgBillSubReqTest {
         String signedAckXml = gepgApiClient.receiveControlNumber(gepgBillSubResp);
         assertNotNull(signedAckXml);
         assertTrue(signedAckXml.contains("gepgBillSubRespAck"));
+
+        // Simulate the callback by counting down the latch
+        latch.countDown();
 
         // Wait for callback
         latch.await();
