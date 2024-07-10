@@ -4,6 +4,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,14 +45,26 @@ public class XmlUtil {
      * }</pre>
      */
     public static String convertToXmlString(Object object) throws Exception {
-        JAXBContext context = JAXBContext.newInstance(object.getClass());
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        String xmlContent = null;
+        try {
+            // Create JAXB Context
+            JAXBContext jaxbContext = JAXBContext.newInstance(object.getClass());
+            // Create Marshaller
+            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);
 
-        StringWriter sw = new StringWriter();
-        marshaller.marshal(object, sw);
-        return sw.toString();
+            // Write XML to StringWriter
+            StringWriter sw = new StringWriter();
+            jaxbMarshaller.marshal(object, sw);
+            // Verify XML Content
+            xmlContent = sw.toString();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            throw new Exception("Error converting object to XML string", e);
+        }
+        return xmlContent;
     }
 
     /**
@@ -118,14 +131,14 @@ public class XmlUtil {
             Document doc = builder.parse(new org.xml.sax.InputSource(new java.io.StringReader(inputXml)));
 
             // Find the XML declaration node and remove it
-            NodeList nodeList = doc.getChildNodes();
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE) {
-                    doc.removeChild(node);
-                    break;
-                }
-            }
+            // NodeList nodeList = doc.getChildNodes();
+            // for (int i = 0; i < nodeList.getLength(); i++) {
+            // Node node = nodeList.item(i);
+            // if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE) {
+            // doc.removeChild(node);
+            // break;
+            // }
+            // }
 
             // Serialize the modified document back to a string
             TransformerFactory transformerFactory = TransformerFactory.newInstance();

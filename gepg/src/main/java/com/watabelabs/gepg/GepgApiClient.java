@@ -228,6 +228,9 @@ public class GepgApiClient {
 
         // Step 1: Send the bill submission request
         String response = sendRequest(signedRequest, GEPG_COM);
+
+        logger.info("BILL_SUBMISSION_RESPONSE:{}", response);
+
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
@@ -251,6 +254,9 @@ public class GepgApiClient {
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest, GEPG_COM_CN_REUSE);
+
+        logger.info("CONTROL_NUMBER_REUSE_REQUEST_RESPONSE:{}", response);
+
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
@@ -274,6 +280,7 @@ public class GepgApiClient {
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest, GEPG_COM_BILL_CHANGE);
+        logger.info("BILL_UPDATE_REQUEST_RESPONSE:{}", response);
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
@@ -297,6 +304,7 @@ public class GepgApiClient {
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest, CONTENT_TYPE);
+        logger.info("CANCEL_BILL_REQUEST_RESPONSE:{}", response);
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
@@ -320,6 +328,7 @@ public class GepgApiClient {
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest, CONTENT_TYPE);
+        logger.info("PAYMENT_SUBMISSION_REQUEST_RESPONSE:{}", response);
         Envelope<GepgPmtSpInfoAck> envelope = mapResponse(response, GepgPmtSpInfoAck.class);
         GepgPmtSpInfoAck paymentSpInfoAck = envelope.getContent().get(0);
 
@@ -343,6 +352,7 @@ public class GepgApiClient {
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest, CONTENT_TYPE);
+        logger.info("RECONCILIATION_REQUEST_RESPONSE:{}", response);
         Envelope<GepgSpReconcRespAck> envelope = mapResponse(response, GepgSpReconcRespAck.class);
         GepgSpReconcRespAck reconciliationRespAck = envelope.getContent().get(0);
 
@@ -529,7 +539,7 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during XML parsing or XPath evaluation
      *
      *                   Example usage:
-     * 
+     *
      *                   <pre>{@code
      * String xml = "<root><key1>value1</key1><key2>value2</key2></root>";
      * boolean containsKeys = XmlUtil.checkKeys(xml, "key1", "key2");
@@ -580,6 +590,9 @@ public class GepgApiClient {
      */
     private String sendRequest(String signedRequest, String headerInfo) throws Exception {
         URL url = new URL(apiUrl);
+
+        logger.info("SUBMISSION_URL:{}", url);
+
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", CONTENT_TYPE);
@@ -607,6 +620,14 @@ public class GepgApiClient {
      */
     @SuppressWarnings("unchecked")
     private <T> Envelope<T> mapResponse(String response, Class<T> contentClass) throws Exception {
+        // Validate the response signature
+
+        // boolean isValid = verify(response, contentClass, publicKeystorePath,
+        // publicKeystorePassword, publicKeyAlias);
+        // if (!isValid) {
+        // throw new RuntimeException("Invalid signature in the response");
+        // }
+
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         StringReader reader = new StringReader(response);
