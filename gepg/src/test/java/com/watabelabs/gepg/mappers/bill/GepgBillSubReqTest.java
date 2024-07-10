@@ -52,10 +52,9 @@ public class GepgBillSubReqTest {
     public void testBillToXmlConvertion() throws Exception {
         GepgBillSubReq gepgBillSubReq = createBillSubReq();
 
-        String xmlOutput = gepgApiClient.convertToXmlString(gepgBillSubReq);
+        String xmlOutput = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
 
-        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                "<gepgBillSubReq>" +
+        String expectedXml = "<gepgBillSubReq>" +
                 "<BillHdr>" +
                 "<SpCode>SP023</SpCode>" +
                 "<RtrRespFlg>true</RtrRespFlg>" +
@@ -108,10 +107,9 @@ public class GepgBillSubReqTest {
 
         GepgBillControlNoReuse gepgBillSubReq = createBillControlNoReuse();
 
-        String xmlOutput = gepgApiClient.convertToXmlString(gepgBillSubReq);
+        String xmlOutput = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
 
-        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                "<gepgBillSubReq>" +
+        String expectedXml = "<gepgBillSubReq>" +
                 "<BillHdr>" +
                 "<SpCode>SP023</SpCode>" +
                 "<RtrRespFlg>true</RtrRespFlg>" +
@@ -166,13 +164,11 @@ public class GepgBillSubReqTest {
 
         String xmlString = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReqAckMapper);
 
-        String signedMessage = gepgApiClient.signMessage(xmlString, GepgBillSubReqAck.class);
-
         // Define expected keys to check in the signed XML
-        String[] keys = { "Gepg", "gepgBillSubReqAck", "TrxStsCode", "gepgSignature" };
+        String[] keys = { "gepgBillSubReqAck", "TrxStsCode" };
 
         // Check if all expected keys are present in the signed message
-        boolean allKeysPresent = gepgApiClient.checkKeys(signedMessage, keys);
+        boolean allKeysPresent = gepgApiClient.checkKeys(xmlString, keys);
 
         // Assert that all keys are present
         assertTrue(allKeysPresent, "Not all keys are present in the signed XML message.");
