@@ -38,7 +38,6 @@ public class GepgBillSubReqTest {
     @BeforeAll
     public static void setup() {
         gepgApiClient = new GepgApiClient();
-
     }
 
     @AfterAll
@@ -184,7 +183,7 @@ public class GepgBillSubReqTest {
         // Sign the message
         String signedMessage = gepgApiClient.signMessage(xmlString, GepgBillSubReq.class);
 
-        System.out.println(signedMessage);
+        logger.info(signedMessage);
 
         // Mock the response from GePG system
         String mockResponse = "<Gepg><gepgBillSubReqAck><TrxStsCode>7101</TrxStsCode><gepgSignature>...</gepgSignature></gepgBillSubReqAck></Gepg>";

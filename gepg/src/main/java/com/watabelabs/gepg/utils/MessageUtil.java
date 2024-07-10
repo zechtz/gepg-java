@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.validation.ValidationException;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -108,11 +107,9 @@ public class MessageUtil {
 
         DigitalSignatureUtil digitalSignatureUtil = new DigitalSignatureUtil(signatureAlgorithm, privateKey, publicKey);
 
-        String encodedSignature = digitalSignatureUtil.generateSignature(message);
-
-        LOGGER.info("encodedSignature:{}", encodedSignature);
-
         T content = parseContent(message, contentClass);
+
+        String encodedSignature = digitalSignatureUtil.generateSignature(message);
 
         Envelope<T> envelope = new Envelope<>();
         envelope.setContent(Collections.singletonList(content));
@@ -129,7 +126,6 @@ public class MessageUtil {
         }
 
         // add back the xml declaration that was stripped off by the sanitize method
-
         String escapedString = escapeCharacter(signedXml);
         LOGGER.info("Signed XML: " + escapedString);
         return escapedString;
@@ -162,26 +158,21 @@ public class MessageUtil {
      * @throws Exception If an error occurs during the conversion.
      */
     public <T> String convertToXmlString(Envelope<T> envelope, Class<T> contentClass) throws Exception {
-        String xmlContent = null;
+        JAXBContext context;
+        String xmlString;
         try {
-            // Create JAXB Context for the Envelope and content class
-            JAXBContext jaxbContext = JAXBContext.newInstance(Envelope.class, contentClass);
-            // Create Marshaller
-            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, false); // Include XML declaration
-
-            // Write XML to StringWriter
             StringWriter sw = new StringWriter();
-            jaxbMarshaller.marshal(envelope, sw);
-            // Verify XML Content
-            xmlContent = sw.toString();
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            throw new Exception("Error converting envelope to XML string", e);
+            context = JAXBContext.newInstance(Envelope.class, contentClass);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false); // Include XML declaration
+            marshaller.marshal(envelope, sw);
+            xmlString = sw.toString();
+            return xmlString;
+        } catch (Exception e) {
+            throw new ValidationException(e.getLocalizedMessage());
         }
-        return xmlContent;
     }
 
     /**

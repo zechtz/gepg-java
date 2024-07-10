@@ -479,6 +479,33 @@ public class GepgApiClient {
     }
 
     /**
+     * Verifies the digital signature of the provided XML string using the public
+     * key.
+     *
+     * @param xmlString    The XML string containing the Envelope with the digital
+     *                     signature.
+     * @param contentClass The class of the content within the Envelope.
+     * @param <T>          The type of the content.
+     * @return True if the signature is valid, false otherwise.
+     * @throws Exception If an error occurs during verification.
+     */
+
+    public <T> boolean verifyMessage(String xmlString, Class<T> contentClass) throws Exception {
+
+        MessageUtil messageUtil = new MessageUtil(
+                this.privateKeystorePath,
+                this.publicKeystorePath,
+                this.privateKeystorePassword,
+                this.privateKeyAlias,
+                this.publicKeyAlias,
+                this.publicKeystorePassword,
+                this.keystoreType,
+                this.signatureAlgorithm);
+
+        return messageUtil.verify(xmlString, contentClass);
+    }
+
+    /**
      * Unwraps the provided XML string from the envelope and converts it to the
      * specified POJO class.
      *
