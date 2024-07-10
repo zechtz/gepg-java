@@ -2,16 +2,14 @@ package com.watabelabs.gepg.utils;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Signature;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
 import javax.validation.ValidationException;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -21,7 +19,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -47,8 +44,6 @@ public class MessageUtil {
     private String publicKeyAlias;
     private String keyStoreType;
     private String signatureAlgorithm;
-
-    private PublicKey publicKey;
 
     /**
      * Default constructor.
@@ -108,45 +103,36 @@ public class MessageUtil {
 
         // Read private key
         PrivateKey privateKey = PrivateKeyReader.get(privateKeyPath, keyStoreType, privateKeyPassword, privateKeyAlias);
+        // Load the public key
+        PublicKey publicKey = PublicKeyReader.get(publicKeyPath, keyStoreType, publicKeyPassword, publicKeyAlias);
 
-        byte[] dataBytes = message.getBytes(StandardCharsets.UTF_8);
+        DigitalSignatureUtil digitalSignatureUtil = new DigitalSignatureUtil(signatureAlgorithm, privateKey, publicKey);
 
-        byte[] digitalSignature;
-        String encodedSignature;
+        String encodedSignature = digitalSignatureUtil.generateSignature(message);
 
-        try {
-            Signature signature = Signature.getInstance(signatureAlgorithm);
-            signature.initSign(privateKey);
-            signature.update(dataBytes);
-            digitalSignature = signature.sign();
-
-            // Base64 encode the digital signature
-            encodedSignature = Base64.getEncoder().encodeToString(digitalSignature);
-        } catch (Exception e) {
-            LOGGER.error("Signing error: " + e.getMessage());
-            throw new ValidationException(e.getLocalizedMessage());
-        }
+        LOGGER.info("encodedSignature:{}", encodedSignature);
 
         T content = parseContent(message, contentClass);
 
         Envelope<T> envelope = new Envelope<>();
         envelope.setContent(Collections.singletonList(content));
-        envelope.setGepgSignature(encodedSignature.getBytes(StandardCharsets.UTF_8));
+        envelope.setGepgSignature(encodedSignature);
 
         String signedXml = convertToXmlString(envelope, contentClass);
 
-        // boolean isValid = verify(signedXml, contentClass);
-        //
-        // if (!isValid) {
-        // String errorMessage = "Signature verification failed after signing.";
-        // LOGGER.error(errorMessage);
-        // throw new ValidationException(errorMessage);
-        // }
-        //
+        boolean isValid = verify(signedXml, contentClass);
+
+        if (!isValid) {
+            String errorMessage = "Signature verification failed after signing.";
+            LOGGER.error(errorMessage);
+            throw new ValidationException(errorMessage);
+        }
+
         // add back the xml declaration that was stripped off by the sanitize method
-        String signedXmlMessage = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" + signedXml;
-        LOGGER.info("Signed XML: " + signedXmlMessage);
-        return signedXmlMessage;
+
+        String escapedString = escapeCharacter(signedXml);
+        LOGGER.info("Signed XML: " + escapedString);
+        return escapedString;
     }
 
     /**
@@ -176,36 +162,26 @@ public class MessageUtil {
      * @throws Exception If an error occurs during the conversion.
      */
     public <T> String convertToXmlString(Envelope<T> envelope, Class<T> contentClass) throws Exception {
-        // Create a new instance of DocumentBuilderFactory
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        // Create a new DocumentBuilder
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-        // Create a new Document
-        Document doc = docBuilder.newDocument();
+        String xmlContent = null;
+        try {
+            // Create JAXB Context for the Envelope and content class
+            JAXBContext jaxbContext = JAXBContext.newInstance(Envelope.class, contentClass);
+            // Create Marshaller
+            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, false); // Include XML declaration
 
-        // Create a JAXB context for the Envelope and content class
-        JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
-        // Create a Marshaller
-        Marshaller marshaller = context.createMarshaller();
-        // Set Marshaller properties
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-        // Marshal the envelope to the Document
-        marshaller.marshal(envelope, doc);
-
-        // Create a TransformerFactory
-        TransformerFactory tf = TransformerFactory.newInstance();
-        // Create a Transformer
-        Transformer transformer = tf.newTransformer();
-        // Set the output property for standalone
-        transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
-        // Create a StringWriter
-        StringWriter writer = new StringWriter();
-        // Transform the Document to a string
-        transformer.transform(new DOMSource(doc), new StreamResult(writer));
-
-        // Return the transformed XML string
-        return XmlUtil.sanitizeRequest(writer.toString());
+            // Write XML to StringWriter
+            StringWriter sw = new StringWriter();
+            jaxbMarshaller.marshal(envelope, sw);
+            // Verify XML Content
+            xmlContent = sw.toString();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            throw new Exception("Error converting envelope to XML string", e);
+        }
+        return xmlContent;
     }
 
     /**
@@ -282,58 +258,71 @@ public class MessageUtil {
      * @throws Exception If an error occurs during verification.
      */
     public <T> boolean verify(String xmlString, Class<T> contentClass) throws Exception {
-        // Create a DocumentBuilderFactory
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        // Create a DocumentBuilder
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         // Parse the XML string to a Document
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         Document doc = docBuilder.parse(new InputSource(new StringReader(xmlString)));
 
-        // Create a JAXB context for the Envelope and content class
+        // Unmarshal the XML to an Envelope object
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         @SuppressWarnings("unchecked")
         Envelope<T> envelope = (Envelope<T>) unmarshaller.unmarshal(doc);
 
+        // Extract the content and signature
         T content = envelope.getContent().get(0);
-        byte[] digitalSignature = envelope.getGepgSignature();
+        String gepgSignature = envelope.getGepgSignature();
 
-        // Marshal the content back to XML using Document
+        // Re-marshal the content to an XML string
         Document contentDoc = docBuilder.newDocument();
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
         marshaller.marshal(content, contentDoc);
-
-        // Transform the Document to a string
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
         StringWriter writer = new StringWriter();
         transformer.transform(new DOMSource(contentDoc), new StreamResult(writer));
         String message = writer.toString();
 
-        // Remove XML declaration from the marshalled message
+        // Remove XML declaration if present
         message = message.replaceAll("^<\\?xml.*?\\?>", "").trim();
-        LOGGER.info("Message to Verify: " + message);
 
-        LOGGER.info("Digital Signature (Base64 Encoded): " + Base64.getEncoder().encodeToString(digitalSignature));
+        // Load the public key
+        PublicKey publicKey = PublicKeyReader.get(publicKeyPath, keyStoreType, publicKeyPassword, publicKeyAlias);
 
-        publicKey = PublicKeyReader.get(publicKeyPath, keyStoreType, publicKeyPassword, publicKeyAlias);
+        // Load the private key
+        PrivateKey privateKey = PrivateKeyReader.get(privateKeyPath, keyStoreType, privateKeyPassword, privateKeyAlias);
 
-        try {
-            // Verify the incoming request's signature
-            Signature verifier = Signature.getInstance(signatureAlgorithm);
-            verifier.initVerify(publicKey);
-            verifier.update(message.getBytes(StandardCharsets.UTF_8));
+        DigitalSignatureUtil digitalSignatureUtil = new DigitalSignatureUtil(signatureAlgorithm, privateKey, publicKey);
 
-            // Decode the signature from Base64
-            boolean isVerified = verifier.verify(Base64.getDecoder().decode(digitalSignature));
-            LOGGER.info("Signature Verification Result: {}", isVerified);
-            return isVerified;
-        } catch (Exception e) {
-            LOGGER.error("Verification error: " + e.getMessage());
-            throw new ValidationException(e.getMessage());
+        return digitalSignatureUtil.verifySignature(gepgSignature, message);
+    }
+
+    public static String escapeCharacter(String xmlString) {
+        // Remove newlines and spaces between tags
+        String compressedString = xmlString.replaceAll(">\\s+<", "><").trim();
+
+        // Unescape the XML string
+        String unescapedString = htmlUnescape(compressedString);
+
+        if (!unescapedString.equals(compressedString)) {
+            return compressedString
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("'", "&apos;")
+                    .replaceAll("Ö", "&Ouml;")
+                    .replaceAll("\"", "&quot;");
+        } else {
+            return compressedString;
         }
+    }
+
+    private static String htmlUnescape(String xmlString) {
+        return xmlString
+                .replaceAll("&amp;", "&")
+                .replaceAll("&apos;", "'")
+                .replaceAll("&Ouml;", "Ö")
+                .replaceAll("&quot;", "\"");
     }
 
     /**
@@ -348,7 +337,7 @@ public class MessageUtil {
         private List<T> content;
 
         @XmlElement(name = "gepgSignature", required = true)
-        private byte[] gepgSignature;
+        private String gepgSignature;
 
         public List<T> getContent() {
             return content;
@@ -358,11 +347,11 @@ public class MessageUtil {
             this.content = content;
         }
 
-        public byte[] getGepgSignature() {
+        public String getGepgSignature() {
             return gepgSignature;
         }
 
-        public void setGepgSignature(byte[] gepgSignature) {
+        public void setGepgSignature(String gepgSignature) {
             this.gepgSignature = gepgSignature;
         }
     }
