@@ -1,19 +1,15 @@
 package com.watabelabs.gepg.utils;
 
-import java.io.ByteArrayInputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 
 import javax.validation.ValidationException;
 
 /**
- * The {@code PrivateKeyReader} class provides utility methods for reading
- * private keys
- * from a keystore file. It supports various keystore types and allows for easy
- * retrieval
- * of private keys using their aliases and passwords.
+ * Utility class for reading private keys from a keystore.
+ * This class provides a method to retrieve a private key from a specified
+ * keystore file.
  */
 public class PrivateKeyReader {
 
@@ -32,19 +28,20 @@ public class PrivateKeyReader {
     public static PrivateKey get(String privateKeyPath, String keystoreType, String privateKeyPassword,
             String privateKeyAlias) {
         try {
-            // Read the keystore file bytes
-            byte[] certStoreBytes = Files.readAllBytes(Paths.get(privateKeyPath));
+            // Load the keystore file from the specified path
+            FileInputStream fileInputStream = new FileInputStream(privateKeyPath);
+
             // Create a KeyStore instance based on the specified keystore type
             KeyStore keyStore = KeyStore.getInstance(keystoreType);
-            // Load the keystore from the byte array input stream
-            keyStore.load(new ByteArrayInputStream(certStoreBytes), privateKeyPassword.toCharArray());
+
+            // Load the keystore from the file input stream using the provided password
+            keyStore.load(fileInputStream, privateKeyPassword.toCharArray());
 
             // Retrieve and return the private key using the alias and password
             return (PrivateKey) keyStore.getKey(privateKeyAlias, privateKeyPassword.toCharArray());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ValidationException(e.getLocalizedMessage());
+            throw new ValidationException("Error reading private key: " + e.getMessage(), e);
         }
     }
 }
-

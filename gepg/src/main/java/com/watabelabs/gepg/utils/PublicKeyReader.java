@@ -6,8 +6,8 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 import javax.validation.ValidationException;
 
@@ -15,11 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@code PublicKeyReader} class provides utility methods for reading public
- * keys
- * from a keystore file. It supports various keystore types and allows for easy
- * retrieval
- * of public keys using their aliases and passwords.
+ * Utility class for reading public keys from a keystore.
+ * This class provides a method to retrieve a public key from a specified
+ * keystore file.
  */
 public class PublicKeyReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicKeyReader.class);
@@ -40,44 +38,32 @@ public class PublicKeyReader {
             String publicKeyAlias) {
         try {
             // Create a KeyStore instance based on the specified keystore type
-            KeyStore keystore = KeyStore.getInstance(keystoreType);
-            // Load the keystore from the file input stream
-            keystore.load(new FileInputStream(publicKeyPath), publicKeyPassword.toCharArray());
+            KeyStore keyStore = KeyStore.getInstance(keystoreType);
+
+            // Load the keystore file from the specified path
+            FileInputStream fileInputStream = new FileInputStream(publicKeyPath);
+
+            // Load the keystore from the file input stream using the provided password
+            keyStore.load(fileInputStream, publicKeyPassword.toCharArray());
 
             // Check if the alias exists in the KeyStore
-            if (!keystore.containsAlias(publicKeyAlias)) {
+            if (!keyStore.containsAlias(publicKeyAlias)) {
                 throw new ValidationException("Alias '" + publicKeyAlias + "' does not exist in the KeyStore.");
             }
 
             // Get the certificate from the keystore using the provided alias
-            X509Certificate certificate = (X509Certificate) keystore.getCertificate(publicKeyAlias);
-
+            Certificate certificate = keyStore.getCertificate(publicKeyAlias);
             if (certificate == null) {
                 throw new ValidationException("Certificate does not exist for alias '" + publicKeyAlias + "'.");
             }
 
-            // Log the found public key
-            // LOGGER.info("THE_CERTIFICATE_FOUND_WITH_PUBLIC_KEY:{}",
-            // certificate.getPublicKey());
+            // Return the public key from the certificate
             return certificate.getPublicKey();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-            throw new ValidationException("KeyStore error: " + e.getLocalizedMessage());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            throw new ValidationException("Algorithm not found: " + e.getLocalizedMessage());
-        } catch (CertificateException e) {
-            e.printStackTrace();
-            throw new ValidationException("Certificate error: " + e.getLocalizedMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new ValidationException("I/O error: " + e.getLocalizedMessage());
-        } catch (ValidationException e) {
-            e.printStackTrace();
-            throw e;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ValidationException("Unexpected error: " + e.getLocalizedMessage());
+
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
+            // Log the exception and rethrow it as a ValidationException
+            LOGGER.error("Error reading public key: {}", e.getMessage(), e);
+            throw new ValidationException("Error reading public key: " + e.getMessage(), e);
         }
     }
 }
