@@ -1,161 +1,94 @@
 package com.watabelabs.gepg.utils;
 
-import java.io.FileInputStream;
-import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
-import java.security.cert.Certificate;
 import java.util.Base64;
-import java.util.Enumeration;
-
-import javax.validation.ValidationException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The DigitalSignatureUtil class provides utility methods for loading a private
- * key from a PKCS#12 keystore,
- * generating a digital signature using that private key, and verifying the
- * signature using a public key.
- *
- * <h2>Usage Example:</h2>
- *
- * <pre>
- * {@code
- * // Load the private key from the keystore
- * String keystorePath = "path/to/keystore.p12";
- * String keystorePassword = "your_keystore_password";
- * String alias = "your_key_alias";
- * PrivateKey privateKey = DigitalSignatureUtil.loadPrivateKey(keystorePath, keystorePassword, alias);
- *
- * // Sign the data
- * String data = "Sample data to be signed";
- * String signature = DigitalSignatureUtil.signData(data, privateKey);
- *
- * // Output the signature
- * System.out.println("Digital Signature: " + signature);
- *
- * // Load the public key from the keystore
- * PublicKey publicKey = DigitalSignatureUtil.loadPublicKey(keystorePath, keystorePassword, alias);
- *
- * // Verify the signature
- * boolean isValid = DigitalSignatureUtil.verifySignature(data, signature, publicKey);
- * System.out.println("Signature is valid: " + isValid);
- * }
- * </pre>
+ * Utility class for generating and verifying digital signatures.
+ * This class provides methods to create a digital signature for a given content
+ * using a private key,
+ * and verify a given digital signature using a public key.
+ * The signature algorithm used for both operations is provided during the
+ * instantiation of the class.
  */
-
 public class DigitalSignatureUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DigitalSignatureUtil.class);
+    private String signatureAlgorithm;
+    private PrivateKey privateKey;
+    private PublicKey publicKey;
 
     /**
-     * Loads a private key from a PKCS#12 keystore.
+     * Constructs a DigitalSignatureUtil instance with the specified signature
+     * algorithm, private key, and public key.
      *
-     * @param privateKeyPath     the path to the PKCS#12 keystore
-     * @param privateKeyPassword the password for the keystore
-     * @param privateKeyAlias    the alias of the private key in the keystore
-     * @return the loaded private key
-     * @throws Exception if an error occurs while loading the private key
+     * @param signatureAlgorithm the algorithm used for generating and verifying
+     *                           signatures (e.g., "SHA1withRSA")
+     * @param privateKey         the private key used for generating digital
+     *                           signatures
+     * @param publicKey          the public key used for verifying digital
+     *                           signatures
      */
-    public static PrivateKey loadPrivateKey(String privateKeyPath, String privateKeyPassword, String privateKeyAlias)
-            throws Exception {
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        try (FileInputStream fis = new FileInputStream(privateKeyPath)) {
-            keystore.load(fis, privateKeyPassword.toCharArray());
-        }
-
-        Enumeration<String> aliases = keystore.aliases();
-        while (aliases.hasMoreElements()) {
-            String a = aliases.nextElement();
-            System.out.println("Alias: " + a);
-        }
-
-        if (!keystore.isKeyEntry(privateKeyAlias)) {
-            throw new IllegalArgumentException("Alias " + privateKeyAlias + " does not exist or is not a key entry.");
-        }
-
-        return (PrivateKey) keystore.getKey(privateKeyAlias, privateKeyPassword.toCharArray());
+    public DigitalSignatureUtil(String signatureAlgorithm, PrivateKey privateKey, PublicKey publicKey) {
+        this.signatureAlgorithm = signatureAlgorithm;
+        this.privateKey = privateKey;
+        this.publicKey = publicKey;
     }
 
     /**
-     * Generates a digital signature for the given data using the specified private
-     * key.
+     * Generates a digital signature for the given content.
      *
-     * @param data       the data to be signed
-     * @param privateKey the private key to use for signing
-     * @return the generated digital signature, encoded in Base64
-     * @throws Exception if an error occurs during the signing process
+     * @param content the content to be signed
+     * @return the Base64-encoded digital signature
+     * @throws Exception if an error occurs during the signature generation process
      */
-    public static String signData(String data, PrivateKey privateKey) throws Exception {
-        try {
-            Signature signature = Signature.getInstance("SHA1withRSA");
-            signature.initSign(privateKey);
+    public String generateSignature(String content) throws Exception {
+        // Convert the content string into a byte array
+        byte[] data = content.getBytes();
 
-            byte[] messageBytes = data.getBytes();
-            LOGGER.info("Data Bytes to Sign: {}", Base64.getEncoder().encodeToString(messageBytes));
-            signature.update(messageBytes);
-            byte[] signatureBytes = signature.sign();
+        // Initialize the Signature object with the specified algorithm
+        Signature signature = Signature.getInstance(signatureAlgorithm);
 
-            return Base64.getEncoder().encodeToString(signatureBytes);
-        } catch (Exception e) {
-            LOGGER.error("Signing error: " + e.getMessage(), e);
-            throw new ValidationException(e.getLocalizedMessage());
-        }
+        // Initialize the Signature object for signing with the private key
+        signature.initSign(privateKey);
+
+        // Add the data to be signed to the Signature object
+        signature.update(data);
+
+        // Generate the digital signature
+        byte[] signatureBytes = signature.sign();
+
+        // Encode the signature bytes into a Base64 string and return it
+        return Base64.getEncoder().encodeToString(signatureBytes);
     }
 
     /**
-     * Loads a public key from a PKCS#12 keystore.
+     * Verifies a digital signature for the given content.
      *
-     * @param publicKeyPath     the path to the PKCS#12 keystore
-     * @param publicKeyPassword the password for the keystore
-     * @param publicKeyAlias    the alias of the certificate in the keystore
-     * @return the loaded public key
-     * @throws Exception if an error occurs while loading the public key
+     * @param signature the Base64-encoded digital signature to be verified
+     * @param content   the content that was signed
+     * @return true if the signature is valid; false otherwise
+     * @throws Exception if an error occurs during the signature verification
+     *                   process
      */
-    public static PublicKey loadPublicKey(String publicKeyPath, String publicKeyPassword, String publicKeyAlias)
-            throws Exception {
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        try (FileInputStream fis = new FileInputStream(publicKeyPath)) {
-            keystore.load(fis, publicKeyPassword.toCharArray());
-        }
+    public boolean verifySignature(String signature, String content) throws Exception {
+        // Decode the Base64-encoded signature into a byte array
+        byte[] signatureBytes = Base64.getDecoder().decode(signature);
 
-        Certificate certificate = keystore.getCertificate(publicKeyAlias);
+        // Initialize the Signature object with the specified algorithm
+        Signature signatureInstance = Signature.getInstance(signatureAlgorithm);
 
-        if (certificate == null) {
-            String errorMessage = String.format("Public Key Alias %s does not exist or does not have a certificate.",
-                    publicKeyAlias);
-            LOGGER.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
-        }
+        // Convert the content string into a byte array
+        byte[] data = content.getBytes();
 
-        return certificate.getPublicKey();
-    }
+        // Initialize the Signature object for verification with the public key
+        signatureInstance.initVerify(publicKey);
 
-    /**
-     * Verifies the digital signature of the given data using the provided public
-     * key.
-     *
-     * @param data          the data to verify
-     * @param signatureData the Base64-encoded signature to verify
-     * @param publicKey     the public key to verify with
-     * @return true if the signature is valid, false otherwise
-     * @throws Exception if an error occurs while verifying the signature
-     */
-    public static boolean verifySignature(String data, String signatureData, PublicKey publicKey) throws Exception {
-        try {
-            Signature signature = Signature.getInstance("SHA1withRSA");
-            signature.initVerify(publicKey);
-            byte[] messageBytes = data.getBytes();
-            LOGGER.info("Data Bytes to Verify: {}", Base64.getEncoder().encodeToString(messageBytes));
-            signature.update(messageBytes);
-            byte[] signatureBytes = Base64.getDecoder().decode(signatureData);
-            return signature.verify(signatureBytes);
-        } catch (Exception e) {
-            LOGGER.error("Verification error: " + e.getMessage(), e);
-            throw new ValidationException(e.getLocalizedMessage());
-        }
+        // Add the data to be verified to the Signature object
+        signatureInstance.update(data);
+
+        // Verify the digital signature and return the result
+        return signatureInstance.verify(signatureBytes);
     }
 }
