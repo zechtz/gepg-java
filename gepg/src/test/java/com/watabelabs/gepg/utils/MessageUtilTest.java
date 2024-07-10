@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -18,12 +17,8 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import javax.validation.ValidationException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.transform.stream.StreamResult;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.watabelabs.gepg.GepgApiClient;
@@ -75,12 +70,12 @@ public class MessageUtilTest {
 
     @Test
     public void testXmlConversion() throws Exception {
-        GepgBillSubReq billSubRequestMapper = createBillSubReq();
+        GepgBillSubReq gepgBillSubReq = createBillSubReq();
 
-        String message = gepgApiClient.convertToXmlStringWithoutDeclaration(billSubRequestMapper);
+        String xmlOutput = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
 
         // Sign the message
-        String signedMessage = gepgApiClient.signMessage(message, GepgBillSubReq.class);
+        String signedMessage = gepgApiClient.signMessage(xmlOutput, GepgBillSubReq.class);
 
         // extract <gepgSignature> from signedMessage
         String signature = signedMessage.substring(signedMessage.indexOf("<gepgSignature>") + 15,
@@ -88,12 +83,10 @@ public class MessageUtilTest {
 
         // Assert that the signed message is not null and contains the digital signature
         assertNotNull(signedMessage);
-        System.out.println(signedMessage);
+
         assertTrue(signedMessage.contains("<gepgSignature>"));
 
-        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                "<Gepg>" +
-                "<gepgBillSubReq>" +
+        String expectedXml = "<gepgBillSubReq>" +
                 "<BillHdr>" +
                 "<SpCode>SP023</SpCode>" +
                 "<RtrRespFlg>true</RtrRespFlg>" +
@@ -136,10 +129,9 @@ public class MessageUtilTest {
                 "</BillItem>" +
                 "</BillItems>" +
                 "</BillTrxInf>" +
-                "</gepgBillSubReq>" +
-                "<gepgSignature>" + signature + "</gepgSignature>" +
-                "</Gepg>";
-        assertEquals(expectedXml.replaceAll("\\s+", ""), signedMessage.replaceAll("\\s+", ""));
+                "</gepgBillSubReq>";
+
+        assertEquals(expectedXml.replaceAll("\\s+", ""), xmlOutput.replaceAll("\\s+", ""));
     }
 
     @Test

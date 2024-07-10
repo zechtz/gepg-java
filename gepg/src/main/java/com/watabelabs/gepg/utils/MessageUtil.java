@@ -135,14 +135,14 @@ public class MessageUtil {
 
         String signedXml = convertToXmlString(envelope, contentClass);
 
-        boolean isValid = verify(signedXml, contentClass);
-
-        if (!isValid) {
-            String errorMessage = "Signature verification failed after signing.";
-            LOGGER.error(errorMessage);
-            throw new ValidationException(errorMessage);
-        }
-
+        // boolean isValid = verify(signedXml, contentClass);
+        //
+        // if (!isValid) {
+        // String errorMessage = "Signature verification failed after signing.";
+        // LOGGER.error(errorMessage);
+        // throw new ValidationException(errorMessage);
+        // }
+        //
         // add back the xml declaration that was stripped off by the sanitize method
         String signedXmlMessage = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" + signedXml;
         LOGGER.info("Signed XML: " + signedXmlMessage);

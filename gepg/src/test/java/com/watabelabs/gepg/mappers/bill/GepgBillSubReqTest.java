@@ -28,7 +28,6 @@ public class GepgBillSubReqTest {
     private static final Logger logger = LoggerFactory.getLogger(GepgBillSubReqTest.class);
 
     private static GepgApiClient gepgApiClient;
-    private static GepgBillSubResp callbackResponse;
     private static CountDownLatch latch;
 
     // Load environment variables once
@@ -204,6 +203,8 @@ public class GepgBillSubReqTest {
 
         // Use the mocked client to submit the signed message
         GepgBillSubReqAck response = mockClient.submitBill(signedMessage);
+
+        logger.info("Gepg Response: {}", response);
 
         assertNotNull(response);
         assertTrue(response.getTrxStsCode() != 0);
