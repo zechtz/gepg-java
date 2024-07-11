@@ -186,11 +186,23 @@ All these DTOs conform to the GePG specification, eliminating the need to mainta
 
 -   `signMessage(String xmlString, Class<T> clazz)`: method that adds a signature to your payload. This method returns a signed xml string of the clazz type.
 
+### Data Convertion Helpers
+
 -   `convertToJavaObject(String xmlString, Class<T> clazz)`: this method converts an xml string into a JAXB-annotated object an returns it
 
 -   `convertToXmlString(Object object)`: this method takes a java JAXB-annotated object and converts it into an xml string nad returns it
 
 -   `convertToXmlStringWithoutDeclaration(Object object)`: this method takes a java JAXB-annotated object and converts it into an xml string without the xml declaration nad returns it
+
+### DateTime Helpers
+
+-   `getFutureDateTimeInDays(int days)`: this method takes an int (days) and
+    return1 a datetime string in the future (days) from now in the format (2017-03-25T14:30:12 )
+
+-   `getPastDateTimeInDays(int days)`: this method takes an int (days) and
+    return1 a datetime string in the past (days) from now in the format (2017-03-25T14:30:12 )
+
+-   `getCurrentDateTime()`: this method returns current datetime string in in the format (2017-03-25T14:30:12 )
 
 ## Usage Example
 
@@ -219,19 +231,17 @@ public GepgBillSubReqAck submitBill() throws Exception {
  }
 
 private static GepgBillSubReq createBillSubReq() {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    // instantiate the apiClient
+    GepgApiClient gepgApiClient = new GepgApiClient();
 
     GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
     GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.0, 7885.0, 0.0, "140206");
     GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
     GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-            UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+            UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, gepgApiClient.getFutureDateTimeInDays(15), formatter), "Palapala",
             "Charles Palapala",
-            "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
+            "Bill Number 7885", gepgApiClient.getCurrentDateTime(), "100", "Hashim",
             "0699210053",
             "charlestp@yahoo.com",
             "TZS", 7885.0, true, 1, Arrays.asList(item1, item2));

@@ -31,6 +31,7 @@ import com.watabelabs.gepg.mappers.payment.GepgPmtSpInfo;
 import com.watabelabs.gepg.mappers.payment.GepgPmtSpInfoAck;
 import com.watabelabs.gepg.mappers.reconciliation.GepgSpReconcResp;
 import com.watabelabs.gepg.mappers.reconciliation.GepgSpReconcRespAck;
+import com.watabelabs.gepg.utils.DateTimeUtil;
 import com.watabelabs.gepg.utils.GepgEndpoints;
 import com.watabelabs.gepg.utils.MessageUtil;
 import com.watabelabs.gepg.utils.PrivateKeyReader;
@@ -583,6 +584,88 @@ public class GepgApiClient {
 
         // Sign the XML string
         return signMessage(ackXml, clazz);
+    }
+
+    /**
+     * Generates a String representing a future date and time based on
+     * the specified number of days from now.
+     *
+     * @param days the number of days from now to calculate the future date and time
+     * @return the LocalDateTime object representing the future date and time
+     *
+     *         <p>
+     *         Example usage:
+     *         </p>
+     *
+     *         <pre>{@code
+     * String futureDateTime = Util.getFutureDateTimeInDays(365);
+     * System.out.println(Util.formatDateTime(futureDateTime));
+     * }</pre>
+     *
+     *         <p>
+     *         Example return value:
+     *         </p>
+     *
+     *         <pre>{@code
+     * "2025-07-04T00:00:00"
+     * }</pre>
+     */
+    public String getFutureDateTimeInDays(int days) {
+        return DateTimeUtil.getFutureDateTimeInDays(days);
+    }
+
+    /**
+     * Generates a String representing a past date and time based on
+     * the specified number of days from now.
+     *
+     * @param days the number of days from now to calculate the past date and time
+     * @return the LocalDateTime object representing the future date and time
+     *
+     *         <p>
+     *         Example usage:
+     *         </p>
+     *
+     *         <pre>{@code
+     * String pastDate = Util.getPastDateTimeInDays(365);
+     * System.out.println(Util.formatDateTime(futureDateTime));
+     * }</pre>
+     *
+     *         <p>
+     *         Example return value:
+     *         </p>
+     *
+     *         <pre>{@code
+     * "2023-07-04T00:00:00"
+     * }</pre>
+     */
+    public String getPastDateTimeInDays(int days) {
+        return DateTimeUtil.getPastDateTimeInDays(days);
+    }
+
+    /**
+     * Generates a String representing the current date and time.
+     *
+     * @return the LocalDateTime object representing the current date and time
+     *
+     *         <p>
+     *         Example usage:
+     *         </p>
+     *
+     *         <pre>{@code
+     * String currentDateTime = Util.getCurrentDateTime();
+     * System.out.println(Util.formatDateTime(currentDateTime));
+     * }</pre>
+     *
+     *         <p>
+     *         Example return value:
+     *         </p>
+     *
+     *         <pre>{@code
+     * "2024-07-04T00:00:00"
+     * }</pre>
+     */
+    public String getCurrentDateTime() {
+        return DateTimeUtil.getCurrentDateTime();
     }
 
     /*
