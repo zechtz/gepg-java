@@ -117,14 +117,14 @@ public class GepgBillSubResp {
         private String payCntrNum;
 
         @XmlElement(name = "TrxStsCode")
-        private int trxStsCode;
+        private String trxStsCode;
 
         // Default no-argument constructor
         public GepgBillTrxInf() {
         }
 
         // Parameterized constructor
-        public GepgBillTrxInf(UUID billId, String trxSts, String payCntrNum, int trxStsCode) {
+        public GepgBillTrxInf(UUID billId, String trxSts, String payCntrNum, String trxStsCode) {
             this.billId = billId;
             this.trxSts = trxSts;
             this.payCntrNum = payCntrNum;
@@ -156,11 +156,11 @@ public class GepgBillSubResp {
             this.payCntrNum = payCntrNum;
         }
 
-        public int getTrxStsCode() {
+        public String getTrxStsCode() {
             return trxStsCode;
         }
 
-        public void setTrxStsCode(int trxStsCode) {
+        public void setTrxStsCode(String trxStsCode) {
             this.trxStsCode = trxStsCode;
         }
 
