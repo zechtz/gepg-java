@@ -1,6 +1,7 @@
 package com.watabelabs.gepg;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.DynamicTest.stream;
 
 import java.lang.System.LoggerFinder;
 import java.text.SimpleDateFormat;
@@ -33,6 +34,39 @@ class GepgApiClientTest {
     @BeforeAll
     public static void setup() {
         gepgApiClient = new GepgApiClient();
+    }
+
+    @Test
+    void testAllRequiredParamsAreSet() {
+
+        String apiUrl = getEnvVariable("API_URL");
+        String gepgCode = getEnvVariable("GEPG_CODE");
+
+        String privateKeystorePath = getEnvVariable("PRIVATE_KEYSTORE_PATH");
+        String privateKeystorePassword = getEnvVariable("PRIVATE_KEYSTORE_PASSWORD");
+        String privateKeyAlias = getEnvVariable("PRIVATE_KEY_ALIAS");
+
+        String publicKeystorePath = getEnvVariable("PUBLIC_KEYSTORE_PATH");
+        String publicKeyAlias = getEnvVariable("PUBLIC_KEY_ALIAS");
+        String publicKeystorePassword = getEnvVariable("PUBLIC_KEYSTORE_PASSWORD");
+
+        String keystoreType = getEnvVariable("KEYSTORE_TYPE");
+        String signatureAlgorithm = getEnvVariable("SIGNATURE_ALGORITHM");
+
+        assertTrue(apiUrl != null && !apiUrl.isEmpty(), "API_URL is required.");
+        assertTrue(gepgCode != null && !gepgCode.isEmpty(), "GEPG_CODE is required.");
+        assertTrue(publicKeystorePassword != null && !publicKeystorePassword.isEmpty(),
+                "PUBLIC_KEYSTORE_PASSWORD is required.");
+        assertTrue(privateKeystorePath != null && !privateKeystorePath.isEmpty(), "PRIVATE_KEYSTORE_PATH is required.");
+        assertTrue(privateKeystorePassword != null && !privateKeystorePassword.isEmpty(),
+                "PRIVATE_KEYSTORE_PASSWORD is required.");
+        assertTrue(privateKeyAlias != null && !privateKeyAlias.isEmpty(), "PRIVATE_KEY_ALIAS is required.");
+        assertTrue(publicKeystorePath != null && !publicKeystorePath.isEmpty(), "PUBLIC_KEYSTORE_PATH is required.");
+        assertTrue(publicKeyAlias != null && !publicKeyAlias.isEmpty(), "PUBLIC_KEY_ALIAS is required.");
+        assertTrue(keystoreType != null && !keystoreType.isEmpty(), "KEYSTORE_TYPE is required.");
+        assertTrue(signatureAlgorithm != null && !signatureAlgorithm.isEmpty(), "SIGNATURE_ALGORITHM is required.");
+
+        assertTrue(signatureAlgorithm.equals("SHA1withRSA"), "The signature algorithm must be SHA1withRSA.");
     }
 
     @Test
