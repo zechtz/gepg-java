@@ -36,7 +36,7 @@ public class GepgSpReconcRespAck {
      * </p>
      */
     @XmlElement(name = "ReconcStsCode")
-    private String reconcStsCode;
+    private int reconcStsCode;
 
     /**
      * Default no-argument constructor.
@@ -54,7 +54,7 @@ public class GepgSpReconcRespAck {
      *
      * @param reconcStsCode the reconciliation status code to set
      */
-    public GepgSpReconcRespAck(String reconcStsCode) {
+    public GepgSpReconcRespAck(int reconcStsCode) {
         this.reconcStsCode = reconcStsCode;
     }
 
@@ -63,7 +63,7 @@ public class GepgSpReconcRespAck {
      *
      * @return the reconciliation status code
      */
-    public String getReconcStsCode() {
+    public int getReconcStsCode() {
         return reconcStsCode;
     }
 
@@ -72,7 +72,7 @@ public class GepgSpReconcRespAck {
      *
      * @param reconcStsCode the reconciliation status code to set
      */
-    public void setReconcStsCode(String reconcStsCode) {
+    public void setReconcStsCode(int reconcStsCode) {
         this.reconcStsCode = reconcStsCode;
     }
 

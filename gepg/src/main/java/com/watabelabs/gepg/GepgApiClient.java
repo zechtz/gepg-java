@@ -26,6 +26,7 @@ import com.watabelabs.gepg.constants.GepgResponseCode;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAck;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubResp;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubRespAck;
+import com.watabelabs.gepg.mappers.payment.GepgOlPmtNtfSpInfoAck;
 import com.watabelabs.gepg.mappers.payment.GepgPmtSpInfo;
 import com.watabelabs.gepg.mappers.payment.GepgPmtSpInfoAck;
 import com.watabelabs.gepg.mappers.reconciliation.GepgSpReconcResp;
@@ -234,11 +235,6 @@ public class GepgApiClient {
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
-        // Check if the response contains a valid acknowledgment
-        if (billSubReqAck == null || billSubReqAck.getTrxStsCode() == 0) {
-            throw new Exception("Invalid acknowledgment response");
-        }
-
         return billSubReqAck;
     }
 
@@ -260,11 +256,6 @@ public class GepgApiClient {
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
-        // Check if the response contains a valid acknowledgment
-        if (billSubReqAck == null || billSubReqAck.getTrxStsCode() == 0) {
-            throw new Exception("Invalid acknowledgment response");
-        }
-
         return billSubReqAck;
     }
 
@@ -280,14 +271,11 @@ public class GepgApiClient {
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest, GEPG_COM_BILL_CHANGE);
+
         logger.info("BILL_UPDATE_REQUEST_RESPONSE:{}", response);
+
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
-
-        // Check if the response contains a valid acknowledgment
-        if (billSubReqAck == null || billSubReqAck.getTrxStsCode() == 0) {
-            throw new Exception("Invalid acknowledgment response");
-        }
 
         return billSubReqAck;
     }
@@ -304,14 +292,11 @@ public class GepgApiClient {
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest, CONTENT_TYPE);
+
         logger.info("CANCEL_BILL_REQUEST_RESPONSE:{}", response);
+
         Envelope<GepgBillSubReqAck> envelope = mapResponse(response, GepgBillSubReqAck.class);
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
-
-        // Check if the response contains a valid acknowledgment
-        if (billSubReqAck == null || billSubReqAck.getTrxStsCode() == 0) {
-            throw new Exception("Invalid acknowledgment response");
-        }
 
         return billSubReqAck;
     }
@@ -328,14 +313,11 @@ public class GepgApiClient {
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest, CONTENT_TYPE);
+
         logger.info("PAYMENT_SUBMISSION_REQUEST_RESPONSE:{}", response);
+
         Envelope<GepgPmtSpInfoAck> envelope = mapResponse(response, GepgPmtSpInfoAck.class);
         GepgPmtSpInfoAck paymentSpInfoAck = envelope.getContent().get(0);
-
-        // Check if the response contains a valid acknowledgment
-        if (paymentSpInfoAck == null || paymentSpInfoAck.getTrxStsCode() != 7101) {
-            throw new Exception("Invalid acknowledgment response");
-        }
 
         return paymentSpInfoAck;
     }
@@ -352,14 +334,11 @@ public class GepgApiClient {
 
         // Step 1: Send the control number reuse request
         String response = sendRequest(signedRequest, CONTENT_TYPE);
+
         logger.info("RECONCILIATION_REQUEST_RESPONSE:{}", response);
+
         Envelope<GepgSpReconcRespAck> envelope = mapResponse(response, GepgSpReconcRespAck.class);
         GepgSpReconcRespAck reconciliationRespAck = envelope.getContent().get(0);
-
-        // Check if the response contains a valid acknowledgment
-        if (reconciliationRespAck == null || Integer.valueOf(reconciliationRespAck.getReconcStsCode()) != 7241) {
-            throw new Exception("Invalid acknowledgment response");
-        }
 
         return reconciliationRespAck;
     }
@@ -427,13 +406,9 @@ public class GepgApiClient {
      */
     public String receiveControlNumber(GepgBillSubResp gepgBillSubResp) throws Exception {
         // Prepare the acknowledgment response
-        GepgBillSubRespAck gepgBillSubRespAck = new GepgBillSubRespAck(7101);
+        GepgBillSubRespAck gepgBillSubRespAck = new GepgBillSubRespAck();
 
-        // Convert acknowledgment to XML and sign it
-        String ackXml = convertToXmlStringWithoutDeclaration(gepgBillSubRespAck);
-
-        // Initialize with the required parameters
-        return signMessage(ackXml, GepgBillSubRespAck.class);
+        return generateResponseAck(gepgBillSubRespAck);
     }
 
     /**
@@ -587,15 +562,24 @@ public class GepgApiClient {
      * @return the signed XML string representing the acknowledgment
      * @throws Exception if an error occurs during the process
      */
-    public <T> String generateResponseAck(Class<T> clazz) throws Exception {
-        // Create an instance of the specified class
-        T instance = clazz.getDeclaredConstructor().newInstance();
+    public <T> String generateResponseAck(T instance) throws Exception {
+        Class<?> clazz = instance.getClass();
 
-        // Set the status code to 7101
-        clazz.getMethod("setTrxStsCode", int.class).invoke(instance, 7101);
+        // Set the status code based on the class type
+        if (clazz == GepgBillSubRespAck.class) {
+            clazz.getMethod("setTrxStsCode", int.class).invoke(instance, 7101);
+        } else if (clazz == GepgPmtSpInfoAck.class) {
+            clazz.getMethod("setTrxStsCode", int.class).invoke(instance, 7101);
+        } else if (clazz == GepgOlPmtNtfSpInfoAck.class) {
+            clazz.getMethod("setOlStsCode", int.class).invoke(instance, 7101);
+        } else if (clazz == GepgSpReconcRespAck.class) {
+            clazz.getMethod("setReconcStsCode", int.class).invoke(instance, 7101);
+        } else {
+            throw new IllegalArgumentException("Unknown response class: " + clazz.getName());
+        }
 
         // Convert the instance to an XML string
-        String ackXml = convertToXmlString(instance);
+        String ackXml = convertToXmlStringWithoutDeclaration(instance);
 
         // Sign the XML string
         return signMessage(ackXml, clazz);
@@ -647,14 +631,6 @@ public class GepgApiClient {
      */
     @SuppressWarnings("unchecked")
     private <T> Envelope<T> mapResponse(String response, Class<T> contentClass) throws Exception {
-        // Validate the response signature
-
-        // boolean isValid = verify(response, contentClass, publicKeystorePath,
-        // publicKeystorePassword, publicKeyAlias);
-        // if (!isValid) {
-        // throw new RuntimeException("Invalid signature in the response");
-        // }
-
         JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         StringReader reader = new StringReader(response);
