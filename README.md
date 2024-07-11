@@ -266,8 +266,9 @@ public String receiveControlNumber(String xml) throws Exception {
 
     // probably use this data to update control number and message to bill
 
-    // respond by return the ack
-    return gepgApiClient.receiveControlNumber(gepgBillSubResp);
+GepgBillSubRespAck gepgBillSubRespAck = new GepgBillSubRespAck();
+    // respond by returning the signed response the ack xml
+    return gepgApiClient.generateResponseAck(gepgBillSubRespAck);
 }
 
 ```
@@ -299,7 +300,7 @@ public String receivePaymentNotifications(String responseXml) throws Exception {
     // set payment status
 
     // return the acknowledgement
-    return gepgApiClient.generateResponseAck(GepgPmtSpInfoAck.class);
+    return gepgApiClient.generateResponseAck(new GepgPmtSpInfoAck());
 }
 
 ```
