@@ -1,6 +1,8 @@
 package com.watabelabs.gepg.mappers.reconciliation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +10,23 @@ import java.util.UUID;
 
 import com.watabelabs.gepg.GepgApiClient;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GepgSpReconcRespTest {
+    private static final Logger logger = LoggerFactory.getLogger(GepgSpReconcRespTest.class);
+    private static GepgApiClient gepgApiClient;
+
+    @BeforeAll
+    public static void setup() {
+        gepgApiClient = new GepgApiClient();
+    }
 
     @Test
     public void testReconciliationResponseXmlCreation() throws Exception {
-        GepgApiClient gepgApiClient = new GepgApiClient();
         GepgSpReconcResp gepgSpReconcResp = getReconciliationResponse();
 
         String xmlOutput = gepgApiClient.convertToXmlString(gepgSpReconcResp);
@@ -76,7 +88,6 @@ public class GepgSpReconcRespTest {
 
     @Test
     public void testReconciliationResponseXmlPojoConvertion() throws Exception {
-        GepgApiClient gepgApiClient = new GepgApiClient();
 
         String receivedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                 "<Gepg>" +
@@ -136,6 +147,19 @@ public class GepgSpReconcRespTest {
         GepgSpReconcResp resp = gepgApiClient.convertToJavaObject(receivedXml, GepgSpReconcResp.class);
 
         assertEquals("GOV Agency", resp.getReconcBatchInfo().getSpName());
+    }
+
+    @Test
+    public void testReconciliationResponseAck() throws Exception {
+
+        GepgSpReconcRespAck gepgSpReconcRespAck = new GepgSpReconcRespAck();
+
+        String reconciliationResponseAck = gepgApiClient.generateResponseAck(gepgSpReconcRespAck);
+
+        logger.info("RECONCILIATION_RESP_ACK:{}", reconciliationResponseAck);
+
+        assertNotNull(reconciliationResponseAck);
+        assertTrue(reconciliationResponseAck.contains("gepgSpReconcRespAck"));
     }
 
     public GepgSpReconcResp getReconciliationResponse() {
