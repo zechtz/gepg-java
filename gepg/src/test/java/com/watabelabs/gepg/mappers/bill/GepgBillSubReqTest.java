@@ -53,6 +53,8 @@ public class GepgBillSubReqTest {
 
         String xmlOutput = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
 
+        logger.info("------------XML_OUTPUT-------------: {}", xmlOutput);
+
         String expectedXml = "<gepgBillSubReq>" +
                 "<BillHdr>" +
                 "<SpCode>SP023</SpCode>" +
@@ -64,11 +66,11 @@ public class GepgBillSubReqTest {
                 "<SpSysId>tjv47</SpSysId>" +
                 "<BillAmt>7885.0</BillAmt>" +
                 "<MiscAmt>0.0</MiscAmt>" +
-                "<BillExprDt>2017-05-30T10:00:01</BillExprDt>" +
+                "<BillExprDt>" + gepgApiClient.getFutureDateTimeInDays(10) + "</BillExprDt>" +
                 "<PyrId>Palapala</PyrId>" +
                 "<PyrName>Charles Palapala</PyrName>" +
                 "<BillDesc>Bill Number 7885</BillDesc>" +
-                "<BillGenDt>2017-02-22T10:00:10</BillGenDt>" +
+                "<BillGenDt>" + gepgApiClient.getCurrentDateTime() + "</BillGenDt>" +
                 "<BillGenBy>100</BillGenBy>" +
                 "<BillApprBy>Hashim</BillApprBy>" +
                 "<PyrCellNum>0699210053</PyrCellNum>" +
@@ -285,9 +287,9 @@ public class GepgBillSubReqTest {
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
                 UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0,
-                "2017-05-30T10:00:01", "Palapala",
+                gepgApiClient.getFutureDateTimeInDays(10), "Palapala",
                 "Charles Palapala",
-                "Bill Number 7885", "2017-02-22T10:00:10", "100", "Hashim",
+                "Bill Number 7885", gepgApiClient.getCurrentDateTime(), "100", "Hashim",
                 "0699210053",
                 "charlestp@yahoo.com",
                 "TZS", 7885.0, true, 1, Arrays.asList(item1, item2));
