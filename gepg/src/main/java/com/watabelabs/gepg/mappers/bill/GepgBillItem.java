@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * The GepgBillItemMapper class is used for mapping the XML response
+ * The GepgBillItem class is used for mapping the XML response
  * to the corresponding Java object. This class represents a collection
  * of bill items within a GEPG bill transaction.
  *
@@ -61,8 +61,8 @@ public class GepgBillItem {
      * @param billItemMiscAmt the bill item miscellaneous amount
      * @param gfsCode         the GFS code
      */
-    public GepgBillItem(String billItemRef, String useItemRefOnPay, Double billItemAmt, Double  billItemEqvAmt,
-            Double  billItemMiscAmt, String gfsCode) {
+    public GepgBillItem(String billItemRef, String useItemRefOnPay, Double billItemAmt, Double billItemEqvAmt,
+            Double billItemMiscAmt, String gfsCode) {
         this.billItemRef = billItemRef;
         this.useItemRefOnPay = useItemRefOnPay;
         this.billItemAmt = billItemAmt;

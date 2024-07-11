@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The ReconcTransMapper class is used for mapping the XML response
+ * The GepgReconcTrans class is used for mapping the XML response
  * to the corresponding Java object. This class represents the reconciliation
  * transactions, containing a list of reconciliation transaction information.
  *

@@ -1,14 +1,8 @@
 package com.watabelabs.gepg;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.DynamicTest.stream;
 
-import java.lang.System.LoggerFinder;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -102,20 +96,15 @@ class GepgApiClientTest {
         String subSpCode = getEnvVariable("SUB_SP_CODE");
         String systemId = getEnvVariable("SYSTEM_ID");
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
         GepgBillHdr billHdr = new GepgBillHdr(spCode, true);
         GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.0, 7885.0, 0.0, "140206");
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
                 UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), subSpCode, systemId, 7885.0, 0.0,
-                LocalDateTime.parse("2017-05-30T10:00:01", formatter), "Palapala",
+                "2017-05-30T10:00:01", "Palapala",
                 "Charles Palapala",
-                "Bill Number 7885", LocalDateTime.parse("2017-02-22T10:00:10", formatter), "100", "Hashim",
+                "Bill Number 7885", "2017-02-22T10:00:10", "100", "Hashim",
                 "0699210053",
                 "charlestp@yahoo.com",
                 "TZS", 7885.0, true, 1, Arrays.asList(item1, item2));

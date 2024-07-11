@@ -1,7 +1,6 @@
 package com.watabelabs.gepg.mappers.bill;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,12 +9,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import com.watabelabs.gepg.utils.LocalDateTimeAdapter;
 
 /**
- * The GepgBillTrxInfoCtrlNoReuseMapper class is used for mapping the XML
+ * The GepgBillTrxInfoCtrlNoReuse class is used for mapping the XML
  * response
  * to the corresponding Java object. This class represents the bill transaction
  * information.
@@ -61,8 +57,7 @@ public class GepgBillTrxInfoCtrlNoReuse {
     private BigDecimal miscAmt;
 
     @XmlElement(name = "BillExprDt", required = true)
-    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
-    private LocalDateTime billExprDt;
+    private String billExprDt;
 
     @XmlElement(name = "PyrId", required = true)
     private String pyrId;
@@ -74,8 +69,7 @@ public class GepgBillTrxInfoCtrlNoReuse {
     private String billDesc;
 
     @XmlElement(name = "BillGenDt", required = true)
-    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
-    private LocalDateTime billGenDt;
+    private String billGenDt;
 
     @XmlElement(name = "BillGenBy", required = true)
     private String billGenBy;
@@ -140,8 +134,8 @@ public class GepgBillTrxInfoCtrlNoReuse {
      */
     public GepgBillTrxInfoCtrlNoReuse(UUID billId, String subSpCode, String spSysId, BigDecimal billAmt,
             BigDecimal miscAmt,
-            LocalDateTime billExprDt,
-            String pyrId, String pyrName, String billDesc, LocalDateTime billGenDt, String billGenBy, String billApprBy,
+            String billExprDt,
+            String pyrId, String pyrName, String billDesc, String billGenDt, String billGenBy, String billApprBy,
             String pyrCellNum, String pyrEmail, String ccy, BigDecimal billEqvAmt, boolean remFlag, int billPayOpt,
             int payCntrNum, List<GepgBillItem> billItems) {
         this.billId = billId;
@@ -200,7 +194,6 @@ public class GepgBillTrxInfoCtrlNoReuse {
                 '}';
     }
 
-
     public UUID getBillId() {
         return billId;
     }
@@ -241,11 +234,11 @@ public class GepgBillTrxInfoCtrlNoReuse {
         this.miscAmt = miscAmt;
     }
 
-    public LocalDateTime getBillExprDt() {
+    public String getBillExprDt() {
         return billExprDt;
     }
 
-    public void setBillExprDt(LocalDateTime billExprDt) {
+    public void setBillExprDt(String billExprDt) {
         this.billExprDt = billExprDt;
     }
 
@@ -273,11 +266,11 @@ public class GepgBillTrxInfoCtrlNoReuse {
         this.billDesc = billDesc;
     }
 
-    public LocalDateTime getBillGenDt() {
+    public String getBillGenDt() {
         return billGenDt;
     }
 
-    public void setBillGenDt(LocalDateTime billGenDt) {
+    public void setBillGenDt(String billGenDt) {
         this.billGenDt = billGenDt;
     }
 

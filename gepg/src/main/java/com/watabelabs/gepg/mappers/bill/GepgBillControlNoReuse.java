@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The GepgBillControlNoReuseReqMapper class is used for mapping the XML request
+ * The GepgBillControlNoReuse class is used for mapping the XML request
  * to the corresponding Java object. This class represents the bill subscription
  * request.
  *

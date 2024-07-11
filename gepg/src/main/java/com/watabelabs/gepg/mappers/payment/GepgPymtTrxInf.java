@@ -1,16 +1,11 @@
 package com.watabelabs.gepg.mappers.payment;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import com.watabelabs.gepg.utils.LocalDateTimeAdapter;
-import com.watabelabs.gepg.utils.LocalDateTimeAdapterWithoutZone;
 
 /**
  * The GepgPymtTrxInf class is used for mapping the XML response
@@ -21,13 +16,16 @@ import com.watabelabs.gepg.utils.LocalDateTimeAdapterWithoutZone;
  * It contains various fields that store details of the payment transaction,
  * such as transaction ID, service provider code, payment reference ID, bill ID,
  * payment control number, bill amount, paid amount, bill payment option,
- * currency, transaction date and time, used payment channel, payer's cell number,
- * payer's name, payer's email, PSP receipt number, PSP name, and control account number.
+ * currency, transaction date and time, used payment channel, payer's cell
+ * number,
+ * payer's name, payer's email, PSP receipt number, PSP name, and control
+ * account number.
  * </p>
  *
  * <p>
  * The class is annotated with JAXB annotations to specify how the XML elements
- * should be mapped to the Java fields. It uses {@link XmlRootElement} to define the
+ * should be mapped to the Java fields. It uses {@link XmlRootElement} to define
+ * the
  * root element name and {@link XmlAccessorType} to specify the access type for
  * the fields.
  * </p>
@@ -66,8 +64,7 @@ public class GepgPymtTrxInf {
     private String CCy;
 
     @XmlElement(name = "TrxDtTm")
-    @XmlJavaTypeAdapter(LocalDateTimeAdapterWithoutZone.class)
-    private LocalDateTime trxDtTm;
+    private String trxDtTm;
 
     @XmlElement(name = "UsdPayChnl")
     private String usdPayChn;
@@ -123,7 +120,7 @@ public class GepgPymtTrxInf {
      */
     public GepgPymtTrxInf(String trxId, String spCode, String payRefId, UUID billId, String payCtrNum,
             Double billAmt, Double paidAmt, String billPayOptString, String CCy,
-            LocalDateTime trxDtTm, String usdPayChn, String pyrCellNum, String pyrName,
+            String trxDtTm, String usdPayChn, String pyrCellNum, String pyrName,
             String pyrEmail, String pspReceiptNumber, String pspName, String ctrAccNum) {
         this.trxId = trxId;
         this.spCode = spCode;
@@ -229,11 +226,11 @@ public class GepgPymtTrxInf {
         this.CCy = CCy;
     }
 
-    public LocalDateTime getTrxDtTm() {
+    public String getTrxDtTm() {
         return trxDtTm;
     }
 
-    public void setTrxDtTm(LocalDateTime trxDtTm) {
+    public void setTrxDtTm(String trxDtTm) {
         this.trxDtTm = trxDtTm;
     }
 
@@ -325,4 +322,3 @@ public class GepgPymtTrxInf {
                 '}';
     }
 }
-

@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The ReconcBatchInfoMapper class is used for mapping the XML response
+ * The GepgReconcBatchInfo class is used for mapping the XML response
  * to the corresponding Java object. This class represents the reconciliation
  * batch information.
  *

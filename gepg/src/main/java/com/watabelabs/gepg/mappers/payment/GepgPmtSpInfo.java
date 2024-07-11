@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
- * The GepgPmtSpInfoMapper class is used for mapping the XML response
+ * The GepgPmtSpInfo class is used for mapping the XML response
  * to the corresponding Java object. This class represents the payment
  * service provider information, containing the payment transaction information.
  *

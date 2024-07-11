@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * The GepgBillHeaderMapper class represents the bill header information.
+ * The GepgBillHdr class represents the bill header information.
  *
  * <p>
  * It contains fields for the service provider code and the return response

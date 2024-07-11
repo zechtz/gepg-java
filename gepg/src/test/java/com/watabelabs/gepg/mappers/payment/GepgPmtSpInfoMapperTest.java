@@ -4,19 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.watabelabs.gepg.GepgApiClient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.watabelabs.gepg.GepgApiClient;
 
 public class GepgPmtSpInfoMapperTest {
     private static final Logger logger = LoggerFactory.getLogger(GepgPmtSpInfoMapperTest.class);
@@ -101,7 +96,7 @@ public class GepgPmtSpInfoMapperTest {
                 1000.0, // paidAmt
                 "1", // billPayOptString (corresponds to FULL payment option)
                 "TZS", // CCy
-                LocalDateTime.parse("2022-01-01T12:00:00"), // trxDtTm
+                "2022-01-01T12:00:00", // trxDtTm
                 "MOBILE", // usdPayChn
                 "255712345678", // pyrCellNum
                 "JohnDoe", // pyrName

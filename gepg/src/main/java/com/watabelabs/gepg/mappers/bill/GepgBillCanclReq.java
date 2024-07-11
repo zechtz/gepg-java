@@ -10,8 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * The GepgBillCancell
- * ationReqMapper class is used for mapping the XML request
+ * The GepgBillCanclReq class is used for mapping the XML request
  * to the corresponding Java object. This class represents the bill cancellation
  * request.
  *
