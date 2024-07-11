@@ -205,20 +205,33 @@ public class GepgBillSubReqTest {
         assertTrue(response.getTrxStsCode() != 0);
 
         // Simulate receiving a control number response from GePG system
-        String controlNumberResponse = "<Gepg><gepgBillSubResp><BillTrxInf><BillId>11ae8614-ceda-4b32-aa83-2dc651ed4bcd</BillId><TrxSts>GF</TrxSts><PayCntrNum>5522023232</PayCntrNum><TrxStsCode>7242;7627</TrxStsCode></BillTrxInf><gepgSignature>...</gepgSignature></gepgBillSubResp></Gepg>";
+        String controlNumberResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Gepg><gepgBillSubResp><BillTrxInf><BillId>11ae8614-ceda-4b32-aa83-2dc651ed4bcd</BillId><TrxSts>GF</TrxSts><PayCntrNum>5522023232</PayCntrNum><TrxStsCode>7242;7627</TrxStsCode></BillTrxInf><gepgSignature>...</gepgSignature></gepgBillSubResp></Gepg>";
 
         GepgBillSubResp gepgBillSubResp = gepgApiClient.convertToJavaObject(controlNumberResponse,
                 GepgBillSubResp.class);
 
-        String signedAckXml = gepgApiClient.receiveControlNumber(gepgBillSubResp);
-        assertNotNull(signedAckXml);
-        assertTrue(signedAckXml.contains("gepgBillSubRespAck"));
+        logger.info("GepgBillSubResp: {}", gepgBillSubResp);
+
+        String controlNumberAck = gepgApiClient.receiveControlNumber(gepgBillSubResp);
+
+        assertNotNull(controlNumberAck);
+        assertTrue(controlNumberAck.contains("gepgBillSubRespAck"));
 
         // Simulate the callback by counting down the latch
         latch.countDown();
 
         // Wait for callback
         latch.await();
+    }
+
+    @Test
+    public void testPaymentNotificationResponseAck() throws Exception {
+        String billSubRespAck = gepgApiClient.generateResponseAck(new GepgBillSubRespAck());
+
+        logger.info("Bill_SUB_RESP_ACK:{}", billSubRespAck);
+
+        assertNotNull(billSubRespAck);
+        assertTrue(billSubRespAck.contains("gepgBillSubRespAck"));
     }
 
     private static GepgBillSubRespAck createBillSubRespAck() {
@@ -232,10 +245,9 @@ public class GepgBillSubReqTest {
     public static String postBillResponse(GepgBillSubResp gepgResponse) throws Exception {
         GepgApiClient gepgApiClient = new GepgApiClient();
         System.out.println(gepgResponse);
-        GepgBillSubRespAck billSubRespAckMapper = new GepgBillSubRespAck(
-                gepgResponse.getBillTrxInf().getTrxStsCode());
+        GepgBillSubRespAck billSubRespAckMapper = new GepgBillSubRespAck();
 
-        String xmlResponse = gepgApiClient.convertToXmlString(billSubRespAckMapper);
+        String xmlResponse = gepgApiClient.generateResponseAck(billSubRespAckMapper);
 
         return xmlResponse;
     }
