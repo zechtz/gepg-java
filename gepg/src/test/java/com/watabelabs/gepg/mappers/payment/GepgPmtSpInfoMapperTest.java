@@ -15,29 +15,17 @@ import com.watabelabs.gepg.GepgApiClient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GepgPmtSpInfoMapperTest {
+    private static final Logger logger = LoggerFactory.getLogger(GepgPmtSpInfoMapperTest.class);
 
     private static GepgApiClient gepgApiClient;
 
     @BeforeAll
     public static void setup() {
         gepgApiClient = new GepgApiClient();
-        try {
-            // Load the keystore file from the classpath
-            InputStream resourceStream = GepgPmtSpInfoMapperTest.class.getResourceAsStream("/keys/private-key.pfx");
-            if (resourceStream == null) {
-                throw new RuntimeException("Keystore file not found");
-            }
-
-            // Copy the resource to a temporary file
-            Path tempFile = Files.createTempFile("private-key", ".pfx");
-            Files.copy(resourceStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
-
-            // Set the keystore path to the temporary file location
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to load keystore", e);
-        }
     }
 
     @Test
@@ -51,6 +39,16 @@ public class GepgPmtSpInfoMapperTest {
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gepgPmtSpInfo><PymtTrxInf><TrxId>TRX123456</TrxId><SpCode>SP001</SpCode><PayRefId>PAYREF123456</PayRefId><BillId>74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c</BillId><PayCtrNum>PAYCTR123456</PayCtrNum><BillAmt>1000.0</BillAmt><PaidAmt>1000.0</PaidAmt><BillPayOpt>1</BillPayOpt><CCy>TZS</CCy><TrxDtTm>2022-01-01T12:00:00</TrxDtTm><UsdPayChnl>MOBILE</UsdPayChnl><PyrCellNum>255712345678</PyrCellNum><PyrName>JohnDoe</PyrName><PyrEmail>johndoe@example.com</PyrEmail><PspReceiptNumber>PSPREC123456</PspReceiptNumber><PspName>PSPName</PspName><CtrAccNum>CTRACC123456</CtrAccNum></PymtTrxInf></gepgPmtSpInfo>";
 
         assertEquals(expectedXml.replaceAll("\\s+", ""), message.replaceAll("\\s+", ""));
+    }
+
+    @Test
+    public void testOnlinePaymentNotificationAck() throws Exception {
+        String gepgOlPmtNtfSpInfoAck = gepgApiClient.generateResponseAck(new GepgOlPmtNtfSpInfoAck());
+
+        logger.info("ONLINE_PMT_INFO_ACK:{}", gepgOlPmtNtfSpInfoAck);
+
+        assertNotNull(gepgOlPmtNtfSpInfoAck);
+        assertTrue(gepgOlPmtNtfSpInfoAck.contains("gepgOlPmtNtfSpAck"));
     }
 
     @Test
