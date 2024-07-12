@@ -16,8 +16,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p>
  * It contains a single field, reconcTrxInf, which is a list of
  *
- * {@link Recon
- * cTrxInfMapper} objects, each representing details of a reconciliation
+ * {@link GepgReconcTrxInf} objects, each representing details of a
+ * reconciliation
  * transaction.
  * </p>
  *

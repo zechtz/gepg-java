@@ -119,7 +119,7 @@ public class XmlUtil {
     /**
      * Sanitizes an XML string by removing the XML declaration if it exists.
      *
-     * @param xml The XML string to sanitize.
+     * @param inputXml The XML string to sanitize.
      * @return A sanitized XML string with the XML declaration removed, or the
      *         original XML in case of
      *         an error.

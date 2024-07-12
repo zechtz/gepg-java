@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * request.
  *
  *
+ * <p>
  * It contains fields for the service provider code, service provider system ID,
  * cance
  * llation reason, and a list of bill IDs. Each field is annotated with JAXB

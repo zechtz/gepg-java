@@ -401,7 +401,7 @@ public class GepgApiClient {
     /**
      * Receives the control number response and sends an acknowledgment back.
      *
-     * @param responseXml the XML response from GePG
+     * @param gepgBillSubResp the GepgBillSubResp
      * @return the signed acknowledgment XML to be sent back to GePG
      * @throws Exception if an error occurs during the process
      */
@@ -558,8 +558,8 @@ public class GepgApiClient {
      * 7101,
      * converts it to an XML string, signs it, and returns the signed XML string.
      *
-     * @param clazz the class type to generate the acknowledgment for
-     * @param <T>   the type of the class
+     * @param instance the class type to generate the acknowledgment for
+     * @param <T>      the type of the class
      * @return the signed XML string representing the acknowledgment
      * @throws Exception if an error occurs during the process
      */

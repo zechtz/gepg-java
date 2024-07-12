@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlElement;
  *
  * <p>
  * It contains a single field, billItem, which is a list of
- * {@link BillItemMapper} objects. Each {@link BillItemMapper} object
+ * {@link GepgBillItem } objects. Each {@link GepgBillItem } object
  * represents the details of an individual bill item.
  * </p>
  *
