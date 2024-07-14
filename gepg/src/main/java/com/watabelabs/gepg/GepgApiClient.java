@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.watabelabs.gepg.constants.GepgResponseCode;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAck;
+import com.watabelabs.gepg.mappers.bill.GepgBillSubResAck;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubResp;
 import com.watabelabs.gepg.mappers.bill.GepgBillSubRespAck;
 import com.watabelabs.gepg.mappers.payment.GepgOlPmtNtfSpInfoAck;
@@ -401,15 +402,12 @@ public class GepgApiClient {
     /**
      * Receives the control number response and sends an acknowledgment back.
      *
-     * @param gepgBillSubResp the GepgBillSubResp
-     * @return the signed acknowledgment XML to be sent back to GePG
+     * @param responseXml the control number xml response from GEPG
+     * @return GepgBillSubResp the java object corresponding to the response
      * @throws Exception if an error occurs during the process
      */
-    public String receiveControlNumber(GepgBillSubResp gepgBillSubResp) throws Exception {
-        // Prepare the acknowledgment response
-        GepgBillSubRespAck gepgBillSubRespAck = new GepgBillSubRespAck();
-
-        return generateResponseAck(gepgBillSubRespAck);
+    public GepgBillSubResp receiveControlNumber(String responseXml) throws Exception {
+        return convertToJavaObject(responseXml, GepgBillSubResp.class);
     }
 
     /**
@@ -568,6 +566,8 @@ public class GepgApiClient {
 
         // Set the status code based on the class type
         if (clazz == GepgBillSubRespAck.class) {
+            clazz.getMethod("setTrxStsCode", int.class).invoke(instance, 7101);
+        } else if (clazz == GepgBillSubResAck.class) {
             clazz.getMethod("setTrxStsCode", int.class).invoke(instance, 7101);
         } else if (clazz == GepgPmtSpInfoAck.class) {
             clazz.getMethod("setTrxStsCode", int.class).invoke(instance, 7101);

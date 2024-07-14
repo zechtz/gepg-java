@@ -209,12 +209,11 @@ public class GepgBillSubReqTest {
         // Simulate receiving a control number response from GePG system
         String controlNumberResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Gepg><gepgBillSubResp><BillTrxInf><BillId>11ae8614-ceda-4b32-aa83-2dc651ed4bcd</BillId><TrxSts>GF</TrxSts><PayCntrNum>5522023232</PayCntrNum><TrxStsCode>7242;7627</TrxStsCode></BillTrxInf><gepgSignature>...</gepgSignature></gepgBillSubResp></Gepg>";
 
-        GepgBillSubResp gepgBillSubResp = gepgApiClient.convertToJavaObject(controlNumberResponse,
-                GepgBillSubResp.class);
+        GepgBillSubResp gepgBillSubResp = gepgApiClient.receiveControlNumber(controlNumberResponse);
 
         logger.info("GepgBillSubResp: {}", gepgBillSubResp);
 
-        String controlNumberAck = gepgApiClient.receiveControlNumber(gepgBillSubResp);
+        String controlNumberAck = gepgApiClient.generateResponseAck(new GepgBillSubRespAck());
 
         assertNotNull(controlNumberAck);
         assertTrue(controlNumberAck.contains("gepgBillSubRespAck"));
