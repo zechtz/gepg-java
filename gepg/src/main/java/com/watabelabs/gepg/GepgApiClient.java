@@ -576,7 +576,7 @@ public class GepgApiClient {
         } else if (clazz == GepgSpReconcRespAck.class) {
             clazz.getMethod("setReconcStsCode", int.class).invoke(instance, 7101);
         } else {
-            throw new IllegalArgumentException("Unknown response class: " + clazz.getName());
+            throw new IllegalArgumentException("Unknown response class: " + clazz.getSimpleName());
         }
 
         // Convert the instance to an XML string
