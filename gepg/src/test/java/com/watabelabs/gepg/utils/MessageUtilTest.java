@@ -68,7 +68,7 @@ public class MessageUtilTest {
     public void testXmlConversion() throws Exception {
         GepgBillSubReq gepgBillSubReq = createBillSubReq();
 
-        String xmlOutput = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
+        String xmlOutput = gepgApiClient.parseToXml(gepgBillSubReq);
 
         // Sign the message
         String signedMessage = gepgApiClient.signMessage(xmlOutput, GepgBillSubReq.class);
@@ -151,7 +151,7 @@ public class MessageUtilTest {
         // Create a sample message
         GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
-        String message = gepgApiClient.convertToXmlStringWithoutDeclaration(billSubRequestMapper);
+        String message = gepgApiClient.parseToXml(billSubRequestMapper);
 
         // Sign the message
         String signedMessage = gepgApiClient.signMessage(message, GepgBillSubReq.class);

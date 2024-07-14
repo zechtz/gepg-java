@@ -29,7 +29,7 @@ public class GepgPmtSpInfoMapperTest {
         GepgPmtSpInfo pmtSpInfoMapper = createData();
 
         // Convert to XML string
-        String message = gepgApiClient.convertToXmlString(pmtSpInfoMapper);
+        String message = gepgApiClient.parseToXml(pmtSpInfoMapper, true);
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gepgPmtSpInfo><PymtTrxInf><TrxId>TRX123456</TrxId><SpCode>SP001</SpCode><PayRefId>PAYREF123456</PayRefId><BillId>74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c</BillId><PayCtrNum>PAYCTR123456</PayCtrNum><BillAmt>1000.0</BillAmt><PaidAmt>1000.0</PaidAmt><BillPayOpt>1</BillPayOpt><CCy>TZS</CCy><TrxDtTm>2022-01-01T12:00:00</TrxDtTm><UsdPayChnl>MOBILE</UsdPayChnl><PyrCellNum>255712345678</PyrCellNum><PyrName>JohnDoe</PyrName><PyrEmail>johndoe@example.com</PyrEmail><PspReceiptNumber>PSPREC123456</PspReceiptNumber><PspName>PSPName</PspName><CtrAccNum>CTRACC123456</CtrAccNum></PymtTrxInf></gepgPmtSpInfo>";
 
@@ -52,7 +52,7 @@ public class GepgPmtSpInfoMapperTest {
         GepgPmtSpInfo pmtSpInfoMapper = createData();
 
         // Convert to XML string
-        String message = gepgApiClient.convertToXmlStringWithoutDeclaration(pmtSpInfoMapper);
+        String message = gepgApiClient.parseToXml(pmtSpInfoMapper);
 
         String expectedXml = "<gepgPmtSpInfo><PymtTrxInf><TrxId>TRX123456</TrxId><SpCode>SP001</SpCode><PayRefId>PAYREF123456</PayRefId><BillId>74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c</BillId><PayCtrNum>PAYCTR123456</PayCtrNum><BillAmt>1000.0</BillAmt><PaidAmt>1000.0</PaidAmt><BillPayOpt>1</BillPayOpt><CCy>TZS</CCy><TrxDtTm>2022-01-01T12:00:00</TrxDtTm><UsdPayChnl>MOBILE</UsdPayChnl><PyrCellNum>255712345678</PyrCellNum><PyrName>JohnDoe</PyrName><PyrEmail>johndoe@example.com</PyrEmail><PspReceiptNumber>PSPREC123456</PspReceiptNumber><PspName>PSPName</PspName><CtrAccNum>CTRACC123456</CtrAccNum></PymtTrxInf></gepgPmtSpInfo>";
 
@@ -66,7 +66,7 @@ public class GepgPmtSpInfoMapperTest {
         GepgPmtSpInfo pmtSpInfoMapper = createData();
 
         // Convert to XML string
-        String message = gepgApiClient.convertToXmlStringWithoutDeclaration(pmtSpInfoMapper);
+        String message = gepgApiClient.parseToXml(pmtSpInfoMapper);
 
         System.out.println("THE_CONVERTED_MESSAGE" + message);
 

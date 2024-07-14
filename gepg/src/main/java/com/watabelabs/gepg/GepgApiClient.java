@@ -377,7 +377,7 @@ public class GepgApiClient {
     public String getPaymentInfoAck(String responseXml) throws Exception {
         GepgPmtSpInfoAck gepgPmtSpInfoAck = new GepgPmtSpInfoAck(7101);
 
-        String ackXml = convertToXmlString(gepgPmtSpInfoAck);
+        String ackXml = parseToXml(gepgPmtSpInfoAck);
 
         // Initialize with the required parameters
         return signMessage(ackXml, GepgBillSubRespAck.class);
@@ -393,7 +393,7 @@ public class GepgApiClient {
     public String getReconciliationAck(String responseXml) throws Exception {
         GepgBillSubRespAck gepgBillSubRespAck = new GepgBillSubRespAck(7101);
 
-        String ackXml = convertToXmlString(gepgBillSubRespAck);
+        String ackXml = parseToXml(gepgBillSubRespAck);
 
         // Initialize with the required parameters
         return signMessage(ackXml, GepgBillSubRespAck.class);
@@ -499,21 +499,21 @@ public class GepgApiClient {
      * @return the XML string representation of the object
      * @throws Exception if an error occurs during XML conversion
      */
-    public String convertToXmlString(Object object) throws Exception {
-        return XmlUtil.convertToXmlString(object);
+    public String parseToXml(Object object) throws Exception {
+        return XmlUtil.convertToXmlStringWithoutDeclaration(object);
     }
 
     /**
-     * Converts a JAXB-annotated object to an XML string without the XML
-     * declaration.
+     * Converts a JAXB-annotated object to an XML string.
      *
-     * @param object the JAXB-annotated object to convert
-     * @return the XML string representation of the object without the XML
-     *         declaration
+     * @param object  the JAXB-annotated object to convert
+     * @param Boolean withDeclartion the the boolean value which when set to true
+     *                will parse with declaratin
+     * @return the XML string representation of the object with the xml declartion
      * @throws Exception if an error occurs during XML conversion
      */
-    public String convertToXmlStringWithoutDeclaration(Object object) throws Exception {
-        return XmlUtil.convertToXmlStringWithoutDeclaration(object);
+    public String parseToXml(Object object, Boolean withDeclartion) throws Exception {
+        return XmlUtil.convertToXmlString(object);
     }
 
     /**
@@ -580,7 +580,7 @@ public class GepgApiClient {
         }
 
         // Convert the instance to an XML string
-        String ackXml = convertToXmlStringWithoutDeclaration(instance);
+        String ackXml = parseToXml(instance);
 
         // Sign the XML string
         return signMessage(ackXml, clazz);

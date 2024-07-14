@@ -29,7 +29,7 @@ public class GepgSpReconcRespTest {
     public void testReconciliationResponseXmlCreation() throws Exception {
         GepgSpReconcResp gepgSpReconcResp = getReconciliationResponse();
 
-        String xmlOutput = gepgApiClient.convertToXmlString(gepgSpReconcResp);
+        String xmlOutput = gepgApiClient.parseToXml(gepgSpReconcResp, true);
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                 "<gepgSpReconcResp>" +

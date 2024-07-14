@@ -76,7 +76,7 @@ class GepgApiClientTest {
         GepgBillSubReq bill = createActualBillWithValidSpCode();
 
         // Convert the bill to XML
-        String billXml = gepgApiClient.convertToXmlStringWithoutDeclaration(bill);
+        String billXml = gepgApiClient.parseToXml(bill);
 
         // Sign the XML
         String signedXml = gepgApiClient.signMessage(billXml, GepgBillSubReq.class);

@@ -51,7 +51,7 @@ public class GepgBillSubReqTest {
     public void testBillToXmlConvertion() throws Exception {
         GepgBillSubReq gepgBillSubReq = createBillSubReq();
 
-        String xmlOutput = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
+        String xmlOutput = gepgApiClient.parseToXml(gepgBillSubReq);
 
         logger.info("------------XML_OUTPUT-------------: {}", xmlOutput);
 
@@ -108,7 +108,7 @@ public class GepgBillSubReqTest {
 
         GepgBillControlNoReuse gepgBillSubReq = createBillControlNoReuse();
 
-        String xmlOutput = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReq);
+        String xmlOutput = gepgApiClient.parseToXml(gepgBillSubReq);
 
         String expectedXml = "<gepgBillSubReq>" +
                 "<BillHdr>" +
@@ -163,7 +163,7 @@ public class GepgBillSubReqTest {
     public void testCorrectGepgBillSubReqAck() throws Exception {
         GepgBillSubReqAck gepgBillSubReqAckMapper = createBillSubReqAck();
 
-        String xmlString = gepgApiClient.convertToXmlStringWithoutDeclaration(gepgBillSubReqAckMapper);
+        String xmlString = gepgApiClient.parseToXml(gepgBillSubReqAckMapper);
 
         // Define expected keys to check in the signed XML
         String[] keys = { "gepgBillSubReqAck", "TrxStsCode" };
@@ -180,7 +180,7 @@ public class GepgBillSubReqTest {
         // Create a sample message
         GepgBillSubReq mapper = createActualBillWithValidSpCode();
 
-        String xmlString = gepgApiClient.convertToXmlStringWithoutDeclaration(mapper);
+        String xmlString = gepgApiClient.parseToXml(mapper);
 
         // Sign the message
         String signedMessage = gepgApiClient.signMessage(xmlString, GepgBillSubReq.class);

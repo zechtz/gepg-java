@@ -21,7 +21,7 @@ public class Main {
 
         GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
-        String message = gepgApiClient.convertToXmlString(billSubRequestMapper);
+        String message = gepgApiClient.parseToXml(billSubRequestMapper);
 
         // Sign the message
         String signedMessage = gepgApiClient.signMessage(message, GepgBillSubReq.class);
