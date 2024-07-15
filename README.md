@@ -367,6 +367,65 @@ public String receivePaymentNotifications(String responseXml) throws Exception {
 
 ```
 
+## Posting Payments
+
+![Payment Posting Flow](images/payment_posting_flow.png)
+
+**1. generate the payload**
+
+```
+    private static GepgPmtSpInfo createPaymentSpInfo() {
+        // Creating and populating the Payment Transaction Information
+
+        GepgPymtTrxInf pymtTrxInf = new GepgPymtTrxInf(
+                "TRX123456", // trxId
+                "SP001", // spCode
+                "PAYREF123456", // payRefId
+                UUID.fromString("74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c"), // billId
+                "PAYCTR123456", // payCtrNum
+                1000.0, // billAmt
+                1000.0, // paidAmt
+                "1", // billPayOptString (corresponds to FULL payment option)
+                "TZS", // CCy
+                "2022-01-01T12:00:00", // trxDtTm
+                "MOBILE", // usdPayChn
+                "255712345678", // pyrCellNum
+                "JohnDoe", // pyrName
+                "johndoe@example.com", // pyrEmail
+                "PSPREC123456", // pspReceiptNumber
+                "PSPName", // pspName
+                "CTRACC123456" // ctrAccNum
+        );
+        // Creating and populating the Payment Service Provider Information
+        GepgPmtSpInfo pmtSpInfo = new GepgPmtSpInfo(pymtTrxInf);
+
+        return pmtSpInfo;
+    }
+
+```
+
+**2. create the method to submit payment**
+
+```
+    public void submitPayment() throws Exception {
+        // Create a sample message
+        GepgPmtSpInfo gepgPmtSpInfo = createData();
+
+        // Convert to XML string
+        String message = gepgApiClient.parseToXml(gepgPmtSpInfo);
+
+        // sign the message
+        String signeXml = gepgApiClient.signMessage(message);
+
+        // submit payment and receive ack from Gepg
+        GepgPmtSpInfoAck ack = gepgApiClient.submitPayment(signedXml);
+
+        // check the response status & update your data, maybe also log it here
+        log.info("Payment Submission Response from Gepg:{}", ack);
+    }
+
+```
+
 ## Contributing
 
 I welcome contributions! If you want to contribute to this project, please fork the repository and create a pull request with your changes. Make sure to follow the existing code style and include tests for your changes, if you find this library helpful, don't forget to star the project.
