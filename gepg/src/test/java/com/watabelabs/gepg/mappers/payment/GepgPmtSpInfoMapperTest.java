@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.watabelabs.gepg.GepgApiClient;
+import com.watabelabs.gepg.mappers.payment.acks.GepgOlPmtNtfSpInfoAck;
+import com.watabelabs.gepg.mappers.payment.requests.GepgPmtSpInfo;
+import com.watabelabs.gepg.mappers.payment.requests.GepgPymtTrxInf;
 
 public class GepgPmtSpInfoMapperTest {
     private static final Logger logger = LoggerFactory.getLogger(GepgPmtSpInfoMapperTest.class);

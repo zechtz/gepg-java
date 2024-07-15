@@ -1,6 +1,5 @@
-package com.watabelabs.gepg.mappers.bill;
+package com.watabelabs.gepg.mappers.bill.requests;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,35 +10,25 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The GepgBillTrxInfoCtrlNoReuse class is used for mapping the XML
- * response
+ * The GepgBillTrxInf class is used for mapping the XML response
  * to the corresponding Java object. This class represents the bill transaction
  * information.
  *
- *
- *
  * <p>
- * It contains four fields: billId, payCntrNum, trxSts, and trxSts
- * ode. These fields
- * store the bill ID, payment
- * control number, transaction status, and transaction
- * status code, respectively.
+ * It contains fields to store the bill ID, payment control number, transaction
+ * status, and transaction status code, among others.
  * </p>
  *
- *
  * <p>
- * The class is annotated with JAXB annotations to specify how the XML elemen
- * s
- * should be mapped to the Java fields. It uses {@link XmlRootElement} to defin
- * root elemen
- * t name and {@link XmlAccessorType} to specify the access type for
- * the fields.
+ * The class is annotated with JAXB annotations to specify how the XML elements
+ * should be mapped to the Java fields. It uses {@link XmlRootElement} to define
+ * the root element name and {@link XmlAccessorType} to specify the access type
+ * for the fields.
  * </p>
  */
-
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class GepgBillTrxInfoCtrlNoReuse {
+public class GepgBillTrxInf {
 
     @XmlElement(name = "BillId", required = true)
     private UUID billId;
@@ -51,10 +40,10 @@ public class GepgBillTrxInfoCtrlNoReuse {
     private String spSysId;
 
     @XmlElement(name = "BillAmt", required = true)
-    private BigDecimal billAmt;
+    private Double billAmt;
 
     @XmlElement(name = "MiscAmt", required = true)
-    private BigDecimal miscAmt;
+    private Double miscAmt;
 
     @XmlElement(name = "BillExprDt", required = true)
     private String billExprDt;
@@ -87,7 +76,7 @@ public class GepgBillTrxInfoCtrlNoReuse {
     private String ccy;
 
     @XmlElement(name = "BillEqvAmt", required = true)
-    private BigDecimal billEqvAmt;
+    private Double billEqvAmt;
 
     @XmlElement(name = "RemFlag", required = true)
     private boolean remFlag;
@@ -96,7 +85,7 @@ public class GepgBillTrxInfoCtrlNoReuse {
     private int billPayOpt;
 
     @XmlElement(name = "PayCntrNum", required = true)
-    private int payCntrNum;
+    private String payCntrNum;
 
     @XmlElementWrapper(name = "BillItems")
     @XmlElement(name = "BillItem", required = true)
@@ -105,11 +94,12 @@ public class GepgBillTrxInfoCtrlNoReuse {
     /**
      * Default no-args constructor.
      */
-    public GepgBillTrxInfoCtrlNoReuse() {
+    public GepgBillTrxInf() {
     }
 
     /**
-     * All-args constructor.
+     * All-args constructor except payCntrNum.
+     * use this when doing a Bill submition, as the control number is not needed
      *
      * @param billId     the bill ID
      * @param subSpCode  the sub service provider code
@@ -129,15 +119,63 @@ public class GepgBillTrxInfoCtrlNoReuse {
      * @param billEqvAmt the bill equivalent amount
      * @param remFlag    the reminder flag
      * @param billPayOpt the bill payment option
-     * @param payCntrNum the bill payment control number
      * @param billItems  the list of bill items
      */
-    public GepgBillTrxInfoCtrlNoReuse(UUID billId, String subSpCode, String spSysId, BigDecimal billAmt,
-            BigDecimal miscAmt,
-            String billExprDt,
-            String pyrId, String pyrName, String billDesc, String billGenDt, String billGenBy, String billApprBy,
-            String pyrCellNum, String pyrEmail, String ccy, BigDecimal billEqvAmt, boolean remFlag, int billPayOpt,
-            int payCntrNum, List<GepgBillItem> billItems) {
+    public GepgBillTrxInf(UUID billId, String subSpCode, String spSysId, Double billAmt, Double miscAmt,
+            String billExprDt, String pyrId, String pyrName, String billDesc, String billGenDt,
+            String billGenBy, String billApprBy, String pyrCellNum, String pyrEmail, String ccy,
+            Double billEqvAmt, boolean remFlag, int billPayOpt, List<GepgBillItem> billItems) {
+        this.billId = billId;
+        this.subSpCode = subSpCode;
+        this.spSysId = spSysId;
+        this.billAmt = billAmt;
+        this.miscAmt = miscAmt;
+        this.billExprDt = billExprDt;
+        this.pyrId = pyrId;
+        this.pyrName = pyrName;
+        this.billDesc = billDesc;
+        this.billGenDt = billGenDt;
+        this.billGenBy = billGenBy;
+        this.billApprBy = billApprBy;
+        this.pyrCellNum = pyrCellNum;
+        this.pyrEmail = pyrEmail;
+        this.ccy = ccy;
+        this.billEqvAmt = billEqvAmt;
+        this.remFlag = remFlag;
+        this.billPayOpt = billPayOpt;
+        this.billItems = billItems;
+    }
+
+    /**
+     * All-args constructor including payCntrNum.
+     * use this when doing a control number reuse submition, as the control number
+     * is needed
+     *
+     * @param billId     the bill ID
+     * @param subSpCode  the sub service provider code
+     * @param spSysId    the service provider system ID
+     * @param billAmt    the bill amount
+     * @param miscAmt    the miscellaneous amount
+     * @param billExprDt the bill expiration date
+     * @param pyrId      the payer ID
+     * @param pyrName    the payer name
+     * @param billDesc   the bill description
+     * @param billGenDt  the bill generation date
+     * @param billGenBy  the bill generated by
+     * @param billApprBy the bill approved by
+     * @param pyrCellNum the payer cell number
+     * @param pyrEmail   the payer email
+     * @param ccy        the currency
+     * @param billEqvAmt the bill equivalent amount
+     * @param remFlag    the reminder flag
+     * @param billPayOpt the bill payment option
+     * @param payCntrNum the payment control number
+     * @param billItems  the list of bill items
+     */
+    public GepgBillTrxInf(UUID billId, String subSpCode, String spSysId, Double billAmt, Double miscAmt,
+            String billExprDt, String pyrId, String pyrName, String billDesc, String billGenDt,
+            String billGenBy, String billApprBy, String pyrCellNum, String pyrEmail, String ccy,
+            Double billEqvAmt, boolean remFlag, int billPayOpt, String payCntrNum, List<GepgBillItem> billItems) {
         this.billId = billId;
         this.subSpCode = subSpCode;
         this.spSysId = spSysId;
@@ -190,9 +228,12 @@ public class GepgBillTrxInfoCtrlNoReuse {
                 ", billEqvAmt=" + billEqvAmt +
                 ", remFlag=" + remFlag +
                 ", billPayOpt=" + billPayOpt +
+                ", payCntrNum=" + payCntrNum +
                 ", billItems=" + billItems +
                 '}';
     }
+
+    // Additional getters and setters for new fields
 
     public UUID getBillId() {
         return billId;
@@ -218,19 +259,19 @@ public class GepgBillTrxInfoCtrlNoReuse {
         this.spSysId = spSysId;
     }
 
-    public BigDecimal getBillAmt() {
+    public Double getBillAmt() {
         return billAmt;
     }
 
-    public void setBillAmt(BigDecimal billAmt) {
+    public void setBillAmt(Double billAmt) {
         this.billAmt = billAmt;
     }
 
-    public BigDecimal getMiscAmt() {
+    public Double getMiscAmt() {
         return miscAmt;
     }
 
-    public void setMiscAmt(BigDecimal miscAmt) {
+    public void setMiscAmt(Double miscAmt) {
         this.miscAmt = miscAmt;
     }
 
@@ -314,11 +355,11 @@ public class GepgBillTrxInfoCtrlNoReuse {
         this.ccy = ccy;
     }
 
-    public BigDecimal getBillEqvAmt() {
+    public Double getBillEqvAmt() {
         return billEqvAmt;
     }
 
-    public void setBillEqvAmt(BigDecimal billEqvAmt) {
+    public void setBillEqvAmt(Double billEqvAmt) {
         this.billEqvAmt = billEqvAmt;
     }
 
@@ -338,11 +379,11 @@ public class GepgBillTrxInfoCtrlNoReuse {
         this.billPayOpt = billPayOpt;
     }
 
-    public int getPayCntrNum() {
+    public String getPayCntrNum() {
         return payCntrNum;
     }
 
-    public void setPayCntrNum(int payCntrNum) {
+    public void setPayCntrNum(String payCntrNum) {
         this.payCntrNum = payCntrNum;
     }
 

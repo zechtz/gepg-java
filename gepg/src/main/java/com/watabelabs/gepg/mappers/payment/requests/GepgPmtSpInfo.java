@@ -1,4 +1,4 @@
-package com.watabelabs.gepg.mappers.payment;
+package com.watabelabs.gepg.mappers.payment.requests;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

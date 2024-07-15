@@ -1,9 +1,12 @@
-package com.watabelabs.gepg.mappers.reconciliation;
+package com.watabelabs.gepg.mappers.reconciliation.responses;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.watabelabs.gepg.mappers.reconciliation.requests.GepgReconcBatchInfo;
+import com.watabelabs.gepg.mappers.reconciliation.requests.GepgReconcTrans;
 
 /**
  * The GepgSpReconcResp class is used for mapping the XML response

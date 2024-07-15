@@ -1,4 +1,4 @@
-package com.watabelabs.gepg.mappers.bill;
+package com.watabelabs.gepg.mappers.bill.responses;
 
 import java.io.Serializable;
 import java.util.UUID;

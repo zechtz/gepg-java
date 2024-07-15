@@ -1,4 +1,4 @@
-package com.watabelabs.gepg.mappers.bill;
+package com.watabelabs.gepg.mappers.bill.acks;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -6,13 +6,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The GepgBillSubReqAck class is used for mapping the XML response
+ * The GepgBillSubRespAck class is used for mapping the XML response
  * to the corresponding Java object. This class represents the acknowledgment
- * of the bill subscription request.
+ * response of a bill subscription.
  *
  * <p>
  * It contains a single field, trxStsCode, which stores the transaction status
- * code of the acknowledgment response.
+ * code
+ * of the acknowledgment response.
  * </p>
  *
  * <p>
@@ -23,17 +24,29 @@ import javax.xml.bind.annotation.XmlRootElement;
  * the fields.
  * </p>
  */
-@XmlRootElement(name = "gepgBillSubReqAck")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class GepgBillSubReqAck {
+@XmlRootElement(name = "gepgBillSubRespAck")
+@XmlAccessorType(value = XmlAccessType.FIELD)
+public class GepgBillSubRespAck {
 
+    /**
+     * The transaction status code.
+     * <p>
+     * This field is mapped to the XML element named "TrxStsCode". It holds the
+     * status code of the transaction, indicating whether it was successful or if
+     * there was an error.
+     * </p>
+     */
     @XmlElement(name = "TrxStsCode")
     private int trxStsCode;
 
     /**
      * Default no-argument constructor.
+     * <p>
+     * This constructor is required for JAXB to be able to create an instance of
+     * the class when unmarshalling XML data.
+     * </p>
      */
-    public GepgBillSubReqAck() {
+    public GepgBillSubRespAck() {
     }
 
     /**
@@ -42,7 +55,7 @@ public class GepgBillSubReqAck {
      *
      * @param trxStsCode the transaction status code to set
      */
-    public GepgBillSubReqAck(int trxStsCode) {
+    public GepgBillSubRespAck(int trxStsCode) {
         this.trxStsCode = trxStsCode;
     }
 
@@ -75,7 +88,7 @@ public class GepgBillSubReqAck {
      */
     @Override
     public String toString() {
-        return "GepgBillSubReqAckMapper{" +
+        return "GepgBillSubRespAckMapper{" +
                 "trxStsCode='" + trxStsCode + '\'' +
                 '}';
     }

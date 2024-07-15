@@ -1,4 +1,4 @@
-package com.watabelabs.gepg.mappers.bill;
+package com.watabelabs.gepg.mappers.bill.responses;
 
 import java.util.List;
 import java.util.UUID;

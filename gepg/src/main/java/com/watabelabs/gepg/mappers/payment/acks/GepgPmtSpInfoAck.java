@@ -1,4 +1,4 @@
-package com.watabelabs.gepg.mappers.bill;
+package com.watabelabs.gepg.mappers.payment.acks;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -6,14 +6,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The GepgBillSubRespAck class is used for mapping the XML response
+ * The GepgPmtSpInfoAck class is used for mapping the XML response
  * to the corresponding Java object. This class represents the acknowledgment
- * response of a bill subscription.
+ * of the payment service provider information.
  *
  * <p>
  * It contains a single field, trxStsCode, which stores the transaction status
- * code
- * of the acknowledgment response.
+ * code of the acknowledgment response.
  * </p>
  *
  * <p>
@@ -24,9 +23,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * the fields.
  * </p>
  */
-@XmlRootElement(name = "gepgBillSubRespAck")
+@XmlRootElement(name = "gepgPmtSpInfoAck")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class GepgBillSubRespAck {
+public class GepgPmtSpInfoAck {
 
     /**
      * The transaction status code.
@@ -46,7 +45,7 @@ public class GepgBillSubRespAck {
      * the class when unmarshalling XML data.
      * </p>
      */
-    public GepgBillSubRespAck() {
+    public GepgPmtSpInfoAck() {
     }
 
     /**
@@ -55,7 +54,7 @@ public class GepgBillSubRespAck {
      *
      * @param trxStsCode the transaction status code to set
      */
-    public GepgBillSubRespAck(int trxStsCode) {
+    public GepgPmtSpInfoAck(int trxStsCode) {
         this.trxStsCode = trxStsCode;
     }
 
@@ -88,7 +87,7 @@ public class GepgBillSubRespAck {
      */
     @Override
     public String toString() {
-        return "GepgBillSubRespAckMapper{" +
+        return "GepgPmtSpInfoAckMapper{" +
                 "trxStsCode='" + trxStsCode + '\'' +
                 '}';
     }

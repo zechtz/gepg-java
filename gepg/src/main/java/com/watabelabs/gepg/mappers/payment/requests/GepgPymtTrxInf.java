@@ -1,4 +1,4 @@
-package com.watabelabs.gepg.mappers.payment;
+package com.watabelabs.gepg.mappers.payment.requests;
 
 import java.util.UUID;
 

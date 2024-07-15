@@ -3,26 +3,33 @@ package com.watabelabs.gepg.mappers.bill;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
-import com.watabelabs.gepg.GepgApiClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import io.javalin.Javalin;
-import io.github.cdimascio.dotenv.Dotenv;
-import static org.mockito.Mockito.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.watabelabs.gepg.GepgApiClient;
+import com.watabelabs.gepg.mappers.bill.acks.GepgBillSubReqAck;
+import com.watabelabs.gepg.mappers.bill.acks.GepgBillSubRespAck;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillControlNoReuse;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillHdr;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillItem;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillSubReq;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillTrxInf;
+import com.watabelabs.gepg.mappers.bill.responses.GepgBillSubResp;
+
+import io.github.cdimascio.dotenv.Dotenv;
+import io.javalin.Javalin;
 
 public class GepgBillSubReqTest {
     private static final Logger logger = LoggerFactory.getLogger(GepgBillSubReqTest.class);

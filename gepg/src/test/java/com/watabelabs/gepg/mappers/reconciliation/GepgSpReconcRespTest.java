@@ -8,13 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.watabelabs.gepg.GepgApiClient;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.watabelabs.gepg.GepgApiClient;
+import com.watabelabs.gepg.mappers.reconciliation.acks.GepgSpReconcRespAck;
+import com.watabelabs.gepg.mappers.reconciliation.requests.GepgReconcBatchInfo;
+import com.watabelabs.gepg.mappers.reconciliation.requests.GepgReconcTrans;
+import com.watabelabs.gepg.mappers.reconciliation.requests.GepgReconcTrxInf;
+import com.watabelabs.gepg.mappers.reconciliation.responses.GepgSpReconcResp;
 
 public class GepgSpReconcRespTest {
     private static final Logger logger = LoggerFactory.getLogger(GepgSpReconcRespTest.class);

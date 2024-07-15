@@ -1,13 +1,15 @@
-package com.watabelabs.gepg.mappers.payment;
-
+package com.watabelabs.gepg.mappers.payment.requests;
 
 /**
  * Enum representing the different bill payment options.
  *
  * <ul>
- * <li>FULL: The bill must be paid in one installment with the amount paid equal to or greater than the billed amount.</li>
- * <li>PARTIAL: The bill may be paid in multiple installments with the last installment being greater than or equal to the billed amount.</li>
- * <li>EXACT: The bill must be paid in one installment with the amount paid being exactly the billed amount.</li>
+ * <li>FULL: The bill must be paid in one installment with the amount paid equal
+ * to or greater than the billed amount.</li>
+ * <li>PARTIAL: The bill may be paid in multiple installments with the last
+ * installment being greater than or equal to the billed amount.</li>
+ * <li>EXACT: The bill must be paid in one installment with the amount paid
+ * being exactly the billed amount.</li>
  * </ul>
  */
 public enum GepgBillPaymentOption {
@@ -20,7 +22,8 @@ public enum GepgBillPaymentOption {
      *
      * @param value the string value of the bill payment option
      * @return the corresponding BillPaymentOption
-     * @throws IllegalArgumentException if the value does not correspond to any BillPaymentOption
+     * @throws IllegalArgumentException if the value does not correspond to any
+     *                                  BillPaymentOption
      */
     public static GepgBillPaymentOption fromValue(String value) {
         switch (value) {

@@ -1,4 +1,4 @@
-package com.watabelabs.gepg.mappers.payment;
+package com.watabelabs.gepg.mappers.bill.acks;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -6,9 +6,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The GepgPmtSpInfoAck class is used for mapping the XML response
+ * The GepgBillSubReqAck class is used for mapping the XML response
  * to the corresponding Java object. This class represents the acknowledgment
- * of the payment service provider information.
+ * of the bill subscription request.
  *
  * <p>
  * It contains a single field, trxStsCode, which stores the transaction status
@@ -23,29 +23,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * the fields.
  * </p>
  */
-@XmlRootElement(name = "gepgPmtSpInfoAck")
-@XmlAccessorType(value = XmlAccessType.FIELD)
-public class GepgPmtSpInfoAck {
+@XmlRootElement(name = "gepgBillSubReqAck")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class GepgBillSubReqAck {
 
-    /**
-     * The transaction status code.
-     * <p>
-     * This field is mapped to the XML element named "TrxStsCode". It holds the
-     * status code of the transaction, indicating whether it was successful or if
-     * there was an error.
-     * </p>
-     */
     @XmlElement(name = "TrxStsCode")
     private int trxStsCode;
 
     /**
      * Default no-argument constructor.
-     * <p>
-     * This constructor is required for JAXB to be able to create an instance of
-     * the class when unmarshalling XML data.
-     * </p>
      */
-    public GepgPmtSpInfoAck() {
+    public GepgBillSubReqAck() {
     }
 
     /**
@@ -54,7 +42,7 @@ public class GepgPmtSpInfoAck {
      *
      * @param trxStsCode the transaction status code to set
      */
-    public GepgPmtSpInfoAck(int trxStsCode) {
+    public GepgBillSubReqAck(int trxStsCode) {
         this.trxStsCode = trxStsCode;
     }
 
@@ -87,7 +75,7 @@ public class GepgPmtSpInfoAck {
      */
     @Override
     public String toString() {
-        return "GepgPmtSpInfoAckMapper{" +
+        return "GepgBillSubReqAckMapper{" +
                 "trxStsCode='" + trxStsCode + '\'' +
                 '}';
     }

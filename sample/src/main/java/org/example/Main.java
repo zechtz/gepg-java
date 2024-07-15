@@ -1,19 +1,15 @@
 package org.example;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import com.watabelabs.gepg.GepgApiClient;
-import com.watabelabs.gepg.mappers.bill.GepgBillHdr;
-import com.watabelabs.gepg.mappers.bill.GepgBillItem;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubReq;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubReqAck;
-import com.watabelabs.gepg.mappers.bill.GepgBillTrxInf;
 import com.watabelabs.gepg.constants.GepgResponseCode;
+import com.watabelabs.gepg.mappers.bill.acks.GepgBillSubReqAck;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillHdr;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillItem;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillSubReq;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillTrxInf;
 
 public class Main {
     public static void main(String[] args) throws Exception {

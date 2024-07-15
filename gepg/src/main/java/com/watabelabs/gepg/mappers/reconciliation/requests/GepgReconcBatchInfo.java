@@ -1,4 +1,4 @@
-package com.watabelabs.gepg.mappers.reconciliation;
+package com.watabelabs.gepg.mappers.reconciliation.requests;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

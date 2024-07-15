@@ -18,10 +18,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.watabelabs.gepg.GepgApiClient;
-import com.watabelabs.gepg.mappers.bill.GepgBillHdr;
-import com.watabelabs.gepg.mappers.bill.GepgBillItem;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubReq;
-import com.watabelabs.gepg.mappers.bill.GepgBillTrxInf;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillHdr;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillItem;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillSubReq;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillTrxInf;
 
 public class MessageUtilTest {
 

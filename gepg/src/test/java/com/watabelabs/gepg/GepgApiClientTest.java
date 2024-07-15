@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.watabelabs.gepg.mappers.bill.GepgBillHdr;
-import com.watabelabs.gepg.mappers.bill.GepgBillItem;
-import com.watabelabs.gepg.mappers.bill.GepgBillSubReq;
-import com.watabelabs.gepg.mappers.bill.GepgBillTrxInf;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillHdr;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillItem;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillSubReq;
+import com.watabelabs.gepg.mappers.bill.requests.GepgBillTrxInf;
 
 import io.github.cdimascio.dotenv.Dotenv;
 

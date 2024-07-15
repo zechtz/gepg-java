@@ -1,4 +1,4 @@
-package com.watabelabs.gepg.mappers.reconciliation;
+package com.watabelabs.gepg.mappers.reconciliation.requests;
 
 import java.util.List;
 
