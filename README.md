@@ -426,6 +426,10 @@ public String receivePaymentNotifications(String responseXml) throws Exception {
 
 ```
 
+## Test Coverage Results
+
+![Test Coverage Results](images/test_coverage_results.png)
+
 ## Contributing
 
 I welcome contributions! If you want to contribute to this project, please fork the repository and create a pull request with your changes. Make sure to follow the existing code style and include tests for your changes, if you find this library helpful, don't forget to star the project.

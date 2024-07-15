@@ -107,23 +107,48 @@ public class GepgBillSubResp {
 
         private static final long serialVersionUID = 1L;
 
+        /**
+         * The unique identifier for the bill.
+         */
         @XmlElement(name = "BillId")
         private UUID billId;
 
+        /**
+         * The transaction status.
+         */
         @XmlElement(name = "TrxSts")
         private String trxSts;
 
+        /**
+         * The payment control number.
+         */
         @XmlElement(name = "PayCntrNum")
         private String payCntrNum;
 
+        /**
+         * The transaction status code.
+         */
         @XmlElement(name = "TrxStsCode")
         private String trxStsCode;
 
-        // Default no-argument constructor
+        /**
+         * Default no-argument constructor.
+         * <p>
+         * This constructor is required for JAXB to be able to create an instance of
+         * the class when unmarshalling XML data.
+         * </p>
+         */
         public GepgBillTrxInf() {
         }
 
-        // Parameterized constructor
+        /**
+         * Parameterized constructor to initialize the object with the provided values.
+         *
+         * @param billId     the bill ID
+         * @param trxSts     the transaction status
+         * @param payCntrNum the payment control number
+         * @param trxStsCode the transaction status code
+         */
         public GepgBillTrxInf(UUID billId, String trxSts, String payCntrNum, String trxStsCode) {
             this.billId = billId;
             this.trxSts = trxSts;
@@ -132,38 +157,88 @@ public class GepgBillSubResp {
         }
 
         // Getters and setters
+
+        /**
+         * Gets the bill ID.
+         *
+         * @return the bill ID
+         */
         public UUID getBillId() {
             return billId;
         }
 
+        /**
+         * Sets the bill ID.
+         *
+         * @param billId the bill ID
+         */
         public void setBillId(UUID billId) {
             this.billId = billId;
         }
 
+        /**
+         * Gets the transaction status.
+         *
+         * @return the transaction status
+         */
         public String getTrxSts() {
             return trxSts;
         }
 
+        /**
+         * Sets the transaction status.
+         *
+         * @param trxSts the transaction status
+         */
         public void setTrxSts(String trxSts) {
             this.trxSts = trxSts;
         }
 
+        /**
+         * Gets the payment control number.
+         *
+         * @return the payment control number
+         */
         public String getPayCntrNum() {
             return payCntrNum;
         }
 
+        /**
+         * Sets the payment control number.
+         *
+         * @param payCntrNum the payment control number
+         */
         public void setPayCntrNum(String payCntrNum) {
             this.payCntrNum = payCntrNum;
         }
 
+        /**
+         * Gets the transaction status code.
+         *
+         * @return the transaction status code
+         */
         public String getTrxStsCode() {
             return trxStsCode;
         }
 
+        /**
+         * Sets the transaction status code.
+         *
+         * @param trxStsCode the transaction status code
+         */
         public void setTrxStsCode(String trxStsCode) {
             this.trxStsCode = trxStsCode;
         }
 
+        /**
+         * Returns a string representation of the object.
+         * <p>
+         * This method is overridden to provide a string representation of the object
+         * that includes the values of the fields.
+         * </p>
+         *
+         * @return a string representation of the object
+         */
         @Override
         public String toString() {
             return "GepgBillTrxInf{" +

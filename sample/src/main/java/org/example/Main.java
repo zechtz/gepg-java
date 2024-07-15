@@ -11,7 +11,17 @@ import com.watabelabs.gepg.mappers.bill.requests.GepgBillItem;
 import com.watabelabs.gepg.mappers.bill.requests.GepgBillSubReq;
 import com.watabelabs.gepg.mappers.bill.requests.GepgBillTrxInf;
 
+/**
+ * Main class for submitting a bill to the GePG API.
+ */
 public class Main {
+
+    /**
+     * Main method for executing the bill submission process.
+     *
+     * @param args the command line arguments
+     * @throws Exception if an error occurs during the process
+     */
     public static void main(String[] args) throws Exception {
         GepgApiClient gepgApiClient = new GepgApiClient();
 
@@ -29,6 +39,11 @@ public class Main {
         System.out.println(responseMessage);
     }
 
+    /**
+     * Creates a sample GepgBillSubReq object for the bill submission request.
+     *
+     * @return the created GepgBillSubReq object
+     */
     private static GepgBillSubReq createBillSubReq() {
 
         GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
@@ -47,3 +62,4 @@ public class Main {
         return new GepgBillSubReq(billHdr, billTrxInf);
     }
 }
+

@@ -30,39 +30,96 @@ import com.watabelabs.gepg.mappers.reconciliation.requests.GepgReconcTrans;
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class GepgSpReconcResp {
 
+    /**
+     * The batch information of the reconciliation response.
+     * <p>
+     * This field is mapped to the XML element named "ReconcBatchInfo". It holds
+     * the details of the reconciliation batch, encapsulated in a
+     * {@link GepgReconcBatchInfo} object.
+     * </p>
+     */
     @XmlElement(name = "ReconcBatchInfo")
     private GepgReconcBatchInfo reconcBatchInfo;
 
+    /**
+     * The reconciliation transactions of the reconciliation response.
+     * <p>
+     * This field is mapped to the XML element named "ReconcTrans". It holds
+     * the details of the reconciliation transactions, encapsulated in a
+     * {@link GepgReconcTrans} object.
+     * </p>
+     */
     @XmlElement(name = "ReconcTrans")
     private GepgReconcTrans reconcTrans;
 
-    // Default no-argument constructor
+    /**
+     * Default no-argument constructor.
+     * <p>
+     * This constructor is required for JAXB to be able to create an instance of
+     * the class when unmarshalling XML data.
+     * </p>
+     */
     public GepgSpReconcResp() {
     }
 
-    // Parameterized constructor
+    /**
+     * Parameterized constructor to initialize the object with the provided values.
+     *
+     * @param reconcBatchInfo the batch information of the reconciliation response
+     * @param reconcTrans     the reconciliation transactions of the reconciliation
+     *                        response
+     */
     public GepgSpReconcResp(GepgReconcBatchInfo reconcBatchInfo, GepgReconcTrans reconcTrans) {
         this.reconcBatchInfo = reconcBatchInfo;
         this.reconcTrans = reconcTrans;
     }
 
-    // Getter and setter methods
+    /**
+     * Gets the batch information of the reconciliation response.
+     *
+     * @return the batch information of the reconciliation response
+     */
     public GepgReconcBatchInfo getReconcBatchInfo() {
         return reconcBatchInfo;
     }
 
+    /**
+     * Sets the batch information of the reconciliation response.
+     *
+     * @param reconcBatchInfo the batch information of the reconciliation response
+     */
     public void setReconcBatchInfo(GepgReconcBatchInfo reconcBatchInfo) {
         this.reconcBatchInfo = reconcBatchInfo;
     }
 
+    /**
+     * Gets the reconciliation transactions of the reconciliation response.
+     *
+     * @return the reconciliation transactions of the reconciliation response
+     */
     public GepgReconcTrans getReconcTrans() {
         return reconcTrans;
     }
 
+    /**
+     * Sets the reconciliation transactions of the reconciliation response.
+     *
+     * @param reconcTrans the reconciliation transactions of the reconciliation
+     *                    response
+     */
     public void setReconcTrans(GepgReconcTrans reconcTrans) {
         this.reconcTrans = reconcTrans;
     }
 
+    /**
+     * Returns a string representation of the object.
+     * <p>
+     * This method is overridden to provide a string representation of the object
+     * that includes the values of the fields.
+     * </p>
+     *
+     * @return a string representation of the object
+     */
     @Override
     public String toString() {
         return "GepgSpReconcResp{" +

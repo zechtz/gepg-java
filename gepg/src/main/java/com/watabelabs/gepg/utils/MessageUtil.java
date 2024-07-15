@@ -290,6 +290,12 @@ public class MessageUtil {
         return digitalSignatureUtil.verifySignature(gepgSignature, message);
     }
 
+    /**
+     * Escapes special characters in the provided XML string.
+     *
+     * @param xmlString The XML string to be escaped.
+     * @return The escaped XML string.
+     */
     public static String escapeCharacter(String xmlString) {
         // Remove newlines and spaces between tags
         String compressedString = xmlString.replaceAll(">\\s+<", "><").trim();
@@ -308,6 +314,12 @@ public class MessageUtil {
         }
     }
 
+    /**
+     * Unescapes special characters in the provided XML string.
+     *
+     * @param xmlString The XML string to be unescaped.
+     * @return The unescaped XML string.
+     */
     private static String htmlUnescape(String xmlString) {
         return xmlString
                 .replaceAll("&amp;", "&")
@@ -330,18 +342,38 @@ public class MessageUtil {
         @XmlElement(name = "gepgSignature", required = true)
         private String gepgSignature;
 
+        /**
+         * Gets the content of the envelope.
+         *
+         * @return the content of the envelope
+         */
         public List<T> getContent() {
             return content;
         }
 
+        /**
+         * Sets the content of the envelope.
+         *
+         * @param content the content to set
+         */
         public void setContent(List<T> content) {
             this.content = content;
         }
 
+        /**
+         * Gets the digital signature of the envelope.
+         *
+         * @return the digital signature
+         */
         public String getGepgSignature() {
             return gepgSignature;
         }
 
+        /**
+         * Sets the digital signature of the envelope.
+         *
+         * @param gepgSignature the digital signature to set
+         */
         public void setGepgSignature(String gepgSignature) {
             this.gepgSignature = gepgSignature;
         }

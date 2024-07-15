@@ -131,42 +131,92 @@ public class GepgApiClient {
 
     // Getters and Setters
 
+    /**
+     * Gets the path to the private keystore.
+     *
+     * @return the private keystore path.
+     */
     public String getPrivateKeystorePath() {
         return privateKeystorePath;
     }
 
+    /**
+     * Sets the path to the private keystore.
+     *
+     * @param privateKeystorePath the private keystore path to set.
+     */
     public void setPrivateKeystorePath(String privateKeystorePath) {
         this.privateKeystorePath = privateKeystorePath;
     }
 
+    /**
+     * Gets the password for the private keystore.
+     *
+     * @return the private keystore password.
+     */
     public String getPrivateKeystorePassword() {
         return privateKeystorePassword;
     }
 
+    /**
+     * Sets the password for the private keystore.
+     *
+     * @param privateKeystorePassword the private keystore password to set.
+     */
     public void setPrivateKeystorePassword(String privateKeystorePassword) {
         this.privateKeystorePassword = privateKeystorePassword;
     }
 
+    /**
+     * Gets the alias for the private key.
+     *
+     * @return the private key alias.
+     */
     public String getPrivateKeyAlias() {
         return privateKeyAlias;
     }
 
+    /**
+     * Sets the alias for the private key.
+     *
+     * @param privateKeyAlias the private key alias to set.
+     */
     public void setPrivateKeyAlias(String privateKeyAlias) {
         this.privateKeyAlias = privateKeyAlias;
     }
 
+    /**
+     * Gets the GEPG code.
+     *
+     * @return the GEPG code.
+     */
     public String getGepgCode() {
         return gepgCode;
     }
 
+    /**
+     * Sets the GEPG code.
+     *
+     * @param gepgCode the GEPG code to set.
+     */
     public void setGepgCode(String gepgCode) {
         this.gepgCode = gepgCode;
     }
 
+    /**
+     * Gets the API URL.
+     *
+     * @return the API URL.
+     */
     public String getApiUrl() {
         return apiUrl;
     }
 
+    /**
+     * Sets the API URL.
+     *
+     * @param apiUrl the API URL to set.
+     */
     public void setApiUrl(String apiUrl) {
         this.apiUrl = apiUrl;
     }
@@ -414,6 +464,7 @@ public class GepgApiClient {
      * Signs the provided message using the private key and wraps it in an XML
      * envelope.
      *
+     * @param <T>          the type of the content
      * @param message      the message to be signed
      * @param contentClass the class of the content to be wrapped
      * @return the signed message wrapped in an XML envelope
@@ -435,6 +486,7 @@ public class GepgApiClient {
     /**
      * Verifies the provided XML string using the public key.
      *
+     * @param <T>               the type of the content
      * @param xmlString         the XML string containing the envelope
      * @param contentClass      the class of the content to be verified
      * @param publicKeyPath     the path to the public key
@@ -485,6 +537,7 @@ public class GepgApiClient {
      *
      * @param xmlString    the XML string containing the envelope
      * @param contentClass the class of the content to be extracted
+     * @param <T>          the type of the content
      * @return the content as a POJO
      * @throws Exception if an error occurs during XML conversion
      */
@@ -506,9 +559,10 @@ public class GepgApiClient {
     /**
      * Converts a JAXB-annotated object to an XML string.
      *
-     * @param object  the JAXB-annotated object to convert
-     * @param Boolean withDeclartion the the boolean value which when set to true
-     *                will parse with declaratin
+     * @param object         the JAXB-annotated object to convert
+     * @param withDeclartion withDeclartion the the boolean value which when set to
+     *                       true
+     *                       will parse with declaratin
      * @return the XML string representation of the object with the xml declartion
      * @throws Exception if an error occurs during XML conversion
      */
@@ -723,6 +777,8 @@ public class GepgApiClient {
     /**
      * The Envelope class wraps any content and the digital signature into an XML
      * structure.
+     *
+     * @param <T> the type of the content
      */
     @XmlRootElement(name = "Gepg")
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -734,20 +790,38 @@ public class GepgApiClient {
         @XmlElement(name = "gepgSignature", required = true)
         private String gepgSignature;
 
-        // Getters and setters
-
+        /**
+         * Retrieves the content of the envelope.
+         *
+         * @return the content of the envelope
+         */
         public List<T> getContent() {
             return content;
         }
 
+        /**
+         * Sets the content of the envelope.
+         *
+         * @param content the content to set
+         */
         public void setContent(List<T> content) {
             this.content = content;
         }
 
+        /**
+         * Retrieves the GePG signature.
+         *
+         * @return the GePG signature
+         */
         public String getGepgSignature() {
             return gepgSignature;
         }
 
+        /**
+         * Sets the GePG signature.
+         *
+         * @param gepgSignature the GePG signature to set
+         */
         public void setGepgSignature(String gepgSignature) {
             this.gepgSignature = gepgSignature;
         }
