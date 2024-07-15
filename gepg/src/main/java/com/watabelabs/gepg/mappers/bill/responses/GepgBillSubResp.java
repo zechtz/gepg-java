@@ -1,7 +1,6 @@
 package com.watabelabs.gepg.mappers.bill.responses;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -111,7 +110,7 @@ public class GepgBillSubResp {
          * The unique identifier for the bill.
          */
         @XmlElement(name = "BillId")
-        private UUID billId;
+        private String billId;
 
         /**
          * The transaction status.
@@ -149,7 +148,7 @@ public class GepgBillSubResp {
          * @param payCntrNum the payment control number
          * @param trxStsCode the transaction status code
          */
-        public GepgBillTrxInf(UUID billId, String trxSts, String payCntrNum, String trxStsCode) {
+        public GepgBillTrxInf(String billId, String trxSts, String payCntrNum, String trxStsCode) {
             this.billId = billId;
             this.trxSts = trxSts;
             this.payCntrNum = payCntrNum;
@@ -163,7 +162,7 @@ public class GepgBillSubResp {
          *
          * @return the bill ID
          */
-        public UUID getBillId() {
+        public String getBillId() {
             return billId;
         }
 
@@ -172,7 +171,7 @@ public class GepgBillSubResp {
          *
          * @param billId the bill ID
          */
-        public void setBillId(UUID billId) {
+        public void setBillId(String billId) {
             this.billId = billId;
         }
 
