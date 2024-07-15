@@ -409,7 +409,7 @@ public String receivePaymentNotifications(String responseXml) throws Exception {
 ```
     public void submitPayment() throws Exception {
         // Create a sample message
-        GepgPmtSpInfo gepgPmtSpInfo = createData();
+        GepgPmtSpInfo gepgPmtSpInfo = createPaymentSpInfo();
 
         // Convert to XML string
         String message = gepgApiClient.parseToXml(gepgPmtSpInfo);
