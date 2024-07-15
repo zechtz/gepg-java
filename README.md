@@ -127,35 +127,57 @@ API_URL=http://localhost:3005
 
 This library exposes all possible requests and responses to and from GePG.
 
-### Data Mapping
+### Data Mapping DTOs
 
 #### For Billing
 
+**Requests**(`com.watabelabs.gepg.mappers.bill.requests`)
+
 -   `GepgBillCanclReq`
--   `GepgBillCanclResp`
 -   `GepgBillControlNoReuse`
 -   `GepgBillHdr`
 -   `GepgBillItem`
 -   `GepgBillSubReq`
+-   `GepgBillTrxInf`
+
+**Responses**(`com.watabelabs.gepg.mappers.bill.responses`)
+
+-   `GepgBillCanclResp`
+-   `GepgBillSubResp`
+
+**Acks**(`com.watabelabs.gepg.mappers.bill.acks`)
+
 -   `GepgBillSubReqAck`
 -   `GepgBillSubResAck`
--   `GepgBillSubResp`
 -   `GepgBillSubRespAck`
--   `GepgBillTrxInf`
 
 #### For Payments
 
+**Requests**(`com.watabelabs.gepg.mappers.payment.requests`)
+
 -   `GepgPmtSpInfo`
--   `GepgPmtSpInfoAck`
 -   `GepgPymtTrxInf`
+
+**Acks**(`com.watabelabs.gepg.mappers.payment.acks`)
+
+-   `GepgOlPmtNtfSpInfoAck`
+-   `GepgPmtSpInfoAck`
 
 #### For Reconciliation
 
--   `GepgSpReconcResp`
+**Requests**(`com.watabelabs.gepg.mappers.reconciliation.requests`)
+
+-   `GepgReconcBatchInfo`
 -   `GepgReconcTrans`
 -   `GepgReconcTrxInf`
+
+**Responses**(`com.watabelabs.gepg.mappers.reconciliation.responses`)
+
 -   `GepgSpReconcRespAck`
--   `GepgReconcBatchInfo`
+
+**Acks**(`com.watabelabs.gepg.mappers.reconciliation.acks`)
+
+-   `GepgSpReconcResp`
 
 All these DTOs conform to the GePG specification, eliminating the need to maintain your own DTOs.
 
@@ -165,51 +187,51 @@ All these DTOs conform to the GePG specification, eliminating the need to mainta
 
 ### The GepgApiClient class exposes the following methods
 
--   `submitBill(String signedRequestXml)`: This method submits a bill to the GePG API, the
-    method takes a signed xml string as a parameter and returns an instance of the `GepgBillSubReqAck` class
+-   **Submiting Requests to Gepg**
 
--   `reuseControlNumber(String signedRequest)`: This method submits a control number reuse request to the GePG API and respond by returning an instance of the `GepgBillSubReqAck` class
+    -   `submitBill(String signedRequestXml)`: This method submits a bill to the GePG API, the
+        method takes a signed xml string as a parameter and returns an instance of the `GepgBillSubReqAck` class
+    -   `reuseControlNumber(String signedRequest)`: This method submits a control number reuse request to the GePG API and respond by returning an instance of the `GepgBillSubReqAck` class
+    -   `updateBill(String signedRequest)`: This method submits a bill change/update request to the GePG API and respond by returning an instance of the `GepgBillSubReqAck` class
+    -   `cancelBill(String signedRequest)`: This method submits a bill change/update request to the GePG API and responds by returning an instance of the `GepgBillSubReqAck` class
+    -   `submitPayment(String signedRequest)`: This method Submits a payment to the GePG API and responds by returning an instance of the `GepgPmtSpInfoAck` class
+    -   `requestReconciliation(String signedRequest)`: This method Submits a reconciliation request to the GePG API and responds by returning an instance of the `GepgSpReconcRespAck` class
 
--   `updateBill(String signedRequest)`: This method submits a bill change/update request to the GePG API and respond by returning an instance of the `GepgBillSubReqAck` class
+-   **Receiving Responses from Gepg**
 
--   `cancelBill(String signedRequest)`: This method submits a bill change/update request to the GePG API and responds by returning an instance of the `GepgBillSubReqAck` class
+    -   `receivePaymentNotification(String signedRequest)`: This method receives the payment notification Info as xml and returns an instance of the `GepgPmtSpInfo` class
+    -   `receiveControlNumber(String signedRequest)`: This method receives the control number response and sends an acknowledgment back as a signed xml string
+    -   `receiveReconciliationResponse(String gepgSpReconcResp)`: This method receives the reconciliation response and return the `GepgSpReconcResp` object
 
--   `submitPayment(String signedRequest)`: This method Submits a payment to the GePG API and responds by returning an instance of the `GepgPmtSpInfoAck` class
+-   **Generating Acknowledgements**
 
--   `requestReconciliation(String signedRequest)`: This method Submits a reconciliation request to the GePG API and responds by returning an instance of the `GepgSpReconcRespAck` class
+    -   `generateResponseAck(T instance)`: This method takes an instance of one of the Ack classes and generate a signed Ack to return back to Gepg, Here are the ack class instances that can be passed
+        -   GepgBillSubRespAck
+        -   GepgBillSubResAck
+        -   GepgPmtSpInfoAck
+        -   GepgOlPmtNtfSpInfoAck
+        -   GepgSpReconcRespAck
 
--   `receivePaymentNotification(String signedRequest)`: This method receives the payment notification Info as xml and returns an instance of the `GepgPmtSpInfo` class
+-   **Helpers**
 
--   `receiveControlNumber(String signedRequest)`: This method receives the control number response and sends an acknowledgment back as a signed xml string
+    -   `signMessage(String xmlString, Class<T> clazz)`: method that adds a signature to your payload. This method returns a signed xml string of the clazz type.
+    -   `convertToJavaObject(String xmlString, Class<T> clazz)`: this method converts an xml string into a JAXB-annotated object an returns it
+    -   `parseToXml(Object object)`: this method takes a java JAXB-annotated object and converts it into an xml string nad returns it without an xml declaration
+    -   `parseToXml(Object object, true)`: this method takes a java JAXB-annotated object and a boolean flag and converts it into an xml string nad returns it with an xml declaration, this is the xml declartion `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`
 
--   `receiveReconciliationResponse(String gepgSpReconcResp)`: This method receives the reconciliation response and return the `GepgSpReconcResp` object
-
--   `signMessage(String xmlString, Class<T> clazz)`: method that adds a signature to your payload. This method returns a signed xml string of the clazz type.
-
-### Data Convertion Helpers
-
--   `convertToJavaObject(String xmlString, Class<T> clazz)`: this method converts an xml string into a JAXB-annotated object an returns it
-
--   `convertToXmlString(Object object)`: this method takes a java JAXB-annotated object and converts it into an xml string nad returns it
-
--   `convertToXmlStringWithoutDeclaration(Object object)`: this method takes a java JAXB-annotated object and converts it into an xml string without the xml declaration nad returns it
-
-### DateTime Helpers
-
--   `getFutureDateTimeInDays(int days)`: this method takes an int (days) and
-    return1 a datetime string in the future (days) from now in the format (2017-03-25T14:30:12 )
-
--   `getPastDateTimeInDays(int days)`: this method takes an int (days) and
-    return1 a datetime string in the past (days) from now in the format (2017-03-25T14:30:12 )
-
--   `getCurrentDateTime()`: this method returns current datetime string in in the format (2017-03-25T14:30:12 )
+-   **DateTime Helpers**
+    -   `getFutureDateTimeInDays(int days)`: this method takes an int (days) and return a datetime string in the future (days) from now in the format (`2017-03-25T14:30:12`)
+    -   `getPastDateTimeInDays(int days)`: this method takes an int (days) and return1 a datetime string in the past (days) from now in the format (`2017-03-25T14:30:12`)
+    -   `getCurrentDateTime()`: this method returns current datetime string in in the format (`2017-03-25T14:30:12` )
 
 ## Usage Example
 
 ### Bill Submission
 
+![Bill Posting Flow](images/bill_posting_flow.png)
+
 ```java
-public GepgBillSubReqAck submitBill() throws Exception {
+public void submitBill() throws Exception {
 
     // instantiate the apiClient
     GepgApiClient gepgApiClient = new GepgApiClient();
@@ -218,7 +240,7 @@ public GepgBillSubReqAck submitBill() throws Exception {
     GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
     // convert it to an xml string
-    String billXml = gepgApiClient.convertToXmlStringWithoutDeclaration(billSubReq);
+    String billXml = gepgApiClient.parseToXml(billSubReq);
 
     // sign the message
     String signedXml = gepgApiClient.signMessage(billXml, GepgBillSubReq.class);
@@ -226,10 +248,15 @@ public GepgBillSubReqAck submitBill() throws Exception {
     // submit Bill to Gepg
     GepgBillSubReqAck gepgBillSubResp = gepgApiClient.submitBill(signedXml);
 
-    // return the response
-    return gepgBillSubResp;
+    // check the response received from Gepg
+    log.info("Bill Submission responses:{}", gepgBillSubResp);
  }
+```
 
+**Generating Bill Submission Request Object**(`populate this with actual bill
+data`)
+
+```
 private static GepgBillSubReq createBillSubReq() {
     // instantiate the apiClient
     GepgApiClient gepgApiClient = new GepgApiClient();
@@ -251,12 +278,37 @@ private static GepgBillSubReq createBillSubReq() {
 
 ```
 
+**For Control Number Reuse** (we use the same dtos as the billrequest with the Exception that, the `GepgBillTrxInf` Dto has an extra parameter for `payCntrNum`, everything else stays the same)
+
+```
+
+    private static GepgBillControlNoReuse createBillControlNoReuse() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
+        GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.0, 7885.0, 0.0, "140206");
+        GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
+
+        GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
+                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0,
+                gepgApiClient.getFutureDateTimeInDays(10), "Palapala",
+                "Charles Palapala",
+                "Bill Number 7885", gepgApiClient.getCurrentDateTime(), "100", "Hashim",
+                "0699210053",
+                "charlestp@yahoo.com",
+                "TZS", 7885.0, true, 1, "990239121373", Arrays.asList(item1, item2));
+
+        return new GepgBillControlNoReuse(billHdr, billTrxInf);
+    }
+```
+
 ### Receiving Control Number
 
 **This is the callback url you will provide to GePG so that they can send control numbers to your system, here we are using Springboot Rest API**
 
 ```
-@PostMapping(value = "/submit-control-number")
+@PostMapping(value = "/submit-control-numbers")
 @Transactional
 public String postGepgBillSubResps(@RequestBody String xml) throws Exception {
     return billService.receiveControlNumber(xml);
@@ -267,12 +319,12 @@ public String postGepgBillSubResps(@RequestBody String xml) throws Exception {
 
 ```
 @Override
-public String receiveControlNumber(String xml) throws Exception {
+public String receiveControlNumber(String gepgBillSubReqRespXml) throws Exception {
     // instantiate the api client
     GepgApiClient gepgApiClient = new GepgApiClient();
 
     // convert the xml string into a readable java object
-    GepgBillSubResp gepgBillSubResp = gepgApiClient.convertToJavaObject(xml, GepgBillSubResp.class);
+    GepgBillSubResp gepgBillSubResp = gepgApiClient.receiveControlNumber(gepgBillSubReqRespXml);
 
     // probably use this data to update control number and message to bill
 
@@ -288,7 +340,7 @@ GepgBillSubRespAck gepgBillSubRespAck = new GepgBillSubRespAck();
 **This is the callback url you will provide to GePG so that they can send payment notifications to your system, again, we are using Springboot Rest API**
 
 ```
-@PostMapping(value = "/receieve-payment-notifications")
+@PostMapping(value = "/submit-payment-notifications")
 @Transactional
 public String receivePaymentNotifications(@RequestBody String xml) throws Exception {
     return billService.receiveControlNumber(xml);
@@ -317,7 +369,7 @@ public String receivePaymentNotifications(String responseXml) throws Exception {
 
 ## Contributing
 
-I welcome contributions! If you want to contribute to this project, please fork the repository and create a pull request with your changes. Make sure to follow the existing code style and include tests for your changes.
+I welcome contributions! If you want to contribute to this project, please fork the repository and create a pull request with your changes. Make sure to follow the existing code style and include tests for your changes, if you find this library helpful, don't forget to star the project.
 
 ## License
 
