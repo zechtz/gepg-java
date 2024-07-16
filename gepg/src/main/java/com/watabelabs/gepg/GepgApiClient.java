@@ -557,6 +557,18 @@ public class GepgApiClient {
     }
 
     /**
+     * Converts a JAXB-annotated object to a signed GepgPayload string.
+     *
+     * @param object the JAXB-annotated object to convert
+     * @return the XML string representation of the object
+     * @throws Exception if an error occurs during XML conversion
+     */
+    public String generatePayload(Object object) throws Exception {
+        String xml = XmlUtil.convertToXmlStringWithoutDeclaration(object);
+        return signMessage(xml, object.getClass());
+    }
+
+    /**
      * Converts a JAXB-annotated object to an XML string.
      *
      * @param object         the JAXB-annotated object to convert

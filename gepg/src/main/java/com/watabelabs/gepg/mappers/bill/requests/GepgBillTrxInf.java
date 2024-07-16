@@ -84,7 +84,7 @@ public class GepgBillTrxInf {
     @XmlElement(name = "BillPayOpt", required = true)
     private int billPayOpt;
 
-    @XmlElement(name = "PayCntrNum", required = true)
+    @XmlElement(name = "PayCntrNum", required = false)
     private String payCntrNum;
 
     @XmlElementWrapper(name = "BillItems")
@@ -591,4 +591,3 @@ public class GepgBillTrxInf {
                 '}';
     }
 }
-

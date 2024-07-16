@@ -216,8 +216,9 @@ All these DTOs conform to the GePG specification, eliminating the need to mainta
 
     -   `signMessage(String xmlString, Class<T> clazz)`: method that adds a signature to your payload. This method returns a signed xml string of the clazz type.
     -   `convertToJavaObject(String xmlString, Class<T> clazz)`: this method converts an xml string into a JAXB-annotated object an returns it
-    -   `parseToXml(Object object)`: this method takes a java JAXB-annotated object and converts it into an xml string nad returns it without an xml declaration
-    -   `parseToXml(Object object, true)`: this method takes a java JAXB-annotated object and a boolean flag and converts it into an xml string nad returns it with an xml declaration, this is the xml declartion `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`
+    -   `parseToXml(Object object)`: this method takes a java JAXB-annotated object and converts it into an xml string and returns it without an xml declaration
+    -   `parseToXml(Object object, true)`: this method takes a java JAXB-annotated object and a boolean flag and converts it into an xml string and returns it with an xml declaration, this is the xml declartion `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`
+    -   `generatePayload(Object object)`: this method takes a java JAXB-annotated object converts it into an xml string, signs it and returns it, It is a combination of the `parseToXml` and the `signMessage` methods
 
 -   **DateTime Helpers**
     -   `getFutureDateTimeInDays(int days)`: this method takes an int (days) and return a datetime string in the future (days) from now in the format (`2017-03-25T14:30:12`)
@@ -278,14 +279,11 @@ private static GepgBillSubReq createBillSubReq() {
 
 ```
 
-**For Control Number Reuse** (we use the same dtos as the billrequest with the Exception that, the `GepgBillTrxInf` Dto has an extra parameter for `payCntrNum`, everything else stays the same)
+**For Control Number Reuse** (we use the same dtos as the bill submission request with the only difference that, the `GepgBillTrxInf` Dto has an extra parameter `payCntrNum`, which you can just set using the `setPayCntrNum(String controlNumber)` method everything else stays the same)
 
 ```
 
     private static GepgBillControlNoReuse createBillControlNoReuse() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
         GepgBillHdr billHdr = new GepgBillHdr("SP023", true);
         GepgBillItem item1 = new GepgBillItem("788578851", "N", 7885.0, 7885.0, 0.0, "140206");
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
@@ -297,7 +295,9 @@ private static GepgBillSubReq createBillSubReq() {
                 "Bill Number 7885", gepgApiClient.getCurrentDateTime(), "100", "Hashim",
                 "0699210053",
                 "charlestp@yahoo.com",
-                "TZS", 7885.0, true, 1, "990239121373", Arrays.asList(item1, item2));
+                "TZS", 7885.0, true, 1, Arrays.asList(item1, item2));
+
+        billTrxInf.setPayCntrNum("990239121373");
 
         return new GepgBillControlNoReuse(billHdr, billTrxInf);
     }
