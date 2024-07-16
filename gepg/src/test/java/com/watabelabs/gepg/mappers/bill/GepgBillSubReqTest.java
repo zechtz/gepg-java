@@ -318,7 +318,9 @@ public class GepgBillSubReqTest {
                 "Bill Number 7885", gepgApiClient.getCurrentDateTime(), "100", "Hashim",
                 "0699210053",
                 "charlestp@yahoo.com",
-                "TZS", 7885.0, true, 1, "990239121373", Arrays.asList(item1, item2));
+                "TZS", 7885.0, true, 1, Arrays.asList(item1, item2));
+
+        billTrxInf.setPayCntrNum("990239121373");
 
         return new GepgBillControlNoReuse(billHdr, billTrxInf);
     }

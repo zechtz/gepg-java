@@ -90,6 +90,23 @@ class GepgApiClientTest {
         assertTrue(isVerified);
     }
 
+    @Test
+    public void testGeneratePayloadMethod() throws Exception {
+        // Create a bill object
+        GepgBillSubReq billSubReq = createActualBillWithValidSpCode();
+        String payload = gepgApiClient.generatePayload(billSubReq);
+        logger.info("Signed Payload: {}", payload);
+
+        String declaration = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+
+        // assertTrue that payload xml is wrapped in <Gepg>
+        assertTrue(payload.contains(declaration));
+        assertTrue(payload.contains("<Gepg>"));
+
+        // assertTrue that payload contains <gepgSignature>
+        assertTrue(payload.contains("<gepgSignature>"));
+    }
+
     private GepgBillSubReq createActualBillWithValidSpCode() {
 
         String spCode = getEnvVariable("SP_CODE");
