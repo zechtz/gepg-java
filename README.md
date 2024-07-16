@@ -2,7 +2,7 @@
 
 # GePG Java Library
 
-A Java library for GePG integration, [Check out the wikis](https://github.com/zechtz/gepg-java/wiki) from more info
+A Java library for GePG integration, [Check out the wiki](https://github.com/zechtz/gepg-java/wiki) from more info
 
 ## Motivation
 
