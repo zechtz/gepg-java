@@ -1,7 +1,6 @@
 package org.example;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 import com.watabelabs.gepg.GepgApiClient;
 import com.watabelabs.gepg.constants.GepgResponseCode;
@@ -27,12 +26,9 @@ public class Main {
 
         GepgBillSubReq billSubRequestMapper = createBillSubReq();
 
-        String message = gepgApiClient.parseToXml(billSubRequestMapper);
+        String payload = gepgApiClient.generatePayload(billSubRequestMapper);
 
-        // Sign the message
-        String signedMessage = gepgApiClient.signMessage(message, GepgBillSubReq.class);
-
-        GepgBillSubReqAck respMapper = gepgApiClient.submitBill(signedMessage);
+        GepgBillSubReqAck respMapper = gepgApiClient.submitBill(payload);
 
         String responseMessage = GepgResponseCode.getResponseMessage(respMapper.getTrxStsCode());
 
@@ -51,7 +47,7 @@ public class Main {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0,
+                "11ae8614-ceda-4b32-aa83-2dc651ed4bcd", "2001", "tjv47", 7885.0, 0.0,
                 "2017-05-30T10:00:01", "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", "2017-02-22T10:00:10", "100", "Hashim",
@@ -62,4 +58,3 @@ public class Main {
         return new GepgBillSubReq(billHdr, billTrxInf);
     }
 }
-

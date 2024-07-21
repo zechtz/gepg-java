@@ -3,13 +3,12 @@ package com.watabelabs.gepg.mappers.bill;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.TimeZone;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.AfterAll;
@@ -194,9 +193,6 @@ public class GepgBillSubReqTest {
 
         logger.info(signedMessage);
 
-        // Mock the response from GePG system
-        String mockResponse = "<Gepg><gepgBillSubReqAck><TrxStsCode>7101</TrxStsCode><gepgSignature>...</gepgSignature></gepgBillSubReqAck></Gepg>";
-
         // Mock the GepgApiClient to simulate the server response
         GepgApiClient mockClient = mock(GepgApiClient.class);
 
@@ -242,10 +238,6 @@ public class GepgBillSubReqTest {
         assertTrue(billSubRespAck.contains("gepgBillSubRespAck"));
     }
 
-    private static GepgBillSubRespAck createBillSubRespAck() {
-        return new GepgBillSubRespAck(7101);
-    }
-
     private static GepgBillSubReqAck createBillSubReqAck() {
         return new GepgBillSubReqAck(7101);
     }
@@ -274,7 +266,7 @@ public class GepgBillSubReqTest {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), subSpCode, systemId, 7885.0, 0.0,
+                "11ae8614-ceda-4b32-aa83-2dc651ed4bcd", subSpCode, systemId, 7885.0, 0.0,
                 gepgApiClient.getFutureDateTimeInDays(10), "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", gepgApiClient.getCurrentDateTime(), "100", "Hashim",
@@ -292,7 +284,7 @@ public class GepgBillSubReqTest {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0,
+                "11ae8614-ceda-4b32-aa83-2dc651ed4bcd", "2001", "tjv47", 7885.0, 0.0,
                 gepgApiClient.getFutureDateTimeInDays(10), "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", gepgApiClient.getCurrentDateTime(), "100", "Hashim",
@@ -312,7 +304,7 @@ public class GepgBillSubReqTest {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0,
+                "11ae8614-ceda-4b32-aa83-2dc651ed4bcd", "2001", "tjv47", 7885.0, 0.0,
                 gepgApiClient.getFutureDateTimeInDays(10), "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", gepgApiClient.getCurrentDateTime(), "100", "Hashim",

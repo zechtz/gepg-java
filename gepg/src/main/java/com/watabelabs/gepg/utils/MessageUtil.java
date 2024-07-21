@@ -5,17 +5,11 @@ import java.io.StringWriter;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Collections;
-import java.util.List;
 
 import javax.validation.ValidationException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -176,50 +170,6 @@ public class MessageUtil {
     }
 
     /**
-     * Converts an Envelope containing the specified content class into an XML
-     * string without the XML declaration.
-     *
-     * @param envelope     The Envelope containing the content.
-     * @param contentClass The class of the content.
-     * @param <T>          The type of the content.
-     * @return The XML string representation of the Envelope without the XML
-     *         declaration.
-     * @throws Exception If an error occurs during the conversion.
-     */
-    private <T> String convertToXmlStringWithoutDeclaration(Envelope<T> envelope, Class<T> contentClass)
-            throws Exception {
-        // Create a new instance of DocumentBuilderFactory
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        // Create a new DocumentBuilder
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-        // Create a new Document
-        Document doc = docBuilder.newDocument();
-
-        // Create a JAXB context for the Envelope class and content class
-        JAXBContext context = JAXBContext.newInstance(Envelope.class, contentClass);
-        // Create a Marshaller
-        Marshaller marshaller = context.createMarshaller();
-        // Set Marshaller properties
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-
-        // Marshal the envelope to the Document
-        marshaller.marshal(envelope, doc);
-
-        // Create a TransformerFactory
-        TransformerFactory tf = TransformerFactory.newInstance();
-        // Create a Transformer
-        Transformer transformer = tf.newTransformer();
-        // Create a StringWriter
-        StringWriter writer = new StringWriter();
-        // Transform the Document to a string
-        transformer.transform(new DOMSource(doc), new StreamResult(writer));
-
-        // Return the transformed XML string
-        return writer.toString();
-    }
-
-    /**
      * Unwraps the provided XML string from the Envelope and converts it to the
      * specified POJO class.
      *
@@ -326,56 +276,5 @@ public class MessageUtil {
                 .replaceAll("&apos;", "'")
                 .replaceAll("&Ouml;", "Ö")
                 .replaceAll("&quot;", "\"");
-    }
-
-    /**
-     * The Envelope class wraps any content and the digital signature into an XML
-     * structure.
-     */
-    @XmlRootElement(name = "Gepg")
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class Envelope<T> {
-
-        @XmlAnyElement(lax = true)
-        private List<T> content;
-
-        @XmlElement(name = "gepgSignature", required = true)
-        private String gepgSignature;
-
-        /**
-         * Gets the content of the envelope.
-         *
-         * @return the content of the envelope
-         */
-        public List<T> getContent() {
-            return content;
-        }
-
-        /**
-         * Sets the content of the envelope.
-         *
-         * @param content the content to set
-         */
-        public void setContent(List<T> content) {
-            this.content = content;
-        }
-
-        /**
-         * Gets the digital signature of the envelope.
-         *
-         * @return the digital signature
-         */
-        public String getGepgSignature() {
-            return gepgSignature;
-        }
-
-        /**
-         * Sets the digital signature of the envelope.
-         *
-         * @param gepgSignature the digital signature to set
-         */
-        public void setGepgSignature(String gepgSignature) {
-            this.gepgSignature = gepgSignature;
-        }
     }
 }

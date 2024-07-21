@@ -1,7 +1,5 @@
 package com.watabelabs.gepg.mappers.reconciliation.requests;
 
-import java.util.UUID;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -35,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class GepgReconcTrxInf {
 
     @XmlElement(name = "SpBillId")
-    private UUID spBillId;
+    private String spBillId;
 
     @XmlElement(name = "BillCtrNum")
     private Long billCtrNum;
@@ -120,7 +118,7 @@ public class GepgReconcTrxInf {
      * @param reconcRvs2   the second reconciliation reversal
      * @param reconcRvs3   the third reconciliation reversal
      */
-    public GepgReconcTrxInf(UUID spBillId, Long billCtrNum, String pspTrxId, Double paidAmt, String cCy,
+    public GepgReconcTrxInf(String spBillId, Long billCtrNum, String pspTrxId, Double paidAmt, String cCy,
             String payRefId, String trxDtTm, String ctrAccNum, String usdPayChnl, String pspName,
             String pspCode, String dptCellNum, String dptName, String dptEmailAddr, String remarks,
             String reconcRvs1, String reconcRvs2, String reconcRvs3) {
@@ -151,7 +149,7 @@ public class GepgReconcTrxInf {
      *
      * @return the service provider bill ID
      */
-    public UUID getSpBillId() {
+    public String getSpBillId() {
         return spBillId;
     }
 
@@ -160,7 +158,7 @@ public class GepgReconcTrxInf {
      *
      * @param spBillId the service provider bill ID
      */
-    public void setSpBillId(UUID spBillId) {
+    public void setSpBillId(String spBillId) {
         this.spBillId = spBillId;
     }
 
@@ -503,4 +501,3 @@ public class GepgReconcTrxInf {
                 '}';
     }
 }
-

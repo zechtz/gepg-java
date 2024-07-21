@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
-import java.util.UUID;
 
 import javax.validation.ValidationException;
 
@@ -80,7 +79,7 @@ public class MessageUtilTest {
         // Assert that the signed message is not null and contains the digital signature
         assertNotNull(signedMessage);
 
-        assertTrue(signedMessage.contains("<gepgSignature>"));
+        assertTrue(signedMessage.contains(signature));
 
         String expectedXml = "<gepgBillSubReq>" +
                 "<BillHdr>" +
@@ -169,7 +168,7 @@ public class MessageUtilTest {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0,
+                "11ae8614-ceda-4b32-aa83-2dc651ed4bcd", "2001", "tjv47", 7885.0, 0.0,
                 "2017-05-30T10:00:01", "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", "2017-02-22T10:00:10", "100", "Hashim",

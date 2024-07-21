@@ -1,7 +1,6 @@
 package com.watabelabs.gepg.mappers.bill.requests;
 
 import java.util.List;
-import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -31,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class GepgBillTrxInf {
 
     @XmlElement(name = "BillId", required = true)
-    private UUID billId;
+    private String billId;
 
     @XmlElement(name = "SubSpCode", required = true)
     private String subSpCode;
@@ -121,7 +120,7 @@ public class GepgBillTrxInf {
      * @param billPayOpt the bill payment option
      * @param billItems  the list of bill items
      */
-    public GepgBillTrxInf(UUID billId, String subSpCode, String spSysId, Double billAmt, Double miscAmt,
+    public GepgBillTrxInf(String billId, String subSpCode, String spSysId, Double billAmt, Double miscAmt,
             String billExprDt, String pyrId, String pyrName, String billDesc, String billGenDt,
             String billGenBy, String billApprBy, String pyrCellNum, String pyrEmail, String ccy,
             Double billEqvAmt, boolean remFlag, int billPayOpt, List<GepgBillItem> billItems) {
@@ -172,7 +171,7 @@ public class GepgBillTrxInf {
      * @param payCntrNum the payment control number
      * @param billItems  the list of bill items
      */
-    public GepgBillTrxInf(UUID billId, String subSpCode, String spSysId, Double billAmt, Double miscAmt,
+    public GepgBillTrxInf(String billId, String subSpCode, String spSysId, Double billAmt, Double miscAmt,
             String billExprDt, String pyrId, String pyrName, String billDesc, String billGenDt,
             String billGenBy, String billApprBy, String pyrCellNum, String pyrEmail, String ccy,
             Double billEqvAmt, boolean remFlag, int billPayOpt, String payCntrNum, List<GepgBillItem> billItems) {
@@ -205,7 +204,7 @@ public class GepgBillTrxInf {
      *
      * @return the bill ID
      */
-    public UUID getBillId() {
+    public String getBillId() {
         return billId;
     }
 
@@ -214,7 +213,7 @@ public class GepgBillTrxInf {
      *
      * @param billId the bill ID
      */
-    public void setBillId(UUID billId) {
+    public void setBillId(String billId) {
         this.billId = billId;
     }
 

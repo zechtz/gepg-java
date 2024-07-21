@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.UUID;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -93,7 +91,7 @@ public class GepgPmtSpInfoMapperTest {
                 "TRX123456", // trxId
                 "SP001", // spCode
                 "PAYREF123456", // payRefId
-                UUID.fromString("74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c"), // billId
+                "74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c", // billId
                 "PAYCTR123456", // payCtrNum
                 1000.0, // billAmt
                 1000.0, // paidAmt

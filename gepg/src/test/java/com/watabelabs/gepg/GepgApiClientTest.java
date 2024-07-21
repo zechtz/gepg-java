@@ -3,7 +3,6 @@ package com.watabelabs.gepg;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -118,7 +117,7 @@ class GepgApiClientTest {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), subSpCode, systemId, 7885.0, 0.0,
+                "11ae8614-ceda-4b32-aa83-2dc651ed4bcd", subSpCode, systemId, 7885.0, 0.0,
                 "2017-05-30T10:00:01", "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", "2017-02-22T10:00:10", "100", "Hashim",

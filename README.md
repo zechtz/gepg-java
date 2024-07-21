@@ -267,7 +267,7 @@ private static GepgBillSubReq createBillSubReq() {
     GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
     GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-            UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0, gepgApiClient.getFutureDateTimeInDays(15), formatter), "Palapala",
+            "11ae8614-ceda-4b32-aa83-2dc651ed4bcd", "2001", "tjv47", 7885.0, 0.0, gepgApiClient.getFutureDateTimeInDays(15), formatter), "Palapala",
             "Charles Palapala",
             "Bill Number 7885", gepgApiClient.getCurrentDateTime(), "100", "Hashim",
             "0699210053",
@@ -289,7 +289,7 @@ private static GepgBillSubReq createBillSubReq() {
         GepgBillItem item2 = new GepgBillItem("788578852", "N", 7885.0, 7885.0, 0.0, "140206");
 
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"), "2001", "tjv47", 7885.0, 0.0,
+                "11ae8614-ceda-4b32-aa83-2dc651ed4bcd", "2001", "tjv47", 7885.0, 0.0,
                 gepgApiClient.getFutureDateTimeInDays(10), "Palapala",
                 "Charles Palapala",
                 "Bill Number 7885", gepgApiClient.getCurrentDateTime(), "100", "Hashim",
@@ -381,7 +381,7 @@ public String receivePaymentNotifications(String responseXml) throws Exception {
                 "TRX123456", // trxId
                 "SP001", // spCode
                 "PAYREF123456", // payRefId
-                UUID.fromString("74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c"), // billId
+                "74c7c4ee-b9d1-4a90-bb71-c999b7b6b09c", // billId
                 "PAYCTR123456", // payCtrNum
                 1000.0, // billAmt
                 1000.0, // paidAmt

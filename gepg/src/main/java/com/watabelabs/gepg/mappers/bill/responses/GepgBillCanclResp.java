@@ -1,7 +1,6 @@
 package com.watabelabs.gepg.mappers.bill.responses;
 
 import java.util.List;
-import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -101,7 +100,7 @@ public class GepgBillCanclResp {
     public static class BillCanclTrxDtMapper {
 
         @XmlElement(name = "BillId")
-        private UUID billId;
+        private String billId;
 
         @XmlElement(name = "TrxSts")
         private String trxSts;
@@ -122,7 +121,7 @@ public class GepgBillCanclResp {
          * @param trxSts     the transaction status
          * @param trxStsCode the transaction status code
          */
-        public BillCanclTrxDtMapper(UUID billId, String trxSts, String trxStsCode) {
+        public BillCanclTrxDtMapper(String billId, String trxSts, String trxStsCode) {
             this.billId = billId;
             this.trxSts = trxSts;
             this.trxStsCode = trxStsCode;
@@ -133,7 +132,7 @@ public class GepgBillCanclResp {
          *
          * @return the bill ID
          */
-        public UUID getBillId() {
+        public String getBillId() {
             return billId;
         }
 
@@ -142,7 +141,7 @@ public class GepgBillCanclResp {
          *
          * @param billId the bill ID to set
          */
-        public void setBillId(UUID billId) {
+        public void setBillId(String billId) {
             this.billId = billId;
         }
 

@@ -1,7 +1,5 @@
 package com.watabelabs.gepg.mappers.payment.requests;
 
-import java.util.UUID;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -44,7 +42,7 @@ public class GepgPymtTrxInf {
     private String payRefId;
 
     @XmlElement(name = "BillId")
-    private UUID billId;
+    private String billId;
 
     @XmlElement(name = "PayCtrNum")
     private String payCtrNum;
@@ -118,7 +116,7 @@ public class GepgPymtTrxInf {
      * @param pspName          the PSP name
      * @param ctrAccNum        the control account number
      */
-    public GepgPymtTrxInf(String trxId, String spCode, String payRefId, UUID billId, String payCtrNum,
+    public GepgPymtTrxInf(String trxId, String spCode, String payRefId, String billId, String payCtrNum,
             Double billAmt, Double paidAmt, String billPayOptString, String CCy,
             String trxDtTm, String usdPayChn, String pyrCellNum, String pyrName,
             String pyrEmail, String pspReceiptNumber, String pspName, String ctrAccNum) {
@@ -203,7 +201,7 @@ public class GepgPymtTrxInf {
      *
      * @return the bill ID
      */
-    public UUID getBillId() {
+    public String getBillId() {
         return billId;
     }
 
@@ -212,7 +210,7 @@ public class GepgPymtTrxInf {
      *
      * @param billId the bill ID
      */
-    public void setBillId(UUID billId) {
+    public void setBillId(String billId) {
         this.billId = billId;
     }
 
@@ -502,4 +500,3 @@ public class GepgPymtTrxInf {
                 '}';
     }
 }
-

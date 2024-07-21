@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -177,10 +176,9 @@ public class GepgSpReconcRespTest {
         // Create list of GepgReconcTrxInf
         List<GepgReconcTrxInf> reconcTrxInfList = new ArrayList<>();
 
-        // UUID.fromString("00000000-0000-0000-0000-0000FH467115"),
         // Create first GepgReconcTrxInf
         GepgReconcTrxInf reconcTrxInf1 = new GepgReconcTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bcd"),
+                "11ae8614-ceda-4b32-aa83-2dc651ed4bcd",
                 991080222529L,
                 "E991080222529",
                 37500.0,
@@ -203,7 +201,7 @@ public class GepgSpReconcRespTest {
 
         // Create second GepgReconcTrxInf
         GepgReconcTrxInf reconcTrxInf2 = new GepgReconcTrxInf(
-                UUID.fromString("11ae8614-ceda-4b32-aa83-2dc651ed4bce"),
+                "11ae8614-ceda-4b32-aa83-2dc651ed4bce",
                 991080222520L,
                 "E991080222528",
                 37500.0,
