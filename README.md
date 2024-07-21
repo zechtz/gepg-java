@@ -227,6 +227,8 @@ All these DTOs conform to the GePG specification, eliminating the need to mainta
 
 ## Usage Example
 
+**NOTE:** - **All bill ids are String**
+
 ### Bill Submission
 
 ![Bill Posting Flow](images/bill_posting_flow.png)
