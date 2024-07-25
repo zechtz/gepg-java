@@ -74,7 +74,7 @@ public class GepgBillSubReqTest {
                 "<MiscAmt>0.0</MiscAmt>" +
                 "<BillExprDt>" + gepgApiClient.getFutureDateTimeInDays(10) + "</BillExprDt>" +
                 "<PyrId>Palapala</PyrId>" +
-                "<PyrName>Charles Palapala</PyrName>" +
+                "<PyrName>Charles&amp;N'gombe&amp;Özil</PyrName>" +
                 "<BillDesc>Bill Number 7885</BillDesc>" +
                 "<BillGenDt>" + gepgApiClient.getCurrentDateTime() + "</BillGenDt>" +
                 "<BillGenBy>100</BillGenBy>" +
@@ -286,7 +286,7 @@ public class GepgBillSubReqTest {
         GepgBillTrxInf billTrxInf = new GepgBillTrxInf(
                 "11ae8614-ceda-4b32-aa83-2dc651ed4bcd", "2001", "tjv47", 7885.0, 0.0,
                 gepgApiClient.getFutureDateTimeInDays(10), "Palapala",
-                "Charles Palapala",
+                "Charles & N'gombe & Özil",
                 "Bill Number 7885", gepgApiClient.getCurrentDateTime(), "100", "Hashim",
                 "0699210053",
                 "charlestp@yahoo.com",

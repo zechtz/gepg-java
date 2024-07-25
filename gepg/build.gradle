@@ -135,3 +135,7 @@ tasks.coveralls {
     dependsOn 'jacocoTestReport'
 }
 
+tasks.publish {
+    dependsOn javadocJar
+}
+

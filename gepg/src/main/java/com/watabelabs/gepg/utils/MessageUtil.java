@@ -5,6 +5,8 @@ import java.io.StringWriter;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.validation.ValidationException;
 import javax.xml.bind.JAXBContext;
@@ -246,22 +248,26 @@ public class MessageUtil {
      * @param xmlString The XML string to be escaped.
      * @return The escaped XML string.
      */
+
     public static String escapeCharacter(String xmlString) {
-        // Remove newlines and spaces between tags
-        String compressedString = xmlString.replaceAll(">\\s+<", "><").trim();
+        // Define a pattern to match text content outside of XML tags
+        Pattern pattern = Pattern.compile(">([^<]*)<");
+        Matcher matcher = pattern.matcher(xmlString);
+        StringBuffer sb = new StringBuffer();
 
-        // Unescape the XML string
-        String unescapedString = htmlUnescape(compressedString);
-
-        if (!unescapedString.equals(compressedString)) {
-            return compressedString
-                    .replaceAll("&", "&amp;")
-                    .replaceAll("'", "&apos;")
-                    .replaceAll("Ö", "&Ouml;")
-                    .replaceAll("\"", "&quot;");
-        } else {
-            return compressedString;
+        while (matcher.find()) {
+            // Escape special characters in the matched content
+            String original = matcher.group(1);
+            String escaped = original
+                    .replace("&", "&amp;")
+                    .replace("'", "&apos;")
+                    .replace("Ö", "&Ouml;")
+                    .replace("\"", "&quot;");
+            matcher.appendReplacement(sb, ">" + Matcher.quoteReplacement(escaped) + "<");
         }
+        matcher.appendTail(sb);
+
+        return sb.toString();
     }
 
     /**
