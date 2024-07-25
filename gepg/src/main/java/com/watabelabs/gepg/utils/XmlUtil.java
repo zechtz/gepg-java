@@ -22,6 +22,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import com.sun.xml.bind.marshaller.CharacterEscapeHandler;
+
 /**
  * Utility class for converting Java objects to XML strings using JAXB
  * and for performing XML operations such as key checks.
@@ -98,6 +100,9 @@ public class XmlUtil {
         // Set Marshaller properties
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+        // Prevent JAXB from escaping characters
+        marshaller.setProperty("com.sun.xml.bind.characterEscapeHandler",
+                (CharacterEscapeHandler) (ch, start, length, isAttVal, writer) -> writer.write(ch, start, length));
 
         // Marshal the object to the Document
         marshaller.marshal(object, doc);
@@ -129,16 +134,6 @@ public class XmlUtil {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(new org.xml.sax.InputSource(new java.io.StringReader(inputXml)));
 
-            // Find the XML declaration node and remove it
-            // NodeList nodeList = doc.getChildNodes();
-            // for (int i = 0; i < nodeList.getLength(); i++) {
-            // Node node = nodeList.item(i);
-            // if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE) {
-            // doc.removeChild(node);
-            // break;
-            // }
-            // }
-
             // Serialize the modified document back to a string
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
@@ -152,6 +147,39 @@ public class XmlUtil {
             e.printStackTrace();
             return inputXml; // Return the input XML as-is in case of an error
         }
+    }
+
+    /**
+     * Escapes special characters in the provided XML string.
+     *
+     * @param xmlString The XML string to be escaped.
+     * @return The escaped XML string.
+     */
+
+    public static String escapeCharacter(String xmlString) {
+        // Unescape any pre-escaped characters first
+        String unescapedString = htmlUnescape(xmlString);
+
+        // Remove newlines and spaces between tags but keep the inner spaces
+        String compressedString = unescapedString.replaceAll(">\\s+<", "><").trim();
+
+        return compressedString;
+    }
+
+    /**
+     * Unescapes special characters in the provided XML string.
+     *
+     * @param xmlString The XML string to be unescaped.
+     * @return The unescaped XML string.
+     */
+    private static String htmlUnescape(String xmlString) {
+        return xmlString
+                .replace("&amp;", "&")
+                .replace("&apos;", "'")
+                .replace("&Ouml;", "Ö")
+                .replace("&quot;", "\"")
+                .replace("&lt;", "<")
+                .replace("&gt;", ">");
     }
 
     /**

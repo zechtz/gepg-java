@@ -250,22 +250,13 @@ public class MessageUtil {
      */
 
     public static String escapeCharacter(String xmlString) {
+        // Unescape any pre-escaped characters first
+        String unescapedString = htmlUnescape(xmlString);
+
         // Remove newlines and spaces between tags but keep the inner spaces
-        String compressedString = xmlString.replaceAll(">\\s+<", "><").trim();
+        String compressedString = unescapedString.replaceAll(">\\s+<", "><").trim();
 
-        // Define a pattern to match text content outside of XML tags
-        Pattern pattern = Pattern.compile(">([^<]*)<");
-        Matcher matcher = pattern.matcher(compressedString);
-        StringBuffer sb = new StringBuffer();
-
-        while (matcher.find()) {
-            // Preserve the original content inside the tags
-            String original = matcher.group(1);
-            matcher.appendReplacement(sb, ">" + Matcher.quoteReplacement(original) + "<");
-        }
-        matcher.appendTail(sb);
-
-        return sb.toString();
+        return compressedString;
     }
 
     /**
@@ -276,9 +267,11 @@ public class MessageUtil {
      */
     private static String htmlUnescape(String xmlString) {
         return xmlString
-                .replaceAll("&amp;", "&")
-                .replaceAll("&apos;", "'")
-                .replaceAll("&Ouml;", "Ö")
-                .replaceAll("&quot;", "\"");
+                .replace("&amp;", "&")
+                .replace("&apos;", "'")
+                .replace("&Ouml;", "Ö")
+                .replace("&quot;", "\"")
+                .replace("&lt;", "<")
+                .replace("&gt;", ">");
     }
 }
