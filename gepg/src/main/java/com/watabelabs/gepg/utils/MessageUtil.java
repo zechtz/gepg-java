@@ -250,20 +250,18 @@ public class MessageUtil {
      */
 
     public static String escapeCharacter(String xmlString) {
+        // Remove newlines and spaces between tags but keep the inner spaces
+        String compressedString = xmlString.replaceAll(">\\s+<", "><").trim();
+
         // Define a pattern to match text content outside of XML tags
         Pattern pattern = Pattern.compile(">([^<]*)<");
-        Matcher matcher = pattern.matcher(xmlString);
+        Matcher matcher = pattern.matcher(compressedString);
         StringBuffer sb = new StringBuffer();
 
         while (matcher.find()) {
-            // Escape special characters in the matched content
+            // Preserve the original content inside the tags
             String original = matcher.group(1);
-            String escaped = original
-                    .replace("&", "&amp;")
-                    .replace("'", "&apos;")
-                    .replace("Ö", "&Ouml;")
-                    .replace("\"", "&quot;");
-            matcher.appendReplacement(sb, ">" + Matcher.quoteReplacement(escaped) + "<");
+            matcher.appendReplacement(sb, ">" + Matcher.quoteReplacement(original) + "<");
         }
         matcher.appendTail(sb);
 
