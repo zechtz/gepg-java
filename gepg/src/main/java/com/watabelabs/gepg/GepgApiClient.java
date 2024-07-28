@@ -1,8 +1,10 @@
 package com.watabelabs.gepg;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
@@ -746,22 +748,54 @@ public class GepgApiClient {
      */
     private String sendRequest(String signedRequest, String headerInfo) throws Exception {
         URL url = new URL(apiUrl);
-
+        int retryCount = 3;
+        int initialDelay = 1000; // 1 second
+        //
         logger.info("SUBMISSION_URL:{}", url);
 
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", CONTENT_TYPE);
-        connection.setRequestProperty("Gepg-Com", headerInfo);
-        connection.setRequestProperty("Gepg-Code", gepgCode);
-        connection.setDoOutput(true);
-        connection.getOutputStream().write(signedRequest.getBytes("UTF-8"));
+        for (int attempt = 0; attempt < retryCount; attempt++) {
+            HttpURLConnection connection = null;
+            try {
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", CONTENT_TYPE);
+                connection.setRequestProperty("Gepg-Com", headerInfo);
+                connection.setRequestProperty("Gepg-Code", gepgCode);
+                connection.setDoOutput(true);
+                connection.setConnectTimeout(5000); // 5 seconds
+                connection.setReadTimeout(5000); // 5 seconds
 
-        Scanner scanner = new Scanner(connection.getInputStream());
-        String response = scanner.useDelimiter("\\A").next();
-        scanner.close();
+                connection.getOutputStream().write(signedRequest.getBytes("UTF-8"));
 
-        return response;
+                Scanner scanner = new Scanner(connection.getInputStream());
+                String response = scanner.useDelimiter("\\A").next();
+                scanner.close();
+
+                return response;
+
+            } catch (SocketTimeoutException e) {
+                logger.warn("Request timed out. Attempt: {}/{}", attempt + 1, retryCount);
+                if (attempt == retryCount - 1) {
+                    throw new IOException("Failed after " + retryCount + " attempts", e);
+                }
+            } catch (IOException e) {
+                logger.error("IOException occurred: ", e);
+                throw e;
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+
+            // Exponential backoff
+            try {
+                Thread.sleep(initialDelay * (long) Math.pow(2, attempt));
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                throw new IOException("Retry interrupted", ie);
+            }
+        }
+        throw new IOException("Request failed after " + retryCount + " attempts.");
     }
 
     /**
