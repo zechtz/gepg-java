@@ -2,7 +2,7 @@ package com.watabelabs.gepg.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * This class is an adapter for JAXB to convert between

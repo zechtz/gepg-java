@@ -5,13 +5,10 @@ import java.io.StringWriter;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.validation.ValidationException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;

@@ -3,9 +3,9 @@ package com.watabelabs.gepg.utils;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -21,8 +21,8 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
-
-import com.sun.xml.bind.marshaller.CharacterEscapeHandler;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 
 /**
  * Utility class for converting Java objects to XML strings using JAXB
@@ -86,13 +86,6 @@ public class XmlUtil {
      * }</pre>
      */
     public static String convertToXmlStringWithoutDeclaration(Object object) throws Exception {
-        // Create a new instance of DocumentBuilderFactory
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        // Create a new DocumentBuilder
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-        // Create a new Document
-        Document doc = docBuilder.newDocument();
-
         // Create a JAXB context for the object's class
         JAXBContext context = JAXBContext.newInstance(object.getClass());
         // Create a Marshaller
@@ -100,24 +93,18 @@ public class XmlUtil {
         // Set Marshaller properties
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-        // Prevent JAXB from escaping characters
-        marshaller.setProperty("com.sun.xml.bind.characterEscapeHandler",
-                (CharacterEscapeHandler) (ch, start, length, isAttVal, writer) -> writer.write(ch, start, length));
 
-        // Marshal the object to the Document
-        marshaller.marshal(object, doc);
+        // Create a custom XML stream writer
+        StringWriter stringWriter = new StringWriter();
+        XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
+        XMLStreamWriter xmlStreamWriter = new CustomXmlStreamWriter(
+                xMLOutputFactory.createXMLStreamWriter(stringWriter));
 
-        // Create a TransformerFactory
-        TransformerFactory tf = TransformerFactory.newInstance();
-        // Create a Transformer
-        Transformer transformer = tf.newTransformer();
-        // Create a StringWriter
-        StringWriter writer = new StringWriter();
-        // Transform the Document to a string
-        transformer.transform(new DOMSource(doc), new StreamResult(writer));
+        // Marshal the object to the custom XML stream writer
+        marshaller.marshal(object, xmlStreamWriter);
 
         // Return the transformed XML string
-        return sanitizeRequest(writer.toString());
+        return sanitizeRequest(stringWriter.toString());
     }
 
     /**
