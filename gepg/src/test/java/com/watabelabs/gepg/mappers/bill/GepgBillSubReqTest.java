@@ -3,21 +3,35 @@ package com.watabelabs.gepg.mappers.bill;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.GetResponse;
 import com.watabelabs.gepg.GepgApiClient;
+import com.watabelabs.gepg.amqp.RabbitMqUtil;
+import com.watabelabs.gepg.amqp.enums.GepgQueueHeaderRequestType;
+import com.watabelabs.gepg.amqp.headers.QueueHeaders;
+import com.watabelabs.gepg.amqp.queues.Queue;
 import com.watabelabs.gepg.mappers.bill.acks.GepgBillSubReqAck;
 import com.watabelabs.gepg.mappers.bill.acks.GepgBillSubRespAck;
 import com.watabelabs.gepg.mappers.bill.requests.GepgBillControlNoReuse;
@@ -26,6 +40,7 @@ import com.watabelabs.gepg.mappers.bill.requests.GepgBillItem;
 import com.watabelabs.gepg.mappers.bill.requests.GepgBillSubReq;
 import com.watabelabs.gepg.mappers.bill.requests.GepgBillTrxInf;
 import com.watabelabs.gepg.mappers.bill.responses.GepgBillSubResp;
+import com.watabelabs.gepg.utils.DotEnvUtil;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import io.javalin.Javalin;
@@ -37,17 +52,39 @@ public class GepgBillSubReqTest {
     private static CountDownLatch latch;
 
     // Load environment variables once
-    private static final Dotenv dotenv = Dotenv.load();
 
     private static Javalin app;
 
+    private static Connection connection;
+    private static Channel channel;
+
+    private static final String QUEUE_NAME = "BILL_CONTROL_NUMBER_REQUEST";
+
+    // Load environment variables once
+    private static final Dotenv dotenv = Dotenv.load();
+
     @BeforeAll
-    public static void setup() {
+    public static void setup() throws Exception {
         gepgApiClient = new GepgApiClient();
+
+        // Setup RabbitMQ connection and channel
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(DotEnvUtil.getEnvVariable("RABBITMQ_HOST"));
+        factory.setPort(Integer.parseInt(DotEnvUtil.getEnvVariable("RABBITMQ_PORT")));
+        factory.setUsername(DotEnvUtil.getEnvVariable("RABBITMQ_USERNAME"));
+        factory.setPassword(DotEnvUtil.getEnvVariable("RABBITMQ_PASSWORD"));
+
+        connection = factory.newConnection();
+        channel = connection.createChannel();
+        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
     }
 
     @AfterAll
-    public static void teardown() {
+    public static void teardown() throws Exception {
+        if (channel != null)
+            channel.close();
+        if (connection != null)
+            connection.close();
         if (app != null) {
             app.stop();
         }
@@ -226,6 +263,45 @@ public class GepgBillSubReqTest {
 
         // Wait for callback
         latch.await();
+    }
+
+    @Test
+    public void testPublishBillToQueue() throws Exception {
+        try (MockedStatic<RabbitMqUtil> mockedRabbitMqUtil = mockStatic(RabbitMqUtil.class)) {
+            GepgBillSubReq gepgBillSubReq = createBillSubReq();
+
+            String xmlOutput = gepgApiClient.generatePayload(gepgBillSubReq);
+            gepgApiClient.publishBill(xmlOutput);
+
+            Map<String, Object> headers = new HashMap<>();
+
+            headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.BILL_SUBMISSION_HEADER);
+
+            mockedRabbitMqUtil.verify(
+                    () -> RabbitMqUtil.publishToQueue(Queue.BILL_SUBMISSION_REQUEST, xmlOutput, headers),
+                    times(1));
+        }
+    }
+
+    @Test
+    @Disabled("This test is for manual testing only")
+    public void testPublishBillToActualQueue() throws Exception {
+        GepgBillSubReq gepgBillSubReq = createBillSubReq();
+
+        String billPayload = gepgApiClient.generatePayload(gepgBillSubReq);
+
+        // Publish to queue
+        gepgApiClient.publishBill(billPayload);
+
+        // Get the message from the queue
+        GetResponse response = channel.basicGet(Queue.BILL_SUBMISSION_REQUEST, true);
+        assertNotNull(response, "No message received from the queue");
+        String message = new String(response.getBody(), "UTF-8");
+
+        logger.info("Received message from queue: {}", message);
+
+        // Assert that the message received is the same as the one sent
+        assertTrue(message.contains("gepgBillSubReq"));
     }
 
     @Test

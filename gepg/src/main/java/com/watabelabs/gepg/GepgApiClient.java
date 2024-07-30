@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import javax.xml.bind.JAXBContext;
@@ -16,6 +18,10 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.watabelabs.gepg.amqp.RabbitMqUtil;
+import com.watabelabs.gepg.amqp.enums.GepgQueueHeaderRequestType;
+import com.watabelabs.gepg.amqp.headers.QueueHeaders;
+import com.watabelabs.gepg.amqp.queues.Queue;
 import com.watabelabs.gepg.constants.GepgResponseCode;
 import com.watabelabs.gepg.mappers.bill.acks.GepgBillSubReqAck;
 import com.watabelabs.gepg.mappers.bill.acks.GepgBillSubResAck;
@@ -27,14 +33,13 @@ import com.watabelabs.gepg.mappers.payment.requests.GepgPmtSpInfo;
 import com.watabelabs.gepg.mappers.reconciliation.acks.GepgSpReconcRespAck;
 import com.watabelabs.gepg.mappers.reconciliation.responses.GepgSpReconcResp;
 import com.watabelabs.gepg.utils.DateTimeUtil;
+import com.watabelabs.gepg.utils.DotEnvUtil;
 import com.watabelabs.gepg.utils.Envelope;
 import com.watabelabs.gepg.utils.GepgEndpoints;
 import com.watabelabs.gepg.utils.MessageUtil;
 import com.watabelabs.gepg.utils.PrivateKeyReader;
 import com.watabelabs.gepg.utils.PublicKeyReader;
 import com.watabelabs.gepg.utils.XmlUtil;
-
-import io.github.cdimascio.dotenv.Dotenv;
 
 /**
  * The {@code GepgApiClient} class provides a client interface to interact with
@@ -66,26 +71,23 @@ public class GepgApiClient {
     private static final String GEPG_COM_CN_REUSE = "reusebill.sp.in";
     private static final String GEPG_COM_BILL_CHANGE = "changebill.sp.in";
 
-    // Load environment variables once
-    private static final Dotenv dotenv = Dotenv.load();
-
     /**
      * No-args constructor initializes the client with environment variables.
      */
     public GepgApiClient() {
-        this.apiUrl = getEnvVariable("API_URL");
-        this.gepgCode = getEnvVariable("GEPG_CODE");
+        this.apiUrl = DotEnvUtil.getEnvVariable("API_URL");
+        this.gepgCode = DotEnvUtil.getEnvVariable("GEPG_CODE");
 
-        this.privateKeystorePath = getEnvVariable("PRIVATE_KEYSTORE_PATH");
-        this.privateKeystorePassword = getEnvVariable("PRIVATE_KEYSTORE_PASSWORD");
-        this.privateKeyAlias = getEnvVariable("PRIVATE_KEY_ALIAS");
+        this.privateKeystorePath = DotEnvUtil.getEnvVariable("PRIVATE_KEYSTORE_PATH");
+        this.privateKeystorePassword = DotEnvUtil.getEnvVariable("PRIVATE_KEYSTORE_PASSWORD");
+        this.privateKeyAlias = DotEnvUtil.getEnvVariable("PRIVATE_KEY_ALIAS");
 
-        this.publicKeystorePath = getEnvVariable("PUBLIC_KEYSTORE_PATH");
-        this.publicKeyAlias = getEnvVariable("PUBLIC_KEY_ALIAS");
-        this.publicKeystorePassword = getEnvVariable("PUBLIC_KEYSTORE_PASSWORD");
+        this.publicKeystorePath = DotEnvUtil.getEnvVariable("PUBLIC_KEYSTORE_PATH");
+        this.publicKeyAlias = DotEnvUtil.getEnvVariable("PUBLIC_KEY_ALIAS");
+        this.publicKeystorePassword = DotEnvUtil.getEnvVariable("PUBLIC_KEYSTORE_PASSWORD");
 
-        this.keystoreType = getEnvVariable("KEYSTORE_TYPE");
-        this.signatureAlgorithm = getEnvVariable("SIGNATURE_ALGORITHM");
+        this.keystoreType = DotEnvUtil.getEnvVariable("KEYSTORE_TYPE");
+        this.signatureAlgorithm = DotEnvUtil.getEnvVariable("SIGNATURE_ALGORITHM");
 
         // Verify private keystore file existence
         File keystoreFile = new File(this.privateKeystorePath);
@@ -105,23 +107,10 @@ public class GepgApiClient {
      *
      * @param endpoint the endpoint to be appended to the base API URL
      */
+    @SuppressWarnings("unused")
     private GepgApiClient(String endpoint) {
         this();
         this.apiUrl = this.apiUrl + endpoint;
-    }
-
-    /**
-     * Retrieves an environment variable by key.
-     *
-     * @param key the environment variable key
-     * @return the environment variable value, or null if not set
-     */
-    private String getEnvVariable(String key) {
-        String value = dotenv.get(key);
-        if (value == null || value.isEmpty()) {
-            logger.warn("Environment variable '{}' is not set!", key);
-        }
-        return value;
     }
 
     // Getters and Setters
@@ -286,6 +275,17 @@ public class GepgApiClient {
     }
 
     /**
+     * Publishes a bill submission request to the RabbitMQ queue.
+     *
+     * @param signedRequest the signed XML request
+     */
+    public void publishBill(String signedRequest) {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.BILL_SUBMISSION_HEADER);
+        RabbitMqUtil.publishToQueue(Queue.BILL_SUBMISSION_REQUEST, signedRequest, headers);
+    }
+
+    /**
      * Submits a control number reuse request to the GePG API.
      *
      * @param signedRequest the signed XML request
@@ -304,6 +304,17 @@ public class GepgApiClient {
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
         return billSubReqAck;
+    }
+
+    /**
+     * Publishes a control number reuse request to the RabbitMQ queue.
+     *
+     * @param signedRequest the signed XML request
+     */
+    public void publishControlNumberReuse(String signedRequest) {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.CONTROL_NUMBER_REUSE_HEADER);
+        RabbitMqUtil.publishToQueue(Queue.BILL_SUBMISSION_REQUEST, signedRequest, headers);
     }
 
     /**
@@ -328,6 +339,17 @@ public class GepgApiClient {
     }
 
     /**
+     * Publishes a bill change/update request to the RabbitMQ queue.
+     *
+     * @param signedRequest the signed XML request
+     */
+    public void publishBillUpdate(String signedRequest) {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.BILL_UPDATE_HEADER);
+        RabbitMqUtil.publishToQueue(Queue.BILL_SUBMISSION_REQUEST, signedRequest, headers);
+    }
+
+    /**
      * Submits a bill change/update request to the GePG API.
      *
      * @param signedRequest the signed XML request
@@ -346,6 +368,17 @@ public class GepgApiClient {
         GepgBillSubReqAck billSubReqAck = envelope.getContent().get(0);
 
         return billSubReqAck;
+    }
+
+    /**
+     * Publishes a bill cancellation request to the RabbitMQ queue.
+     *
+     * @param signedRequest the signed XML request
+     */
+    public void publishBillCancellation(String signedRequest) {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.BILL_CANCELLATION_HEADER);
+        RabbitMqUtil.publishToQueue(Queue.BILL_SUBMISSION_REQUEST, signedRequest, headers);
     }
 
     /**
@@ -370,6 +403,17 @@ public class GepgApiClient {
     }
 
     /**
+     * Publishes a payment submission request to the RabbitMQ queue.
+     *
+     * @param signedRequest the signed XML request
+     */
+    public void publishPayments(String signedRequest) {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.PAYMENT_SUBMISSION_HEADER);
+        RabbitMqUtil.publishToQueue(Queue.BILL_PAYMENT_RESPONSE, signedRequest, headers);
+    }
+
+    /**
      * Submits a reconciliation request to the GePG API.
      *
      * @param signedRequest the signed XML request
@@ -388,6 +432,17 @@ public class GepgApiClient {
         GepgSpReconcRespAck reconciliationRespAck = envelope.getContent().get(0);
 
         return reconciliationRespAck;
+    }
+
+    /**
+     * Publishes a reconciliation request to the RabbitMQ queue.
+     *
+     * @param signedRequest the signed XML request
+     */
+    public void publishReconciliation(String signedRequest) {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.RECONCILIATION_SUBMISSION_HEADER);
+        RabbitMqUtil.publishToQueue(Queue.BILL_RECONCILIATION, signedRequest, headers);
     }
 
     /**
