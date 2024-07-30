@@ -28,10 +28,10 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
 import com.watabelabs.gepg.GepgApiClient;
-import com.watabelabs.gepg.amqp.RabbitMqUtil;
 import com.watabelabs.gepg.amqp.enums.GepgQueueHeaderRequestType;
-import com.watabelabs.gepg.amqp.headers.QueueHeaders;
-import com.watabelabs.gepg.amqp.queues.Queue;
+import com.watabelabs.gepg.amqp.headers.GepgQueueHeaders;
+import com.watabelabs.gepg.amqp.publisher.GepgAMqPublisher;
+import com.watabelabs.gepg.amqp.queues.GepgAMqQueues;
 import com.watabelabs.gepg.mappers.bill.acks.GepgBillSubReqAck;
 import com.watabelabs.gepg.mappers.bill.acks.GepgBillSubRespAck;
 import com.watabelabs.gepg.mappers.bill.requests.GepgBillControlNoReuse;
@@ -267,7 +267,7 @@ public class GepgBillSubReqTest {
 
     @Test
     public void testPublishBillToQueue() throws Exception {
-        try (MockedStatic<RabbitMqUtil> mockedRabbitMqUtil = mockStatic(RabbitMqUtil.class)) {
+        try (MockedStatic<GepgAMqPublisher> mockedRabbitMqUtil = mockStatic(GepgAMqPublisher.class)) {
             GepgBillSubReq gepgBillSubReq = createBillSubReq();
 
             String xmlOutput = gepgApiClient.generatePayload(gepgBillSubReq);
@@ -275,33 +275,13 @@ public class GepgBillSubReqTest {
 
             Map<String, Object> headers = new HashMap<>();
 
-            headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.BILL_SUBMISSION_HEADER);
+            headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), GepgQueueHeaders.BILL_SUBMISSION_HEADER);
 
             mockedRabbitMqUtil.verify(
-                    () -> RabbitMqUtil.publishToQueue(Queue.BILL_SUBMISSION_REQUEST, xmlOutput, headers),
+                    () -> GepgAMqPublisher.publishToQueue(GepgAMqQueues.BILL_SUBMISSION_QUEUE, xmlOutput,
+                            headers),
                     times(1));
         }
-    }
-
-    @Test
-    @Disabled("This test is for manual testing only")
-    public void testPublishBillToActualQueue() throws Exception {
-        GepgBillSubReq gepgBillSubReq = createBillSubReq();
-
-        String billPayload = gepgApiClient.generatePayload(gepgBillSubReq);
-
-        // Publish to queue
-        gepgApiClient.publishBill(billPayload);
-
-        // Get the message from the queue
-        GetResponse response = channel.basicGet(Queue.BILL_SUBMISSION_REQUEST, true);
-        assertNotNull(response, "No message received from the queue");
-        String message = new String(response.getBody(), "UTF-8");
-
-        logger.info("Received message from queue: {}", message);
-
-        // Assert that the message received is the same as the one sent
-        assertTrue(message.contains("gepgBillSubReq"));
     }
 
     @Test

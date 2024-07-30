@@ -1,4 +1,4 @@
-package com.watabelabs.gepg.amqp;
+package com.watabelabs.gepg.amqp.publisher;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -11,8 +11,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public class RabbitMqUtil {
-    private static final Logger logger = LoggerFactory.getLogger(RabbitMqUtil.class);
+/**
+ * Utility class for interacting with RabbitMQ, providing methods for
+ * publishing messages to a queue and managing connections.
+ */
+public class GepgAMqPublisher {
+    private static final Logger logger = LoggerFactory.getLogger(GepgAMqPublisher.class);
 
     private static final String RABBITMQ_HOST = DotEnvUtil.getEnvVariable("RABBITMQ_HOST");
     private static final int RABBITMQ_PORT = Integer.valueOf(DotEnvUtil.getEnvVariable("RABBITMQ_PORT"));
@@ -22,6 +26,7 @@ public class RabbitMqUtil {
     private static Connection connection;
     private static Channel channel;
 
+    // Static block to initialize the RabbitMQ connection and channel
     static {
         try {
             ConnectionFactory factory = new ConnectionFactory();
@@ -37,6 +42,13 @@ public class RabbitMqUtil {
         }
     }
 
+    /**
+     * Publishes a message to a specified RabbitMQ queue with headers.
+     *
+     * @param queueName the name of the queue to publish to
+     * @param message   the message to publish
+     * @param headers   the headers to include with the message
+     */
     public static void publishToQueue(String queueName, String message, Map<String, Object> headers) {
         try {
             channel.queueDeclare(queueName, true, false, false, null);
@@ -50,6 +62,9 @@ public class RabbitMqUtil {
         }
     }
 
+    /**
+     * Closes the RabbitMQ channel and connection.
+     */
     public static void close() {
         try {
             if (channel != null)

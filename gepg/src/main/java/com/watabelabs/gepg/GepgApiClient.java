@@ -18,10 +18,10 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.watabelabs.gepg.amqp.RabbitMqUtil;
 import com.watabelabs.gepg.amqp.enums.GepgQueueHeaderRequestType;
-import com.watabelabs.gepg.amqp.headers.QueueHeaders;
-import com.watabelabs.gepg.amqp.queues.Queue;
+import com.watabelabs.gepg.amqp.headers.GepgQueueHeaders;
+import com.watabelabs.gepg.amqp.publisher.GepgAMqPublisher;
+import com.watabelabs.gepg.amqp.queues.GepgAMqQueues;
 import com.watabelabs.gepg.constants.GepgResponseCode;
 import com.watabelabs.gepg.mappers.bill.acks.GepgBillSubReqAck;
 import com.watabelabs.gepg.mappers.bill.acks.GepgBillSubResAck;
@@ -281,8 +281,8 @@ public class GepgApiClient {
      */
     public void publishBill(String signedRequest) {
         Map<String, Object> headers = new HashMap<>();
-        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.BILL_SUBMISSION_HEADER);
-        RabbitMqUtil.publishToQueue(Queue.BILL_SUBMISSION_REQUEST, signedRequest, headers);
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), GepgQueueHeaders.BILL_SUBMISSION_HEADER);
+        GepgAMqPublisher.publishToQueue(GepgAMqQueues.BILL_SUBMISSION_QUEUE, signedRequest, headers);
     }
 
     /**
@@ -313,8 +313,8 @@ public class GepgApiClient {
      */
     public void publishControlNumberReuse(String signedRequest) {
         Map<String, Object> headers = new HashMap<>();
-        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.CONTROL_NUMBER_REUSE_HEADER);
-        RabbitMqUtil.publishToQueue(Queue.BILL_SUBMISSION_REQUEST, signedRequest, headers);
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), GepgQueueHeaders.CONTROL_NUMBER_REUSE_HEADER);
+        GepgAMqPublisher.publishToQueue(GepgAMqQueues.BILL_SUBMISSION_QUEUE, signedRequest, headers);
     }
 
     /**
@@ -345,8 +345,8 @@ public class GepgApiClient {
      */
     public void publishBillUpdate(String signedRequest) {
         Map<String, Object> headers = new HashMap<>();
-        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.BILL_UPDATE_HEADER);
-        RabbitMqUtil.publishToQueue(Queue.BILL_SUBMISSION_REQUEST, signedRequest, headers);
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), GepgQueueHeaders.BILL_UPDATE_HEADER);
+        GepgAMqPublisher.publishToQueue(GepgAMqQueues.BILL_SUBMISSION_QUEUE, signedRequest, headers);
     }
 
     /**
@@ -377,8 +377,8 @@ public class GepgApiClient {
      */
     public void publishBillCancellation(String signedRequest) {
         Map<String, Object> headers = new HashMap<>();
-        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.BILL_CANCELLATION_HEADER);
-        RabbitMqUtil.publishToQueue(Queue.BILL_SUBMISSION_REQUEST, signedRequest, headers);
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), GepgQueueHeaders.BILL_CANCELLATION_HEADER);
+        GepgAMqPublisher.publishToQueue(GepgAMqQueues.BILL_SUBMISSION_QUEUE, signedRequest, headers);
     }
 
     /**
@@ -409,8 +409,8 @@ public class GepgApiClient {
      */
     public void publishPayments(String signedRequest) {
         Map<String, Object> headers = new HashMap<>();
-        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.PAYMENT_SUBMISSION_HEADER);
-        RabbitMqUtil.publishToQueue(Queue.BILL_PAYMENT_RESPONSE, signedRequest, headers);
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), GepgQueueHeaders.PAYMENT_SUBMISSION_HEADER);
+        GepgAMqPublisher.publishToQueue(GepgAMqQueues.PAYMENT_SUBMISSION_QUEUE, signedRequest, headers);
     }
 
     /**
@@ -441,8 +441,10 @@ public class GepgApiClient {
      */
     public void publishReconciliation(String signedRequest) {
         Map<String, Object> headers = new HashMap<>();
-        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(), QueueHeaders.RECONCILIATION_SUBMISSION_HEADER);
-        RabbitMqUtil.publishToQueue(Queue.BILL_RECONCILIATION, signedRequest, headers);
+        headers.put(GepgQueueHeaderRequestType.REQUEST_TYPE.toString(),
+                GepgQueueHeaders.RECONCILIATION_SUBMISSION_HEADER);
+        GepgAMqPublisher.publishToQueue(GepgAMqQueues.RECONCILIATION_SUBMISSION_QUEUE, signedRequest,
+                headers);
     }
 
     /**

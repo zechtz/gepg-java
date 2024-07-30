@@ -1,6 +1,6 @@
 package com.watabelabs.gepg.amqp.headers;
 
-public class QueueHeaders {
+public class GepgQueueHeaders {
     public static final String BILL_SUBMISSION_HEADER = "BILL_SUBMISSION_REQUEST_HEADER";
     public static final String CONTROL_NUMBER_REUSE_HEADER = "CONTROL_NUMBER_REUSE_REQUEST_HEADER";
     public static final String BILL_UPDATE_HEADER = "BILL_UPDATE_REQUEST_HEADER";
