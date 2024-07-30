@@ -67,16 +67,16 @@ public class GepgBillSubReqTest {
     public static void setup() throws Exception {
         gepgApiClient = new GepgApiClient();
 
-        // Setup RabbitMQ connection and channel
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(DotEnvUtil.getEnvVariable("RABBITMQ_HOST"));
-        factory.setPort(Integer.parseInt(DotEnvUtil.getEnvVariable("RABBITMQ_PORT")));
-        factory.setUsername(DotEnvUtil.getEnvVariable("RABBITMQ_USERNAME"));
-        factory.setPassword(DotEnvUtil.getEnvVariable("RABBITMQ_PASSWORD"));
-
-        connection = factory.newConnection();
-        channel = connection.createChannel();
-        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+        // // Setup RabbitMQ connection and channel
+        // ConnectionFactory factory = new ConnectionFactory();
+        // factory.setHost(DotEnvUtil.getEnvVariable("RABBITMQ_HOST"));
+        // factory.setPort(Integer.parseInt(DotEnvUtil.getEnvVariable("RABBITMQ_PORT")));
+        // factory.setUsername(DotEnvUtil.getEnvVariable("RABBITMQ_USERNAME"));
+        // factory.setPassword(DotEnvUtil.getEnvVariable("RABBITMQ_PASSWORD"));
+        //
+        // connection = factory.newConnection();
+        // channel = connection.createChannel();
+        // channel.queueDeclare(QUEUE_NAME, true, false, false, null);
     }
 
     @AfterAll
