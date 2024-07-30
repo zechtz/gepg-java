@@ -5,8 +5,6 @@ import java.io.StringWriter;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.validation.ValidationException;
 import javax.xml.bind.JAXBContext;
