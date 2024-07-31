@@ -197,11 +197,17 @@ All these DTOs conform to the GePG specification, eliminating the need to mainta
     -   `submitPayment(String signedRequest)`: This method Submits a payment to the GePG API and responds by returning an instance of the `GepgPmtSpInfoAck` class
     -   `requestReconciliation(String signedRequest)`: This method Submits a reconciliation request to the GePG API and responds by returning an instance of the `GepgSpReconcRespAck` class
 
--   **Receiving Responses from Gepg**
+-   **Publishing to RabbitMQ**
 
-    -   `receivePaymentNotification(String signedRequest)`: This method receives the payment notification Info as xml and returns an instance of the `GepgPmtSpInfo` class
-    -   `receiveControlNumber(String signedRequest)`: This method receives the control number response and sends an acknowledgment back as a signed xml string
-    -   `receiveReconciliationResponse(String gepgSpReconcResp)`: This method receives the reconciliation response and return the `GepgSpReconcResp` object
+    -   `publishBill(submitBillString signedRequestXml)`: This method publishes a bill submission request to the RabbitMQ queue
+
+    -   `publishBillUpdate(String signedRequest)`: This method publishes a bill change/update request to the RabbitMQ queue.
+
+    -   `publishBillCancellation(String signedRequest)`: This method publishes a bill cancellation request to the RabbitMQ queue.
+
+    -   `publishPayments(String signedRequest)`: This method publishes a payment submission request to the RabbitMQ queue
+
+    -   `publishReconciliation(String signedRequest)`: This Publishes a reconciliation request to the RabbitMQ queue.
 
 -   **Generating Acknowledgements**
 

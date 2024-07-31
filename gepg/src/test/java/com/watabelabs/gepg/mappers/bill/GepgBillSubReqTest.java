@@ -17,7 +17,6 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.slf4j.Logger;
@@ -25,8 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.GetResponse;
 import com.watabelabs.gepg.GepgApiClient;
 import com.watabelabs.gepg.amqp.enums.GepgQueueHeaderRequestType;
 import com.watabelabs.gepg.amqp.headers.GepgQueueHeaders;
@@ -40,7 +37,6 @@ import com.watabelabs.gepg.mappers.bill.requests.GepgBillItem;
 import com.watabelabs.gepg.mappers.bill.requests.GepgBillSubReq;
 import com.watabelabs.gepg.mappers.bill.requests.GepgBillTrxInf;
 import com.watabelabs.gepg.mappers.bill.responses.GepgBillSubResp;
-import com.watabelabs.gepg.utils.DotEnvUtil;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import io.javalin.Javalin;
@@ -57,8 +53,6 @@ public class GepgBillSubReqTest {
 
     private static Connection connection;
     private static Channel channel;
-
-    private static final String QUEUE_NAME = "BILL_CONTROL_NUMBER_REQUEST";
 
     // Load environment variables once
     private static final Dotenv dotenv = Dotenv.load();
