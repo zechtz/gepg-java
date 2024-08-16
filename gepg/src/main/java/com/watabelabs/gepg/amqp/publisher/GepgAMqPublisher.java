@@ -63,16 +63,40 @@ public class GepgAMqPublisher {
     }
 
     /**
+     * Publishes a message to a specified RabbitMQ exchange with headers.
+     *
+     * @param exchangeName the name of the exchange to publish to
+     * @param routingKey   the routing key to use
+     * @param message      the message to publish
+     * @param headers      the headers to include with the message
+     */
+    public static void publishToExchange(String exchangeName, String routingKey, String message,
+            Map<String, Object> headers) {
+        try {
+            AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
+                    .headers(headers)
+                    .build();
+            channel.basicPublish(exchangeName, routingKey, props, message.getBytes("UTF-8"));
+            logger.info("MESSAGE_PUBLISHED_TO_EXCHANGE {}: {}", exchangeName, message);
+        } catch (Exception e) {
+            logger.error("FAILED_TO_PUBLISH_MESSAGE_TO_EXCHANGE", e);
+        }
+    }
+
+    /**
      * Closes the RabbitMQ channel and connection.
      */
     public static void close() {
         try {
-            if (channel != null)
+            if (channel != null) {
                 channel.close();
-            if (connection != null)
+            }
+            if (connection != null) {
                 connection.close();
+            }
         } catch (Exception e) {
             logger.error("FAILED_TO_CLOSE_RABBITMQ_CONNECTION", e);
         }
     }
+
 }
