@@ -263,10 +263,10 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgBillSubReqAck submitBill(String signedRequest) throws Exception {
-        this.setApiUrl(apiUrl + GepgEndpoints.SUBMIT_BILL);
+        String submissionUrl = apiUrl + GepgEndpoints.SUBMIT_BILL;
 
         // Step 1: Send the bill submission request
-        String response = sendRequest(signedRequest, GEPG_COM);
+        String response = sendRequest(submissionUrl, signedRequest, GEPG_COM);
 
         logger.info("BILL_SUBMISSION_RESPONSE:{}", response);
 
@@ -295,10 +295,10 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgBillSubReqAck reuseControlNumber(String signedRequest) throws Exception {
-        this.setApiUrl(apiUrl + GepgEndpoints.REUSE_CONTROL_NUMBER);
+        String submissionUrl = apiUrl + GepgEndpoints.REUSE_CONTROL_NUMBER;
 
         // Step 1: Send the control number reuse request
-        String response = sendRequest(signedRequest, GEPG_COM_CN_REUSE);
+        String response = sendRequest(submissionUrl, signedRequest, GEPG_COM_CN_REUSE);
 
         logger.info("CONTROL_NUMBER_REUSE_REQUEST_RESPONSE:{}", response);
 
@@ -327,10 +327,10 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgBillSubReqAck updateBill(String signedRequest) throws Exception {
-        this.setApiUrl(apiUrl + GepgEndpoints.UPDATE_BILL);
+        String submissionUrl = apiUrl + GepgEndpoints.UPDATE_BILL;
 
         // Step 1: Send the control number reuse request
-        String response = sendRequest(signedRequest, GEPG_COM_BILL_CHANGE);
+        String response = sendRequest(submissionUrl, signedRequest, GEPG_COM_BILL_CHANGE);
 
         logger.info("BILL_UPDATE_REQUEST_RESPONSE:{}", response);
 
@@ -359,10 +359,10 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgBillSubReqAck cancelBill(String signedRequest) throws Exception {
-        this.setApiUrl(apiUrl + GepgEndpoints.CANCEL_BILL);
+        String submissionUrl = apiUrl + GepgEndpoints.CANCEL_BILL;
 
         // Step 1: Send the control number reuse request
-        String response = sendRequest(signedRequest, CONTENT_TYPE);
+        String response = sendRequest(submissionUrl, signedRequest, CONTENT_TYPE);
 
         logger.info("CANCEL_BILL_REQUEST_RESPONSE:{}", response);
 
@@ -391,10 +391,10 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgPmtSpInfoAck submitPayment(String signedRequest) throws Exception {
-        this.setApiUrl(apiUrl + GepgEndpoints.SEND_PAYMENT);
+        String submissionUrl = apiUrl + GepgEndpoints.SEND_PAYMENT;
 
         // Step 1: Send the control number reuse request
-        String response = sendRequest(signedRequest, CONTENT_TYPE);
+        String response = sendRequest(submissionUrl, signedRequest, CONTENT_TYPE);
 
         logger.info("PAYMENT_SUBMISSION_REQUEST_RESPONSE:{}", response);
 
@@ -423,10 +423,10 @@ public class GepgApiClient {
      * @throws Exception if an error occurs during the process
      */
     public GepgSpReconcRespAck requestReconciliation(String signedRequest) throws Exception {
-        this.setApiUrl(apiUrl + GepgEndpoints.REQUEST_RECONCILIATION);
+        String submissionUrl = apiUrl + GepgEndpoints.REQUEST_RECONCILIATION;
 
         // Step 1: Send the control number reuse request
-        String response = sendRequest(signedRequest, CONTENT_TYPE);
+        String response = sendRequest(submissionUrl, signedRequest, CONTENT_TYPE);
 
         logger.info("RECONCILIATION_REQUEST_RESPONSE:{}", response);
 
@@ -803,8 +803,8 @@ public class GepgApiClient {
      * @return the response from the GePG API
      * @throws Exception if an error occurs during the request
      */
-    private String sendRequest(String signedRequest, String headerInfo) throws Exception {
-        URL url = new URL(apiUrl);
+    private String sendRequest(String submissionUrl, String signedRequest, String headerInfo) throws Exception {
+        URL url = new URL(submissionUrl);
         int retryCount = 3;
         int initialDelay = 1000; // 1 second
 
